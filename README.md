@@ -5,7 +5,7 @@
 - [Documentation](#documentation)
   - [Projects](#projects)
   - [Supported Providers](#supported-providers)
-  - [Variables](#Variables)
+  - [Variables](#variables)
   - [Modules](#modules)
     - [c2](#c2)
     - [dns_records](#dnsrecords)
@@ -17,12 +17,15 @@
     - [mail](#mail)
     - [redirector](#redirector)
     - [webserver](#webserver)
+    - [godaddy](#godaddy)
+- [Arguments](#arguments)
   - [Help](#help)
   - [Advanced Configuration](#advanced-configuration)
     - [Installation Templates](#installation-templates)
     - [Default Configuration File](#default-configuration-file)
 - [RedBaron](#redbaron)
-- [Notes](#notes)
+  - [Notes](#notes)
+    - [Firewall rules](#firewall-rules)
 
 
 This tool provides a python-based console CLI which is used to build Red Teaming infrastructure in an automated way. The user has to provide inputs by using the tool’s modules (e.g. C2, Email Server, HTTP web delivery server, Phishing server etc.) and the full infra / modules and scripts will be generated automatically on a cloud provider of choice. Currently supports AWS and Digital Ocean. The tool is still under development and it was inspired and uses the [Red-Baron](https://github.com/byt3bl33d3r/Red-Baron) Terraform implementation found on Github. 
@@ -261,7 +264,8 @@ The `./config/config.json` file contains the default configuration on each modul
 
 For more information on how to modify the terraform modules and about the Red Baron project visit the following [Link](https://github.com/byt3bl33d3r/Red-Baron).
 
-## Notes:
-### Firewall rules: Vverlord does not support adding new firewall rules from the CLI at the current time. You can add or remove the rules  from the RedBaron modules directory on the  terraform code or after the installation on each provider.
+## Notes
+### Firewall rules
+Overlord does not support adding new firewall rules from the CLI at the current time. You can add or remove the rules  from the RedBaron modules directory on the  terraform code or after the installation on each provider.
 - AWS: https://www.terraform.io/docs/providers/aws/r/security_group.html
 - DIGITALOCEAN: https://www.terraform.io/docs/providers/do/r/firewall.html
