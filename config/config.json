@@ -1,0 +1,93 @@
+{
+    "mod_redirector": {
+        "module": "redirector",
+        "type" : "http",
+        "region": "LON1",
+        "redirector_id":"",
+        "provider": "digitalocean",
+        "size": "s-1vcpu-1gb",
+        "id": ""
+    },
+    "mod_c2": {
+        "module": "c2",
+        "type" : "http",
+        "redirectors": 1,
+        "tools": [],
+        "region": "LON1",
+        "provider": "digitalocean",
+        "size": "s-1vcpu-1gb",
+        "id": ""
+    },
+    "mod_dns_record": {
+        "module": "dns_record",
+        "provider": "digitalocean",
+        "type": "A",
+        "name": "@",
+        "records": {},
+        "counter": 1,
+        "ttl": "10",
+        "priority": 1
+    },
+    "mod_gophish": {
+        "module": "gophish",
+        "redirectors": 1,
+        "region": "LON1",
+        "provider": "digitalocean",
+        "size": "s-1vcpu-1gb",
+        "id": ""
+    },
+    "mod_letsencrypt": {
+        "module": "letsencrypt",
+        "id": "",
+        "domain_name" : "",
+        "mod_id" : "",
+        "email": "kokos@example.com"
+    },
+    "mod_mail": {
+        "module": "mail",
+        "domain_name": "",
+        "subdomain": "mail",
+        "region": "LON1",
+        "provider": "digitalocean",
+        "size": "s-1vcpu-1gb",
+        "id": "",
+        "allowed_ips": []
+    },
+    "mod_webserver": {
+        "module": "webserver",
+        "redirectors": 1,
+        "region": "LON1",
+        "provider": "digitalocean",
+        "size": "s-1vcpu-1gb",
+        "id": ""
+    },
+    "mod_godaddy": {
+        "module": "godaddy",
+        "provider": "digitalocean",
+        "domain": "",
+        "id": ""
+    },
+    "mod_firewall": {
+        "module": "firewall",
+        "provider": "digitalocean",
+        "protocol": "tcp",
+        "port": "",
+        "address": "0.0.0.0/0",
+        "rule": "inbound",
+        "mod_id":""
+    },
+    "aws" :{
+        "regions" : ["us-east-2", "us-east-1", "us-west-1", "us-west-2", "ap-east-1", "ap-south-1", "ap-northeast-3", "ap-northeast-2", "ap-southeast-1", "ap-southeast-2", "ap-northeast-1", "ca-central-1", "cn-north-1", "cn-northwest-1", "eu-central-1", "eu-west-1", "eu-west-2", "eu-west-3", "eu-north-1", "me-south-1", "sa-east-1", "us-gov-east-1", "us-gov-west-1"],
+        "size" : ["t2.nano", "t2.micro", "t2.small", "t2.medium", "t2.large", "t2.xlarge", "t2.2xlarge", "a1.medium", "a1.large", "a1.xlarge", "a1.2xlarge", "a1.4xlarge", "t3.nano", "t3.micro", "t3.small", "t3.medium", "t3.large", "t3.xlarge", "t3.2xlarge", "t3a.nano", "t3a.micro", "t3a.small", "t3a.medium", "t3a.large", "t3a.xlarge", "t3a.2xlarge"],
+        "default_region": "eu-west-1",
+        "default_size": "t2.micro"
+    },
+    "digitalocean" :{
+        "regions" : ["NYC1","NYC2","NYC2", "SFO1", "SFO2", "AMS2", "AMS1", "LON1","FRA1","TOR1","BLR1"],
+        "size" : ["s-1vcpu-1gb"],
+        "default_region" : "LON1",
+        "default_size" : "s-1vcpu-1gb"
+    },
+    "providers_list" : ["digitalocean","aws"]
+}
+
