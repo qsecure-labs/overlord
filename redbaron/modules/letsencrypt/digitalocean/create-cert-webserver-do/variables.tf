@@ -10,5 +10,5 @@ variable "phishing_server_ip" {
 }
 
 variable "email" {
-  default = "fakeemail@a.com "
+  default = "fakeemail@a.com"
 }

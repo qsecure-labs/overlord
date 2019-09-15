@@ -97,8 +97,18 @@ resource "aws_instance" "gophish-server" {
   }
 
   provisioner "file" {
-    source      = "../../redbaron/data/scripts/gophish.sh"
+    source      = "../../redbaron/data/scripts/gophish/gophish_service.sh"
     destination = "/tmp/gophish.sh"
+        connection {
+        type = "ssh"
+        user = "admin"
+        private_key = "${tls_private_key.ssh.*.private_key_pem[count.index]}"
+    }
+  }
+
+  provisioner "file" {
+    source      = "../../redbaron/data/scripts/gophish.sh"
+    destination = "/tmp/gophish_install.sh"
         connection {
         type = "ssh"
         user = "admin"
@@ -108,8 +118,8 @@ resource "aws_instance" "gophish-server" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo chmod 777 /tmp/gophish.sh",
-      "sudo /tmp/gophish.sh",
+      "sudo chmod 777 /tmp/gophish_install.sh",
+      "sudo /tmp/gophish_install.sh",
     ]
 
   # "sudo /opt/goapps/src/github.com/gophish/gophish/gophish &"
@@ -119,17 +129,6 @@ resource "aws_instance" "gophish-server" {
         private_key = "${tls_private_key.ssh.*.private_key_pem[count.index]}"
     }
   }
-
-
-  # provisioner "remote-exec" {
-  #   scripts = "${concat(list("../../redbaron/data/scripts/gophish.sh"), var.install)}"
-  #
-  #   connection {
-  #       type = "ssh"
-  #       user = "admin"
-  #       private_key = "${tls_private_key.ssh.*.private_key_pem[count.index]}"
-  #   }
-  # }
 
 }
 

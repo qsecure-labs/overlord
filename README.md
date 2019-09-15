@@ -30,7 +30,7 @@
 
 This tool provides a python-based console CLI which is used to build Red Teaming infrastructure in an automated way. The user has to provide inputs by using the tool’s modules (e.g. C2, Email Server, HTTP web delivery server, Phishing server etc.) and the full infra / modules and scripts will be generated automatically on a cloud provider of choice. Currently supports AWS and Digital Ocean. The tool is still under development and it was inspired and uses the [Red-Baron](https://github.com/byt3bl33d3r/Red-Baron) Terraform implementation found on Github. 
 
-It was only tested on Kali Linux but it propably work on all Linux x64 systems.
+It was only tested on Kali Linux but it probably work on all Linux x64 systems.
 # Setup
 
 ```bash
@@ -46,14 +46,14 @@ Overlord has build in functionality for project management. From the cli you can
   - AWS
   - Godaddy
 ## Variables
-The `set` command can be used to initalize the API keys to communicate with the providers. The  domains variable can be used  to add domain names into the overlord project.
+The `set` command can be used to initialize the API keys to communicate with the providers. The  domains variable can be used  to add domain names into the overlord project.
 ```
 aws_access_key        aws_secret_key        domains               dotoken               godaddy_access_key    godaddy_secret_key
 ```
 The `./projects/variables.json` can be used to auto load the keys used to authenticate with each of the providers overlord supports and the domain names. When you first set the arguments into your campaign you can save them using the `set variables` command which will create the `variables.json` file. 
 ## Modules
 ### c2
-Creates a C2 server of the provider of choice in the cloud. The types availalbe are HTTP/DNS. SSH keys for each instance will be outputted to the ```redbaron/data/ssh_keys``` folder.
+Creates a C2 server of the provider of choice in the cloud. The types available are HTTP/DNS. SSH keys for each instance will be outputted to the ```redbaron/data/ssh_keys``` folder.
 
 |Variable   	|Required   |Description   	                                            |
 |---	        |---	    |---	                                                        |
@@ -64,6 +64,13 @@ Creates a C2 server of the provider of choice in the cloud. The types availalbe 
 |`size`   	  |Yes   	    |Instance size to launch   	                                |
 |`redirectors`|Yes   	    |Number of redirectors to launch for each c2. It can be 0.  |
 |`tools`   	  |No   	    |Tools to be installed on instance creation.   	            |
+
+The tools that are currently embedded to be automatically install are the following:
+- metasploit
+- empire
+- dnscat2
+- cobaltstrike (The `CSTRIKE_KEY` variable has to be set in the  `./redbaron/data/scripts/tools/cobaltstrike.sh` script)
+- The PenTesters Framework `(PTF)` (A library of penetration testing tools. You can modify what  you  want to install by changing the  `./redbaron/data/scripts/tools/ptf.sh` script. For more information about  the  project visit: https://github.com/trustedsec/ptf)
 
 ### dns_records
 Adds records to a domain.
@@ -89,7 +96,7 @@ TXT: set record -d <domain> -v <custom>
 MX:  set record -m <module_id> -d <domain>
 ```
 #### Name
-Use '@' for Digitalocean or "" to AWS to create the record at the root of the domain or enter a hostname to create it elsewhere.A records are for IPv4 addresses only and tell a request where your domain should direct to. 
+Use '@' for DigitalOcean or "" to AWS to create the record at the root of the domain or enter a hostname to create it elsewhere.A records are for IPv4 addresses only and tell a request where your domain should direct to. 
 
 ### gophish
 Creates a gophish server of the provider of choice in the cloud. SSH keys for each instance will be outputted to the ```redbaron/data/ssh_keys``` folder.
@@ -168,7 +175,7 @@ Documented commands (type help <topic>):
 
 General (type help <command>)
 ================================================================================
-info                Prints variable table or contents of a module which was added to the campaigng
+info                Prints variable table or contents of a module which was added to the campaign
 set                 General variables for the campaign to be set
 
 Module  (type help <command>)
@@ -190,7 +197,7 @@ save                Save a project
 Other
 ================================================================================
 clear               Clear the screen
-exit                Exit this application
+exit                Exit to main menu
 help                List available commands or provide detailed help for a specific command
 history             View, run, edit, save, or clear previously entered commands
 shell               Execute a command as if at the OS prompt
@@ -212,7 +219,7 @@ set-commands:
     dotoken             Sets the Digital Ocean Token
     aws_secret_key      Sets the AWS Secret Key
     aws_access_key      Sets the AWS Access Key
-    domains             Domain names to be used in the campaign (Multilpe domain names can be added)
+    domains             Domain names to be used in the campaign (Multiple domain names can be added)
     variables           Sets the default variables.json to the values that are in memory
 ```
 

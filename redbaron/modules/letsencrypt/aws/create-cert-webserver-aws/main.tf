@@ -1,6 +1,7 @@
 resource "null_resource" "lets-encrypt" {
   provisioner "remote-exec" {
     inline = [
+      "sudo service apache2 start",
       "sudo wget https://dl.eff.org/certbot-auto",
       "sudo mv certbot-auto /usr/local/bin/certbot-auto",
       "sudo chown root /usr/local/bin/certbot-auto",

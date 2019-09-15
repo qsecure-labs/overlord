@@ -40,7 +40,7 @@ class Overlord(cmd2.Cmd):
     """Main Menu for Overlord."""
     os.system('clear')
     print(cmd2.ansi.style("AWS its on development it may contain some bugs", fg='red', bg='',bold=True, underline=False))
-    version = cmd2.ansi.style("v.0.1", fg='red', bg='',
+    version = cmd2.ansi.style("v.0.2", fg='red', bg='',
                              bold=True, underline=False)
     print(f"""
                      _               _        
