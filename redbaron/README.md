@@ -16,4 +16,4 @@ For detailed documentation on the tool and each module please see Red Baron's [w
 
 # License
 
-This fork of the original Red Baron repository is licensed under the GNU General Public License v3.0.
+The Red Baron repository is licensed under the GNU General Public License v3.0.
