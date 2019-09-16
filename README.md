@@ -34,7 +34,7 @@ It was only tested on Kali Linux but it probably work on all Linux x64 systems.
 # Setup
 
 ```bash
-git clone overlord /opt/
+git clone https://github.com/qsecure-labs/overlord.git /opt/
 cd /opt/overlord/config
 ./install.sh
 ```
