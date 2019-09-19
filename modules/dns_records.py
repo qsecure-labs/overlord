@@ -82,6 +82,7 @@ class cmd_main(cmd2.Cmd):
             self.mod["id"] = randomString()
 
         # Create list with modules id
+        modules_ids = []
         for c in campaign_list:
             if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy":
                 if c["module"] == "mail" or c["module"] == "redirector":
@@ -122,7 +123,7 @@ class cmd_main(cmd2.Cmd):
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
             x.add_row(["id",self.mod["id"] , "N/A", ""])
             x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
-            x.add_row(["type", self.mod["type"], "yes", "The record type to add. Valid values are A, AAAA, CAA, \nCNAME, MX, NAPTR, NS, PTR, SOA, SPF, SRV and TXT."])
+            x.add_row(["type", self.mod["type"], "yes", "The record type to add. Valid values are A, MX and TXT."])
             x.add_row(["record", self.mod["records"], "yes", "The  record to add.\n  A:   set record -m <module_id> -d <domain>\n  TXT: set record -d <domain> -t <template>/-v <custom>\n  MX:  set record -m <module_id> -d <domain>"])
             x.add_row(["name",self.mod["name"] , "yes", "Use @ to create the record at the root of the domain or enter a hostname to create it elsewhere.\nA records are for IPv4 addresses only and tell a request where your domain should direct to."])
             x.add_row(["priority",self.mod["priority"] , "no", "Used for mail server. Default 1,"])
@@ -197,11 +198,32 @@ class cmd_main(cmd2.Cmd):
     
     def set_provider(self, arg):
         """Sets the provider variable"""
+        # Check if a provider exists to set up a dns record
+        do_flag= False
+        aws_flag= False
+        global campaign_list
+
+        if arg.provider == "aws":
+            for c in campaign_list:
+                if c["provider"] == "aws":
+                    aws_flag = True
+            if not aws_flag:
+                print("No aws module was set! Returing without setting the value")
+                return
+        if arg.provider == "digitalocean":
+            for c in campaign_list:
+                if c["provider"] == "digitalocean":
+                    do_flag = True
+            if not do_flag:
+                print("No digitalocean module was set! Returing without setting the value")     
+                return
+        
         self.mod["provider"]= arg.provider
         if self.mod["name"] == "@" and self.mod["provider"] == "aws":
             self.mod["name"] = ""
         elif self.mod["name"] == "" and self.mod["provider"] == "digitalocean":
             self.mod["name"] = "@"
+    
     def set_record(self, arg):
         """Sets the record"""
         global campaign_list
@@ -239,6 +261,8 @@ class cmd_main(cmd2.Cmd):
                     elif arg.module.split('/')[0] == c["id"]:
                         record = {arg.domain: arg.module.split('/')[0]}
                         self.mod["records"]= record 
+            else:
+                print("The A type requires domain and a module to be set")
 
         
     #Set handler functions for the sub-commands
@@ -262,12 +286,36 @@ class cmd_main(cmd2.Cmd):
     def do_add(self,args):
         """Adds a dns_record module to the project """
         global  module
-        if self.mod["records"]:
-            module = self.mod
-            return True         
-        else:
-            print("The variable records can not be None!")
+        do_flag= False
+        aws_flag= False
+        global campaign_list
 
+        if not self.mod["records"]:
+            print("The variable records can not be None!")      
+        elif self.mod["provider"] == "digitalocean":
+            for c in campaign_list:
+                if c["provider"] == "digitalocean":
+                    do_flag = True
+                    break
+            if not do_flag:
+                print("No digitalocean module was set!")
+            else:
+                module = self.mod
+                return True       
+        elif self.mod["provider"] == "aws":
+            for c in campaign_list:
+                if c["provider"] == "aws":
+                    aws_flag = True
+                    break
+            if not aws_flag:
+                print("No aws module was set!")
+            else:
+                module = self.mod
+                return True                    
+        else:
+            module = self.mod
+            return True   
+    
     # Command categories
     CMD_CAT_GENERAL = 'General (type help <command>)'
     CMD_CAT_MODULE  = 'Module  (type help <command>)'

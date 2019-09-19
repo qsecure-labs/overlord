@@ -416,7 +416,7 @@ module "create_cert_{c["id"]}" {{
             if c["type"] == "MX" or c["type"] == "TXT":
                 record = f""" "{key}" = "{value}" """
             output = digitalocean.main.dns_records_type(c,record)
-
+            return output
         elif c["provider"] == "aws":
             if c["type"] == "A":
                 if len(value.split('-')) > 1:
