@@ -34,8 +34,8 @@ It was only tested on Kali Linux but it probably work on all Linux x64 systems.
 # Setup
 
 ```bash
-git clone https://github.com/qsecure-labs/overlord.git /opt/
-cd /opt/overlord/config/overlord
+git clone overlord /opt/overlord
+cd /opt/overlord/config
 ./install.sh
 ```
 # Documentation
@@ -157,7 +157,7 @@ Creates a web server of the provider of choice in the cloud. SSH keys for each i
 
 ### godaddy
 Redirects the nameservers from Godaddy to another provider (AWS, DigitalOcean)
-
+Godaddy some times needs time to change the NS records of a specific domain. This is causing an issue on Overlord failing to execute the godaddy plugin. After the NS records are updated on Goddady it would automaticaly be fixed.
 # Arguments
 
 | Name                      | Required | Description

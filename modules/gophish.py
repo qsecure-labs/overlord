@@ -94,7 +94,7 @@ class cmd_main(cmd2.Cmd):
             x.title = mod["module"] + "/"+ mod["id"]
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
             x.add_row(["id", mod["id"], "N/A", "Module ID"])
-            x.add_row(["provider", mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", mod["provider"], "yes", "Provider to be used"])
             x.add_row(["region",mod["region"] , "yes", "Regions to create Droplet in."])
             x.add_row(["size",mod["size"] , "yes", "Droplet size to launch."])
             x.add_row(["redirectors",mod["redirectors"] , "yes", "Number of redirectors to launch for each gophish instance. Defaults to 1."])
@@ -104,7 +104,7 @@ class cmd_main(cmd2.Cmd):
             x.title = 'Gophish module'
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
             x.add_row(["id", self.mod["id"], "N/A", "Module ID"])
-            x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used"])
             x.add_row(["region",self.mod["region"] , "yes", "Regions to create Droplet in. Defaults to LON1."])
             x.add_row(["size",self.mod["size"] , "yes", "Droplet size to launch."])
             x.add_row(["redirectors",self.mod["redirectors"] , "yes", "Number of redirectors to launch for each gophish instance. Defaults to 1."])
@@ -126,7 +126,7 @@ class cmd_main(cmd2.Cmd):
     parser_redirectors.add_argument('redirectors', type=int, help='example: [ set redirectors <3>')
 
     # create the parser for the "provider" sub-command
-    parser_provider = set_subparsers.add_parser('provider', help='Provider to be used (Only supported DO for now)')
+    parser_provider = set_subparsers.add_parser('provider', help='Provider to be used ')
     module_provider_parser = parser_provider.add_argument('provider',choices=providers_list, type=str, help='example : [set provider <digitalocean> ]')
 
     # create the parser for the "size" sub-command

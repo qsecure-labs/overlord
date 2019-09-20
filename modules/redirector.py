@@ -106,7 +106,7 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["id", mod["id"], "N/A", "Module ID"])
             x.add_row(["type", mod["type"], "yes", "Type of traffic to redirect values are: HTTP/DNS."])
             x.add_row(["redirector_id",mod["redirector_id"] , "yes", "ID of the redirector to set up."])
-            x.add_row(["provider", mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", mod["provider"], "yes", "Provider to be used "])
             x.add_row(["region",mod["region"] , "yes", "Regions to create Droplet in."])
             x.add_row(["size",mod["size"] , "yes", "Droplet size to launch."])
             x.align["DESCRITPION"] = "l"
@@ -117,7 +117,7 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["id", self.mod["id"], "N/A", "Module ID"])
             x.add_row(["type", self.mod["type"], "yes", "Type of traffic to redirect values are: HTTP/DNS."])
             x.add_row(["redirector_id",self.mod["redirector_id"] , "yes", "ID of the redirector to set up."])
-            x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used "])
             x.add_row(["region",self.mod["region"] , "yes", "Regions to create Droplet in."])
             x.add_row(["size",self.mod["size"] , "yes", "Droplet size to launch."])
             x.align["DESCRITPION"] = "l"
@@ -137,7 +137,7 @@ class cmd_main(cmd2.Cmd):
     parser_type.add_argument('type' ,choices=type_list, type=str, help='example:  set type <http> ]')
 
     # create the parser for the "provider" sub-command
-    parser_provider = set_subparsers.add_parser('provider', help='Provider to be used (Only supported DO for now)')
+    parser_provider = set_subparsers.add_parser('provider', help='Provider to be used ')
     module_provider_parser = parser_provider.add_argument('provider',choices=providers_list, type=str, help='example: [ set provider <digitalocean> ]')
 
     # create the parser for the "redirector" sub-command

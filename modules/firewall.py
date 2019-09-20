@@ -106,7 +106,7 @@ class cmd_main(cmd2.Cmd):
             x.title = mod["module"] + "/"+ mod["id"]
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
             x.add_row(["id", mod["id"], "N/A", "Module ID"])
-            x.add_row(["provider", mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", mod["provider"], "yes", "Provider to be used"])
             x.add_row(["protocol", mod["protocol"], "yes", "Protocol for the rule [tcp,udp,icmp]"])
             x.add_row(["port", mod["port"], "yes", "Port or Range of ports [22,0-65535]"])
             x.add_row(["address", mod["address"], "yes", "Addresses for the rule. Default 0.0.0.0/0. It can take more than one seperated by space"])           

@@ -110,7 +110,7 @@ class cmd_main(cmd2.Cmd):
             x.title = mod["module"] + "/"+ mod["id"]
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
             x.add_row(["id",mod["id"] , "N/A", ""])
-            x.add_row(["provider", mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", mod["provider"], "yes", "Provider to be used"])
             x.add_row(["type", mod["type"], "yes", "The record type to add. Valid values are A, MX and TXT."])
             x.add_row(["record", mod["records"], "yes", "The record to add.\n  A:   set record -m <module_id> -d <domain>\n  TXT: set record -d <domain> -t <template>/-v <custom>\n  MX:  set record -m <module_id> -d <domain>"])
             x.add_row(["name",mod["name"] , "yes", "Use @ to create the record at the root of the domain or enter a hostname to create it elsewhere.\nA records are for IPv4 addresses only and tell a request where your domain should direct to. For AWS the '@' is converted to ''."])
@@ -122,7 +122,7 @@ class cmd_main(cmd2.Cmd):
             x.title = 'DNS Records module'
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
             x.add_row(["id",self.mod["id"] , "N/A", ""])
-            x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used"])
             x.add_row(["type", self.mod["type"], "yes", "The record type to add. Valid values are A, MX and TXT."])
             x.add_row(["record", self.mod["records"], "yes", "The  record to add.\n  A:   set record -m <module_id> -d <domain>\n  TXT: set record -d <domain> -t <template>/-v <custom>\n  MX:  set record -m <module_id> -d <domain>"])
             x.add_row(["name",self.mod["name"] , "yes", "Use @ to create the record at the root of the domain or enter a hostname to create it elsewhere.\nA records are for IPv4 addresses only and tell a request where your domain should direct to."])
@@ -142,7 +142,7 @@ class cmd_main(cmd2.Cmd):
     parser_type.add_argument('type',choices=types_list, type=str, help='example: [ set type <MX> ]')
 
     # create the parser for the "provider" sub-command
-    parser_provider = set_subparsers.add_parser('provider', help='Provider to be used (Only supported DO for now)')
+    parser_provider = set_subparsers.add_parser('provider', help='Provider to be used ')
     module_provider_parser = parser_provider.add_argument('provider',choices=providers_list, type=str, help='example: [ set provider <digitalocean> ]')
 
     # create the parser for the "name" sub-command

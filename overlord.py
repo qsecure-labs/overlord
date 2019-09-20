@@ -39,7 +39,6 @@ def hide_cmd2_modules(self):
 class Overlord(cmd2.Cmd):
     """Main Menu for Overlord."""
     os.system('clear')
-    print(cmd2.ansi.style("AWS its on development it may contain some bugs", fg='red', bg='',bold=True, underline=False))
     version = cmd2.ansi.style("v.0.2", fg='red', bg='',
                              bold=True, underline=False)
     print(f"""
@@ -172,13 +171,18 @@ class Overlord(cmd2.Cmd):
             dir_path = "projects/"+self.project_id+"/.terraform"
             if  os.path.exists(dir_path):
                 os.system(f"""cd projects/{self.project_id} && terraform destroy -auto-approve""")
-            shutil.rmtree("projects/"+arg.id)
-            self.deleteproject_id.choices = next(os.walk("projects"))[1]
-            self.loadproject_id.choices = next(os.walk("projects"))[1]
-            self.update_choices(self.campaign)
-            proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
             notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
-            print(f"""\n{notification} The project with ID {proj} has been deleted {notification}\n""")
+            print(f"""\n{notification} Check if terraform exited without an error before you proceed. {notification}\n""")
+            flag1 = input(cmd2.ansi.style("Proceding with deleting project directory. Are you sure? [y/N]:", fg='red', bg='',bold=True, underline=False))
+            if flag1 == "y":
+                shutil.rmtree("projects/"+arg.id)
+                self.deleteproject_id.choices = next(os.walk("projects"))[1]
+                self.loadproject_id.choices = next(os.walk("projects"))[1]
+                self.update_choices(self.campaign)
+                proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
+                notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+                print(f"""\n{notification} The project with ID {proj} has been deleted {notification}\n""")
+
 
     def do_save(self,arg):
         """Save a project"""
@@ -215,6 +219,8 @@ class Overlord(cmd2.Cmd):
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
         print(f"""\n{notification} Started deployment of project with ID {proj} {notification}\n""")   
+        os.system(f"""mkdir -p projects/{self.project_id}/.terraform/plugins/linux_amd64 """)
+        os.system(f"""cp redbaron/data/plugins/terraform-provider-godaddy_v1.6.4_x4 projects/{self.project_id}/.terraform/plugins/linux_amd64""")
         os.system(f"""cd projects/{self.project_id} && terraform init""")
         os.system(f"""cd projects/{self.project_id} && terraform plan""")
         os.system(f"""cd projects/{self.project_id} && terraform apply -auto-approve""")

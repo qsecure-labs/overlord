@@ -57,6 +57,8 @@ class main(list):
                 f.write(self.create_dns_records_type(c))
             if c["module"] == "letsencrypt":
                 f.write(self.create_cert(c))
+            if c["module"] == "godaddy":
+                f.write(self.redirect_ns(c))
             # if c["module"] == "firewall":
             #     f.write(self.create_firewall(c))
         f.close
@@ -64,20 +66,20 @@ class main(list):
         #Create the variables.tf file:
         q.write(self.create_variables())
 
-
+    
     def categorize_domains(self):
         self.do_domains  =[]
         self.aws_domains =[]
         for camp in self.campaign:
             if camp["module"] == "dns_record":
-                if camp["type"] == "A" and camp["name"] == "":
+                if camp["type"] == "A" and (camp["name"] == "@" or camp["name"] == ""):
                     if camp["provider"] == "digitalocean":
                         for k in camp["records"].keys():
                             self.do_domains.append(k)
                     elif camp["provider"] == "aws":
                         for k in camp["records"].keys():
                             self.aws_domains.append(k)
-
+       
     def create_aws_vpc(self):
         output = """
 // Create VPC for AWS instances
@@ -192,6 +194,29 @@ provider "godaddy" {
                 break
         return output
 
+
+    def redirect_ns(self,c):
+        if c["provider"] == "digitalocean":
+            output = f"""
+module "redirect_ns_{c["id"]}"{{
+  source = "../../redbaron/modules/godaddy/redirect-nameservers"
+  domain = "{c["domain"]}"
+  nameservers = ["ns1.digitalocean.com" , "ns2.digitalocean.com", "ns3.digitalocean.com"]
+}}
+"""
+        elif c["provider"] == "aws":
+            public_zone = 0
+            for idx,d in enumerate(self.aws_domains):
+                if d == c["domain_name"]:
+                    public_zone = idx
+            output = f"""
+module "redirect_ns_{c["id"]}"{{
+  source = "../../redbaron/modules/godaddy/redirect-nameservers"
+  domain = "{c["domain"]}"
+  nameservers = ["${{module.public_zone.name_servers[{public_zone}]}}"]
+}}
+"""
+        return output
     #################################################################################### 
     #REDIRECTOR:
     ####################################################################################

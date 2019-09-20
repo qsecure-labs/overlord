@@ -120,7 +120,7 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["domain_name", mod["domain_name"], "yes", "Domain Name to use"])
             x.add_row(["subdomain", mod["subdomain"], "yes", "Subdomain to use"])
             x.add_row(["allowed_ips", mod["allowed_ips"], "yes", "IPs which are allowed to connect to relay emails"])
-            x.add_row(["provider", mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", mod["provider"], "yes", "Provider to be used "])
             x.add_row(["region",mod["region"] , "yes", "Regions to create Droplet in."])
             x.add_row(["size",mod["size"] , "no", "Droplet size to launch."])
             x.align["DESCRITPION"] = "l"
@@ -132,7 +132,7 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["domain_name", self.mod["domain_name"], "yes", "Domain Name to use"])
             x.add_row(["subdomain", self.mod["subdomain"], "yes", "Subdomain to use"])
             x.add_row(["allowed_ips", self.mod["allowed_ips"], "yes", "IPs which are allowed to connect to relay emails"])
-            x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used (Only supported DO for now)"])
+            x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used "])
             x.add_row(["region",self.mod["region"] , "yes", "Regions to create Droplet in."])
             x.add_row(["size",self.mod["size"] , "no", "Droplet size to launch."])
             x.align["DESCRITPION"] = "l"
@@ -152,7 +152,7 @@ class cmd_main(cmd2.Cmd):
     module_size_parser = parser_size.add_argument('size', type=str, help='example: [ set size <s-1vcpu-1gb>] ')
 
     # create the parser for the "provider" sub-command
-    parser_provider = set_subparsers.add_parser('provider', help='Provider to be used (Only supported DO for now)')
+    parser_provider = set_subparsers.add_parser('provider', help='Provider to be used ')
     module_provider_parser = parser_provider.add_argument('provider',choices=providers_list, type=str, help='example : [set provider <digitalocean> ]')
 
     # create the parser for the "domain name" sub-command
