@@ -5,6 +5,6 @@ do
 done
 git clone https://github.com/iagox86/dnscat2.git
 cd dnscat2/server
-apt-get install gcc make
-gem install bundler
-bundle install
+sudo apt-get install gcc make
+sudo gem install bundler
+sudo bundle install
