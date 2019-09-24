@@ -16,7 +16,7 @@ cd /opt/goapps/src/github.com/gophish/gophish
 go build
 sed -i 's/127.0.0.1/0.0.0.0/g' config.json # replace localhost to open
 #gophish service
-chmod +x /root/gophish.sh
+chmod +x /tmp/gophish.sh
 systemctl start gophish.service
 #Update .profile file
 echo "export GOROOT=/usr/local/go" >> /root/.profile
@@ -30,6 +30,5 @@ echo "systemctl stop gophish.service (stop the service)" >> /root/README.txt
 #file: /root/gophish.sh
 #systemctl start gophish.service (start the service)
 #systemctl stop gophish.service (stop the service)
-
 #/opt/goapps/src/github.com/gophish/gophish/config.json
 #listen_url": "0.0.0.0:3333", must change to this!
