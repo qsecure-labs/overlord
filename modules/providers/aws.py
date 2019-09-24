@@ -173,7 +173,7 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
   provisioner "remote-exec" {{
     inline = [
       "sudo postconf -e 'mynetworks = 127.0.0.1 [::1] {my_nets_1}'",
-      "echo \\"MYNETWORKS = [{my_nets_2}]\\" >> | sudo tee -a /opt/iredapd/settings.py",
+      "echo \\"MYNETWORKS = [{my_nets_2}]\\" | sudo tee -a /opt/iredapd/settings.py",
       "sudo postconf -e \\"mydomain = {c["domain_name"]}\\"",
       "sudo postconf -e \\"myhostname = {c["subdomain"]}.{c["domain_name"]}\\"",
       "sudo postconf -e \\"myorigin = \\\\$mydomain\\"",
