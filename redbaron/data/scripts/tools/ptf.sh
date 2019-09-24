@@ -4,8 +4,7 @@ do
     sleep 10
 done
 git clone https://github.com/trustedsec/ptf.git /opt/ptf
-cd /opt/ptf/ && ./ptf<< EOF
-cd /opt/ptf/ && ./ptf<< EOF
+cd /opt/ptf/ && sudo ./ptf<< EOF
 use modules/exploitation/install_update_all
 yes
 use modules/intelligence/install_update_all
