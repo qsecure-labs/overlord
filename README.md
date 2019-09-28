@@ -31,7 +31,7 @@
 This tool provides a python-based console CLI which is used to build Red Teaming infrastructure in an automated way. The user has to provide inputs by using the tool’s modules (e.g. C2, Email Server, HTTP web delivery server, Phishing server etc.) and the full infra / modules and scripts will be generated automatically on a cloud provider of choice. Currently supports AWS and Digital Ocean. The tool is still under development and it was inspired and uses the [Red-Baron](https://github.com/byt3bl33d3r/Red-Baron) Terraform implementation found on Github. 
 
 It was only tested on Kali Linux but it probably work on all Linux x64 systems.
-# Setup
+# Installation
 
 ```bash
 git clone overlord /opt/overlord
@@ -50,10 +50,10 @@ The `set` command can be used to initialize the API keys to communicate with the
 ```
 aws_access_key        aws_secret_key        domains               dotoken               godaddy_access_key    godaddy_secret_key
 ```
-The `./projects/variables.json` can be used to auto load the keys used to authenticate with each of the providers overlord supports and the domain names. When you first set the arguments into your campaign you can save them using the `set variables` command which will create the `variables.json` file. 
+The `./projects/variables.json` can be used to auto load the keys used to authenticate with each of the supported providers and the domain names. When you first set the arguments into your campaign you can save them using the `set variables` command which will create the `variables.json` file. 
 ## Modules
 ### c2
-Creates a C2 server of the provider of choice in the cloud. The types available are HTTP/DNS. SSH keys for each instance will be outputted to the ```redbaron/data/ssh_keys``` folder.
+Creates a C2 server of the provider of choice on the cloud. The types available are HTTP/DNS. SSH keys for each instance will be generated in the ```redbaron/data/ssh_keys``` folder.
 
 |Variable   	|Required   |Description   	                                            |
 |---	        |---	    |---	                                                        |
@@ -65,7 +65,7 @@ Creates a C2 server of the provider of choice in the cloud. The types available 
 |`redirectors`|Yes   	    |Number of redirectors to launch for each c2. It can be 0.  |
 |`tools`   	  |No   	    |Tools to be installed on instance creation.   	            |
 
-The tools that are currently embedded to be automatically install are the following:
+The tools which are currently available for automatic installation on the C2 servers are the following:
 - metasploit
 - empire
 - dnscat2
@@ -96,10 +96,10 @@ TXT: set record -d <domain> -v <custom>
 MX:  set record -m <module_id> -d <domain>
 ```
 #### Name
-Use '@' for DigitalOcean or "" to AWS to create the record at the root of the domain or enter a hostname to create it elsewhere.A records are for IPv4 addresses only and tell a request where your domain should direct to. 
+Use '@' for DigitalOcean or "" for AWS to create the record at the root of the domain or enter a hostname to create it elsewhere. 
 
 ### gophish
-Creates a gophish server of the provider of choice in the cloud. SSH keys for each instance will be outputted to the ```redbaron/data/ssh_keys``` folder.
+Creates a gophish server of the provider of choice on the cloud. SSH keys for each instance will be generated in the ```redbaron/data/ssh_keys``` folder.
 
 |Variable   	  |Required   |Description   	                                            |
 |---	          |---	      |---	                                                      |
@@ -120,7 +120,7 @@ Creates a Let's Encrypt TLS certificate for the specified domain using the DNS c
 |`mod_id`     |No   	    |Autoloaded from domain_name                                |
 
 ### mail
-Creates a mail server of the provider of choice in the cloud. SSH keys for each instance will be outputted to the ```redbaron/data/ssh_keys``` folder.
+Creates a mail server of the provider of choice on the cloud. SSH keys for each instance will be generated in the ```redbaron/data/ssh_keys``` folder.
 
 |Variable   	  |Required   |Description   	                                            |
 |---	          |---	      |---	                                                      |
@@ -133,7 +133,7 @@ Creates a mail server of the provider of choice in the cloud. SSH keys for each 
 |`size`   	    |Yes   	    |Instance size to launch   	                                |
 
 ### redirector
-Creates a redirector server for another module of the provider of choice in the cloud. The types availalbe are HTTP/DNS. SSH keys for each instance will be outputted to the ```redbaron/data/ssh_keys``` folder.
+Creates a redirector server for another module (e.g. redirector for the C2 servers, for gophish etc.) of the provider of choice on the cloud. The types availalbe are HTTP/DNS. SSH keys for each instance will be generated in the ```redbaron/data/ssh_keys``` folder.
 
 |Variable   	  |Required   |Description   	                                            |
 |---	          |---	      |---	                                                      |
@@ -145,7 +145,7 @@ Creates a redirector server for another module of the provider of choice in the 
 |`redirector_id`|Yes   	    |ID of the redirector to set up.                            |
 
 ### webserver
-Creates a web server of the provider of choice in the cloud. SSH keys for each instance will be outputted to the ```redbaron/data/ssh_keys``` folder.
+Creates a web server of the provider of choice on the cloud. SSH keys for each instance will be generated in the ```redbaron/data/ssh_keys``` folder.
 
 |Variable   	|Required   |Description   	                                            |
 |---	        |---	    |---	                                                        |
@@ -239,7 +239,7 @@ optional arguments:
 In the c2 module the user has the ability to install tools from a list. The tool automatically loads the scripts from the `./redbaron/data/scripts/tools`. By adding a new script in the directory, you can install by the `tools` variable in the c2 module.
 
 ### Default Configuration File
-The `./config/config.json` file contains the default configuration on each module and the providers that are used by overlord. By changing each object, you can customize the default values of each module when it loads to overlord.
+The `./config/config.json` file contains the default configuration on each module and the providers that are used by overlord. By changing each object, you can customize the default values of each module when it loads to Overlord.
 ```json
     // Default
     "mod_c2": {
@@ -267,12 +267,12 @@ The `./config/config.json` file contains the default configuration on each modul
 ```
 
 # RedBaron
-**Red Baron only supports Terraform version 0.11 and will only work on Linux x64 systems. We will try to update it to support newer versions as well on a later date.** 
+**Red Baron only supports Terraform version 0.11 and will only work on Linux x64 systems. We will try to update it to support newer versions as well on a later phase.** 
 
 For more information on how to modify the terraform modules and about the Red Baron project visit the following [Link](https://github.com/byt3bl33d3r/Red-Baron).
 
 ## Notes
 ### Firewall rules
-Overlord does not support adding new firewall rules from the CLI at the current time. You can add or remove the rules  from the RedBaron modules directory on the  terraform code or after the installation on each provider.
+Overlord does not support adding new firewall rules from the CLI at the current time. You can add or remove rules from the RedBaron modules directory on the Terraform code or after the installation of each provider (i.e. manually via the cloud provider's web interface).
 - AWS: https://www.terraform.io/docs/providers/aws/r/security_group.html
 - DIGITALOCEAN: https://www.terraform.io/docs/providers/do/r/firewall.html
