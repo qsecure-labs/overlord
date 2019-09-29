@@ -170,6 +170,7 @@ class Overlord(cmd2.Cmd):
         if  flag == 'y':
             dir_path = "projects/"+self.project_id+"/.terraform"
             if  os.path.exists(dir_path):
+                os.system(f"""cd projects/{self.project_id} && terraform state rm module.redirect_ns""")
                 os.system(f"""cd projects/{self.project_id} && terraform destroy -auto-approve""")
             notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
             print(f"""\n{notification} Check if terraform exited without an error before you proceed. {notification}\n""")

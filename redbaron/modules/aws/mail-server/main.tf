@@ -64,7 +64,8 @@ resource "aws_instance" "mail-server" {
   }
 
   provisioner "file" {
-    source      = "../../redbaron/data/scripts/iredmail.sh"
+    #source      = "../../redbaron/data/scripts/iredmail.sh"
+    source = "${var.path}"
     destination = "/tmp/iredmail.sh"
 
     connection {

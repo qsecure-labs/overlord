@@ -174,7 +174,7 @@ class cmd_main(cmd2.Cmd):
             self.module_recrod_parser.choices = modules_ids
         else:
             for c in campaign_list:
-                    if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "redirector":
+                    if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "redirector" and c["module"] != "godaddy":
                         if c["module"] == "mail":
                             modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                         else:

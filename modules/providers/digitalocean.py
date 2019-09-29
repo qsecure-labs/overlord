@@ -137,13 +137,14 @@ output "gophish-{c["id"]}-ips" {{
         return output
 
     #Mail
-    def mail(c,my_nets_1,my_nets_2):
+    def mail(c,my_nets_1,my_nets_2,project_id):
         output=f"""
 module "mail_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/mail-server"
     name = "{c["subdomain"]}.{c["domain_name"]}"
     size = "{c["size"]}"
     regions = ["{c["region"]}"]
+    path = "{c["id"]}/iredmail.sh"
 }}
 
 output "mail-{c["id"]}-ips" {{
@@ -185,6 +186,8 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
         return output
 
     def dns_records_type(c,record):
+        if "v=DMARC1;" in record:
+          c["name"] ="_dmarc"
         output=f"""
 module "create_dns_record_{c["id"]}" {{
     source = "../../redbaron/modules/digitalocean/create-dns-record"

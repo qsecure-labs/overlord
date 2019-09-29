@@ -51,6 +51,7 @@ resource "digitalocean_droplet" "mail-server" {
   }
   provisioner "file" {
     source      = "../../redbaron/data/scripts/iredmail.sh"
+    # source = "${var.path}"
     destination = "/tmp/iredmail.sh"
         connection {
         host = "${self.ipv4_address}"

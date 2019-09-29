@@ -25,6 +25,8 @@ variable "size" {
 
 variable "name" {}
 
+variable "path" {}
+
 variable "regions" {
   type = "list"
   default = ["LON1"]

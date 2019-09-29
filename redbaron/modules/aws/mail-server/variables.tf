@@ -17,6 +17,8 @@ variable "ansible_arguments" {
   description = "Additional Ansible Arguments"
 }
 
+variable "path" {}
+
 variable "ansible_vars" {
   default = []
   type    = "list"

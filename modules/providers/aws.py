@@ -155,13 +155,14 @@ output "gophish-{c["id"]}-ips" {{
         return output
 
     #Mail
-    def mail(c,my_nets_1,my_nets_2):
+    def mail(c,my_nets_1,my_nets_2,project_id):
         output=f"""
 module "mail_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/mail-server"
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
+    path = "{c["id"]}/iredmail.sh"
 }}
 
 output "mail-{c["id"]}-ips" {{
