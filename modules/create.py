@@ -39,7 +39,7 @@ class main(list):
 
         # Check if AWS is used
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "godaddy":
                 if c["provider"] == "aws":
                     self.variables["aws_region"] = c["region"]
                     f.write(self.create_aws_vpc())

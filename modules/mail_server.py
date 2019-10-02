@@ -92,7 +92,7 @@ class cmd_main(cmd2.Cmd):
     
         # Create list with modules id
         for c in campaign_list:
-            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "mail" and c["module"] != "redirector":
+            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "mail" and c["module"] != "redirector" and c["module"] != "godaddy":
                 modules_ids.insert(len(modules_ids),(c["id"]))
                 for i in range(c["redirectors"]):
                     modules_ids.insert(len(modules_ids),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
@@ -218,7 +218,7 @@ class cmd_main(cmd2.Cmd):
         self.mod["allowed_ips"] = []
         if arg.custom is not None:
             for c in arg.custom:
-                self.mod["allowed_ips"].insert(len( self.mod["allowed_ips"]),c)
+                self.mod["allowed_ips"].insert(len( self.mod["allowed_ips"]),c) 
         if arg.modules is not None:
             for m in arg.modules:
                 self.mod["allowed_ips"].insert(len( self.mod["allowed_ips"]),m.split('/')[0])

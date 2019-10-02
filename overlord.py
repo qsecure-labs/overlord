@@ -41,7 +41,7 @@ class Overlord(cmd2.Cmd):
     os.system('clear')
     version = cmd2.ansi.style("v.0.2", fg='red', bg='',
                              bold=True, underline=False)
-    print(f"""
+    print(f"""                                                       
                      _               _        
   _____   _____ _ __| | ___  _ __ __| |       
  / _ \ \ / / _ \ '__| |/ _ \| '__/ _` |       
@@ -99,7 +99,7 @@ class Overlord(cmd2.Cmd):
 
     def do_version(self, arg):
         """Version"""
-        print("version 0.1")
+        print("version 0.2")
     
     def do_create(self,arg):
         """Creates terraform project from the campaign"""

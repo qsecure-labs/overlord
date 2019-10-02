@@ -66,7 +66,7 @@ resource "digitalocean_droplet" "phishing-server" {
 
   provisioner "file" {
     source      = "../../redbaron/data/scripts/gophish/gophish_service.sh"
-    destination = "/root/gophish.sh"
+    destination = "/tmp/gophish.sh"
         connection {
         host = "${self.ipv4_address}"
         type = "ssh"
