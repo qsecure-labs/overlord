@@ -1,5 +1,7 @@
 # Overlord – Red Teaming Automation
-<center><img src="logo.png" width=30%></center>
+<p align="center">
+  <img src="logo.png" width=30%>
+</p>
 
 - [Overlord – Red Teaming Automation](#overlord-%e2%80%93-red-teaming-automation)
 - [Installation](#installation)
