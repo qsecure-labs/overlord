@@ -1,7 +1,8 @@
 # Overlord – Red Teaming Automation
+<center><img src="logo.png" width=30%></center>
 
 - [Overlord – Red Teaming Automation](#overlord-%e2%80%93-red-teaming-automation)
-- [Setup](#setup)
+- [Installation](#installation)
 - [Documentation](#documentation)
   - [Projects](#projects)
   - [Supported Providers](#supported-providers)
