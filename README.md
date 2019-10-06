@@ -31,7 +31,9 @@
     - [Firewall rules](#firewall-rules)
 
 
-This tool provides a python-based console CLI which is used to build Red Teaming infrastructure in an automated way. The user has to provide inputs by using the tool’s modules (e.g. C2, Email Server, HTTP web delivery server, Phishing server etc.) and the full infra / modules and scripts will be generated automatically on a cloud provider of choice. Currently supports AWS and Digital Ocean. The tool is still under development and it was inspired and uses the [Red-Baron](https://github.com/byt3bl33d3r/Red-Baron) Terraform implementation found on Github. A demo infrastructure was set up in our blog post https://blog.qsecure.com.cy/posts/overlord/ .
+This tool provides a python-based console CLI which is used to build Red Teaming infrastructure in an automated way. The user has to provide inputs by using the tool’s modules (e.g. C2, Email Server, HTTP web delivery server, Phishing server etc.) and the full infra / modules and scripts will be generated automatically on a cloud provider of choice. Currently supports AWS and Digital Ocean. The tool is still under development and it was inspired and uses the [Red-Baron](https://github.com/byt3bl33d3r/Red-Baron) Terraform implementation found on Github. 
+
+A demo infrastructure was set up in our blog post https://blog.qsecure.com.cy/posts/overlord/ .
 
 It was only tested on Kali Linux but it probably work on all Linux x64 systems.
 # Installation
