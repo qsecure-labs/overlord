@@ -9,7 +9,7 @@ module "redirector_{c["id"]}" {{
     redirect_to = "${{module.{c["redirector_id"].split("/")[1]}_{c["redirector_id"].split("/")[0]}.ips}}"
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
-    subnet_id = "${{module.create_vpc.subnet_id}}"        
+    subnet_id = "${{module.create_vpc.subnet_id}}"
 }}
 output "redirector_{c["id"]}-ips" {{
   value = "${{module.redirector_{c["id"]}.ips}}"
@@ -61,9 +61,9 @@ module "c2_{c["id"]}" {{
 output "c2-{c["id"]}-ips" {{
   value = "${{module.c2_{c["id"]}.ips}}"
 }}
-"""     
+"""
         return output
-    
+
     #WebServer
     def webserver(c):
         if c["redirectors"] > 0:
@@ -107,8 +107,8 @@ output "webserver-{c["id"]}-ips" {{
 }}
 
 """
-        return output    
-    
+        return output
+
     #Gophish:
     def gophish(c):
         if c["redirectors"] > 0:
@@ -155,7 +155,7 @@ output "gophish-{c["id"]}-ips" {{
         return output
 
     #Mail
-    def mail(c,my_nets_1,my_nets_2,project_id):
+    def mail(c,my_nets_1,my_nets_2,my_nets_3,project_id):
         output=f"""
 module "mail_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/mail-server"
@@ -180,15 +180,13 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
       "sudo postconf -e \\"myorigin = \\\\$mydomain\\"",
       "sudo postconf -# \\"content_filter\\"",
       "sudo postconf -e \\"always_add_missing_headers = yes\\"",
-      "sudo /etc/init.d/postfix restart",
-      "sudo /etc/init.d/clamav-daemon stop",
-      "sudo /etc/init.d/clamav-freshclam stop",
-      "sudo /etc/init.d/amavis stop",
-      "sudo update-rc.d -f clamav-daemon remove",
-      "sudo update-rc.d -f clamav-freshclam remove",
-      "sudo update-rc.d -f amavis remove",
-      "sudo service postfix restart",
-      # "service iredapad restart"
+      "sudo sed -i 's/@bypass_virus_checks_maps = (0);/@bypass_virus_checks_maps = (1);/g' /etc/amavis/conf.d/50-user",
+      "sudo touch /etc/postfix/sender_access.pcre",
+      "sudo echo -e \\"{my_nets_3}\\" | sudo tee -a /etc/postfix/sender_access.pcre",
+      "sudo service clamav-daemon restart",
+      "sudo service amavis restart",
+      "sudo service clamav-freshclam restart",
+      "sudo service postfix restart"
     ]
 
     connection {{
@@ -197,7 +195,7 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
         user = "admin"
         private_key = "${{file("../../redbaron/data/ssh_keys/${{module.mail_{c["id"]}.ips[0]}}")}}"
     }}
-  }}  
+  }}
 }}
 
 """
@@ -213,7 +211,7 @@ module "create_dns_record_{c["id"]}" {{
     records = {{ {record} }}
     zone = "${{module.public_zone.public_zones_ids[{value}]}}"
 }}\n"""
-        return output      
+        return output
 
 
     def dns_records_type_txt(record,value):
@@ -226,9 +224,9 @@ module "create_dns_record_{value}" {{
     records = [{record}]
     zone = "${{module.public_zone.public_zones_ids[{value}]}}"
 }}\n"""
-        return output    
+        return output
 
-    def create_dns_name(domain_string_aws):            
+    def create_dns_name(domain_string_aws):
         output=f"""
 ###################################################################################################################
 #                                          DNS ROUTE53 Zone                                                       #
@@ -247,7 +245,7 @@ module "public_zone" {{
   comment = "Managed by Terraform"
 }}
 """
-        return output   
+        return output
 
     # def firewall(c):
     #   print("ime mesa AWS")
