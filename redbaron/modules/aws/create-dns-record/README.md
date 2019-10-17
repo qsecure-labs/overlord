@@ -10,10 +10,12 @@ module "create_a_record" {
 
   domain = "domain.com"
   type = "A"
+  name = "@"
   records = {
     "domain.com" = "192.168.0.1"
     "test.domain.com" = "192.168.0.2"
   }
+  zone = "zoneID"
 }
 ```
 
