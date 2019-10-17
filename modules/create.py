@@ -22,7 +22,7 @@ class main(list):
     }
 
     def __init__(self,camp,variables,pid):
-        
+
         self.campaign = camp
         self.project_id  = pid
         self.variables = dict(variables)
@@ -75,7 +75,7 @@ class main(list):
         #Create the variables.tf file:
         q.write(self.create_variables())
 
-    
+
     def categorize_domains(self):
         self.do_domains  =[]
         self.aws_domains =[]
@@ -90,7 +90,7 @@ class main(list):
         #             elif camp["provider"] == "aws":
         #                 for k in camp["records"].keys():
         #                     self.aws_domains.append(k)
-        
+
         for camp in self.campaign:
             if camp["module"] == "dns_record":
                 if camp["provider"] == "digitalocean":
@@ -132,7 +132,7 @@ default = [{domain_string_aws}]
 variable "do_domain" {{
 type    = "list"
 default = [{domain_string_do}]
-}}\n"""           
+}}\n"""
         # Check if digitalocean is used.
         for c in self.campaign:
             if c["module"] != "letsencrypt":
@@ -241,7 +241,7 @@ module "redirect_ns_{c["id"]}"{{
 }}
 """
         return output
-    #################################################################################### 
+    ####################################################################################
     #REDIRECTOR:
     ####################################################################################
     def create_redirector(self,c):
@@ -250,7 +250,7 @@ module "redirect_ns_{c["id"]}"{{
         elif c["provider"] == "aws":
             output = aws.main.redirector(c)
         return output
-    #################################################################################### 
+    ####################################################################################
     #C2:
     ####################################################################################
     def create_c2(self,c):
@@ -260,7 +260,7 @@ module "redirect_ns_{c["id"]}"{{
             output = aws.main.c2(c)
         return output
 
-    #################################################################################### 
+    ####################################################################################
     #WEBSERVER:
     ####################################################################################
     def create_webserver(self,c):
@@ -270,7 +270,7 @@ module "redirect_ns_{c["id"]}"{{
             output = aws.main.webserver(c)
         return output
 
-    #################################################################################### 
+    ####################################################################################
     #GOPHISH:
     ####################################################################################
     def create_gophish(self,c):
@@ -279,8 +279,8 @@ module "redirect_ns_{c["id"]}"{{
         elif c["provider"] == "aws":
             output = aws.main.gophish(c)
         return output
-    
-    #################################################################################### 
+
+    ####################################################################################
     #firewall
     ####################################################################################
     # def create_firewall(self,c):
@@ -290,7 +290,7 @@ module "redirect_ns_{c["id"]}"{{
     #         output = aws.main.firewall(c)
     #     return output
 
-    #################################################################################### 
+    ####################################################################################
     #DNS_NAMES
     ####################################################################################
     def create_dns_names(self):
@@ -302,7 +302,7 @@ module "redirect_ns_{c["id"]}"{{
             output= output + digitalocean.main.create_dns_name()
         return output
 
-    #################################################################################### 
+    ####################################################################################
     #CERTIFICATES:
     ####################################################################################
     def create_cert(self,c):
@@ -319,7 +319,7 @@ module "create_cert_{c["id"]}" {{
   do_token ="${{var.do_token}}"
   phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
 }}
-"""                       
+"""
                     elif camp["module"] == "webserver":
                         output=f"""
 module "create_cert_{c["id"]}" {{
@@ -346,7 +346,7 @@ module "create_cert_{c["id"]}" {{
                     for idx,d in enumerate(self.aws_domains):
                         if d == c["domain_name"]:
                             public_zone = idx
-                    
+
                     if camp["module"] == "gophish":
                         output=f"""
 module "create_cert_{c["id"]}" {{
@@ -357,7 +357,7 @@ module "create_cert_{c["id"]}" {{
   aws_secret = "${{var.aws_secret}}"
   region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
-  server_url = "production" 
+  server_url = "production"
   phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
 }}
 """
@@ -381,10 +381,10 @@ module "create_cert_{c["id"]}" {{
   region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
 }}
-"""  
+"""
         return output
 
-    #################################################################################### 
+    ####################################################################################
     #RECORDS:
     ####################################################################################
     def create_dns_records_type(self,c):
@@ -396,7 +396,7 @@ module "create_cert_{c["id"]}" {{
         if c["provider"] == "digitalocean":
             if c["type"] == "A":
                 if len(value.split('-')) > 1:
-                    for camp in self.campaign: 
+                    for camp in self.campaign:
                         if camp["id"] == value.split('-')[0]:
                             record = f""" "{key}" = "${{module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[{str(int(value.split('-',1)[1])-1)}]}}" """
                             break
@@ -424,12 +424,12 @@ module "create_cert_{c["id"]}" {{
                             break
                 value = self.aws_domains.index(key)
                 output = aws.main.dns_records_type(c,record,value)
-                return output                
+                return output
             if c["type"] == "MX":
                 record = f""" "{key}" = "{c["priority"]} {value}" """
                 value = self.aws_domains.index(key)
                 output = aws.main.dns_records_type(c,record,value)
-                return output 
+                return output
             if c["type"] == "TXT":
                 txt_rec_list = []
                 txt_rec_list = [""] * len(self.aws_domains)
@@ -439,21 +439,21 @@ module "create_cert_{c["id"]}" {{
                         if camp["module"] == "dns_record" and camp["provider"] == "aws" and camp["type"] == "TXT":
                             for k in camp["records"].keys():
                                 key = k
-                            value = camp["records"][key]            
+                            value = camp["records"][key]
                             txt_rec_list[self.aws_domains.index(key)] = txt_rec_list[self.aws_domains.index(key)] +" , \""+value +"\""
-                    
+
                     #Replace 3 fist characters in the list
                     output = ""
                     for idx,t in enumerate(txt_rec_list):
                         if len(t) != 0:
                             txt_rec_list[idx] = t[3:]
                             output = output + aws.main.dns_records_type_txt(txt_rec_list[idx],idx)
-                    return output 
+                    return output
                 else:
                     return output
 
 
-    #################################################################################### 
+    ####################################################################################
     #MAIL:
     ####################################################################################
     def create_mail(self,c):
@@ -470,10 +470,11 @@ module "create_cert_{c["id"]}" {{
                         my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+camp["id"]+".ips[0]}"))
                         break
         my_nets_1 = ' '.join("{0}".format(s) for s in my_nets)
-        my_nets_2 = ', '.join("'{0}'".format(s) for s in my_nets)       
-        
+        my_nets_2 = ', '.join("'{0}'".format(s) for s in my_nets)
+        my_nets_3 = '\\n'.join("{0}".format(s) for s in my_nets)
+
         if c["provider"] == "digitalocean":
-            output = digitalocean.main.mail(c,my_nets_1,my_nets_2,self.project_id)
+            output = digitalocean.main.mail(c,my_nets_1,my_nets_2,my_nets_3,self.project_id)
         elif c["provider"] == "aws":
-            output = aws.main.mail(c,my_nets_1,my_nets_2,self.project_id)
+            output = aws.main.mail(c,my_nets_1,my_nets_2,my_nets_3,self.project_id)
         return output
