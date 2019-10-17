@@ -8,7 +8,6 @@ Adds records to a domain using AWS Route53
 module "create_a_record" {
   source = "./modules/aws/create-dns-record"
 
-  domain = "domain.com"
   type = "TXT"
   name = ""
   records = {
@@ -23,7 +22,6 @@ module "create_a_record" {
 
 | Name                      | Required | Value Type | Description
 |---------------------------| -------- | ---------- | -----------
-|`domain`                   | Yes      | String     | The domain to add records to
 |`type`                     | Yes      | String     | The record type to add. Valid values are A, AAAA, CAA, CNAME, MX, NAPTR, NS, PTR, SOA, SPF, SRV and TXT.
 |`records`                  | Yes      | Map        | A map of records to add. Domains as keys and IPs as values.
 |`zone`                     | Yes      | String     | AWS ZoneID of the Route53 for that domain
