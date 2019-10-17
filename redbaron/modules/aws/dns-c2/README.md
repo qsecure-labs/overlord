@@ -10,6 +10,7 @@ module "dns_c2" {
 
   vpc_id = "<VPC ID>"
   subnet_id = "<Subnet ID>"
+  instance_type = "t2.micro"
 }
 ```
 
