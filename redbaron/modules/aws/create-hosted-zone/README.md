@@ -7,7 +7,17 @@ Creates a hosted zone for a domain in AWS Route53.
 ```hcl
 module "create_hosted_zone" {
   source = "./modules/aws/create-hosted-zone"
-  domain = "domain.com"
+  
+  public_hosted_zones = ["domain.com"]
+  
+  tags = {
+     Environment    = "prod"
+     Infrastructure = "core"
+     Owner          = "terraform"
+     Project        = "zones-public"
+   }
+
+   comment = "Managed by Terraform"
 }
 ```
 
@@ -15,7 +25,10 @@ module "create_hosted_zone" {
 
 | Name                      | Required | Value Type | Description
 |---------------------------| -------- | ---------- | -----------
-|`domain`                   | Yes      | String     | The domain to create a hosted zone for.
+|`public_hosted_zones`      | Yes      | Map        | The domain to create a hosted zone for.
+|`tags`                     | Yes      | List       | Choose who ise the owner of the hosted Zones, environment etc.
+|`commnet`                  | Yes      | String     | Comments to be added in the Route53
+
 
 # Outputs
 
