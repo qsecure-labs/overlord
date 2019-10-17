@@ -7,6 +7,7 @@ Creates a hosted zone for a domain in AWS Route53.
 ```hcl
 module "create_hosted_zone" {
   source = "./modules/aws/create-hosted-zone"
+  domain = "domain.com"
 }
 ```
 
