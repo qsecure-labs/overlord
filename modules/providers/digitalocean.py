@@ -53,7 +53,7 @@ module "c2_{c["id"]}" {{
 output "c2-{c["id"]}-ips" {{
   value = "${{module.c2_{c["id"]}.ips}}"
 }}
-"""     
+"""
         return output
 
     def webserver(c):
@@ -95,7 +95,7 @@ output "webserver-{c["id"]}-ips" {{
 """
         return output
 
-    
+
     #Gophish:
     def gophish(c):
         if c["redirectors"] > 0:
@@ -137,7 +137,7 @@ output "gophish-{c["id"]}-ips" {{
         return output
 
     #Mail
-    def mail(c,my_nets_1,my_nets_2,project_id):
+    def mail(c,my_nets_1,my_nets_2,my_nets_3,project_id):
         output=f"""
 module "mail_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/mail-server"
@@ -162,15 +162,13 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
       "sudo postconf -e \\"myorigin = \\\\$mydomain\\"",
       "sudo postconf -# \\"content_filter\\"",
       "sudo postconf -e \\"always_add_missing_headers = yes\\"",
-      "sudo /etc/init.d/postfix restart",
-      "sudo /etc/init.d/clamav-daemon stop",
-      "sudo /etc/init.d/clamav-freshclam stop",
-      "sudo /etc/init.d/amavis stop",
-      "sudo update-rc.d -f clamav-daemon remove",
-      "sudo update-rc.d -f clamav-freshclam remove",
-      "sudo update-rc.d -f amavis remove",
-      "sudo service postfix restart",
-      # "service iredapad restart"
+      "sudo sed -i 's/@bypass_virus_checks_maps = (0);/@bypass_virus_checks_maps = (1);/g' /etc/amavis/conf.d/50-user",
+      "sudo touch /etc/postfix/sender_access.pcre",
+      "sudo echo -e \\"{my_nets_3}\\" | sudo tee -a /etc/postfix/sender_access.pcre",
+      "sudo service clamav-daemon restart",
+      "sudo service amavis restart",
+      "sudo service clamav-freshclam restart",
+      "sudo service postfix restart"
     ]
 
     connection {{
@@ -179,7 +177,7 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
         user = "root"
         private_key = "${{file("../../redbaron/data/ssh_keys/${{module.mail_{c["id"]}.ips[0]}}")}}"
     }}
-  }}  
+  }}
 }}
 
 """
@@ -197,10 +195,10 @@ module "create_dns_record_{c["id"]}" {{
     counter = {c["counter"]}
     records = {{ {record} }}
 }}\n"""
-        return output        
+        return output
 
 
-    def create_dns_name():            
+    def create_dns_name():
         output= """
 ###################################################################################################################
 #                                          DNS DIGITALOCEAN                                                       #
@@ -209,9 +207,9 @@ module "create_domain_name_do" {
     source = "../../redbaron/modules/digitalocean/create-domain"
     counter = "${length("${var.do_domain}")}"
     name = "${var.do_domain}"
-}\n"""            
-        return output   
-    
+}\n"""
+        return output
+
 #     def firewall(c):
 #       mod, mod_type = c["mod_id"].split('/')
 #       output=f"""
