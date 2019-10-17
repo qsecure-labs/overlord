@@ -1,4 +1,4 @@
-# create-dns-record
+# create-dns-txt-record
 
 Adds records to a domain using AWS Route53
 
@@ -9,11 +9,13 @@ module "create_a_record" {
   source = "./modules/aws/create-dns-record"
 
   domain = "domain.com"
-  type = "A"
+  type = "TXT"
+  name = ""
   records = {
     "domain.com" = "192.168.0.1"
     "test.domain.com" = "192.168.0.2"
   }
+  zone = "zoneID"
 }
 ```
 
@@ -24,6 +26,8 @@ module "create_a_record" {
 |`domain`                   | Yes      | String     | The domain to add records to
 |`type`                     | Yes      | String     | The record type to add. Valid values are A, AAAA, CAA, CNAME, MX, NAPTR, NS, PTR, SOA, SPF, SRV and TXT.
 |`records`                  | Yes      | Map        | A map of records to add. Domains as keys and IPs as values.
+|`zone`                     | Yes      | String     | AWS ZoneID of the Route53 for that domain
+|`name`                     | Yes      | String     | Use @ to create the record at the root of the domain or enter a hostname to create it elsewhere. A records are for IPv4 addresses only and tell a request where your domain should direct to.
 |`count`                    | No       | Integer    | Number of records to add. Default value is 1
 |`ttl`                      | No       | Integer    | The TTL of the record(s). Default value is 300
 
