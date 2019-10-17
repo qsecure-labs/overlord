@@ -5,8 +5,8 @@ Creates a Mail Server in Aws. By default, Overlord will also use the iRedMail sc
 # Example
 
 ```hcl
-module "dns_c2" {
-  source = "./modules/aws/dns-c2"
+module "create_mail_server" {
+  source = "./modules/aws/mail-server"
 
   vpc_id = "<VPC ID>"
   subnet_id = "<Subnet ID>"
