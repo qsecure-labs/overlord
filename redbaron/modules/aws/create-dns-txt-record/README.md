@@ -26,7 +26,6 @@ module "create_a_record" {
 |`records`                  | Yes      | Map        | A map of records to add. Domains as keys and IPs as values.
 |`zone`                     | Yes      | String     | AWS ZoneID of the Route53 for that domain
 |`name`                     | Yes      | String     | Use @ to create the record at the root of the domain or enter a hostname to create it elsewhere. A records are for IPv4 addresses only and tell a request where your domain should direct to.
-|`count`                    | No       | Integer    | Number of records to add. Default value is 1
 |`ttl`                      | No       | Integer    | The TTL of the record(s). Default value is 300
 
 # Outputs
