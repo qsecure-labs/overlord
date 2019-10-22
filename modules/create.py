@@ -55,12 +55,13 @@ class main(list):
             if c["module"] == "gophish":
                f.write(self.create_gophish(c))
             if c["module"] == "mail":
-                alphabet = string.ascii_letters + string.digits
-                password = ''.join(secrets.choice(alphabet) for i in range(20))
-                os.system(f"""mkdir -p projects/{self.project_id}/{c["id"]}/""")
-                os.system(f"""cp redbaron/data/scripts/iredmail.sh projects/{self.project_id}/{c["id"]}/iredmail.sh""")
-                os.system(f"""sed -i 's/domain-to-change.com/{c["domain_name"]}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
-                os.system(f"""sed -i 's/changeme!/{password}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                if not os.path.exists(f"""projects/{self.project_id}/{c["id"]}/"""):
+                    alphabet = string.ascii_letters + string.digits
+                    password = ''.join(secrets.choice(alphabet) for i in range(20))
+                    os.system(f"""mkdir -p projects/{self.project_id}/{c["id"]}/""")
+                    os.system(f"""cp redbaron/data/scripts/iredmail.sh projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                    os.system(f"""sed -i 's/domain-to-change.com/{c["domain_name"]}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                    os.system(f"""sed -i 's/changeme!/{password}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
                 f.write(self.create_mail(c))
             if c["module"] == "dns_record":
                 f.write(self.create_dns_records_type(c))
