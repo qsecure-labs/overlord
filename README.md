@@ -281,3 +281,6 @@ For more information on how to modify the terraform modules and about the Red Ba
 Overlord does not support adding new firewall rules from the CLI at the current time. You can add or remove rules from the RedBaron modules directory on the Terraform code or after the installation of each provider (i.e. manually via the cloud provider's web interface).
 - AWS: https://www.terraform.io/docs/providers/aws/r/security_group.html
 - DIGITALOCEAN: https://www.terraform.io/docs/providers/do/r/firewall.html
+
+## Disclaimer
+Overlord comes without warranty and is meant to be used by penetration testers during approved red teaming assessments and/or social enigneering assessments. Overlord's developers and QSecure decline all responsibility in case the tool is used for malicious purposes or in any illegal context.
