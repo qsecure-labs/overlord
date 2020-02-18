@@ -1,10 +1,10 @@
 #bin/bash
 
-wget https://bitbucket.org/zhb/iredmail/downloads/iRedMail-0.9.9.tar.bz2 --header "Referer: bitbucket.org"
+wget https://github.com/iredmail/iRedMail/archive/1.1.tar.gz
 
-tar xjf "iRedMail-0.9.9.tar.bz2"
+tar -xf 1.1.tar.gz
 
-cd iRedMail-0.9.9
+cd iRedMail-1.1
 
 echo -e "AUTO_USE_EXISTING_CONFIG_FILE=y \
 \nAUTO_INSTALL_WITHOUT_CONFIRM=y \
