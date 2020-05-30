@@ -14,7 +14,7 @@ modules_ids = []
 
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the dns_records module """
-    def __init__(self,domains,campaign,mod):
+    def __init__(self,domains,campaign,mod,project_id):
         global domain_names
         global campaign_list
         global module
@@ -26,9 +26,7 @@ class main(list):
 
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = cmd2.ansi.style("Overlord", fg='red', bg='', bold=True, underline=False) + \
-            cmd2.ansi.style("/dns_records", fg='blue', bg='',
-                            bold=True, underline=False) + "$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/dns_records", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):

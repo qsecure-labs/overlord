@@ -20,7 +20,7 @@ import mail_server
 import argparse
 import create
 import godaddy
-#import firewall12
+#import firewall
 
 
 def hide_cmd2_modules(self):
@@ -50,8 +50,7 @@ class Overlord(cmd2.Cmd):
                                         {version}
     """)
     intro = "Welcome to Overlord!\nType help or ? to list commands\n"
-    prompt = cmd2.ansi.style("Overlord", fg='red', bg='',
-                             bold=True, underline=False) + "$> "
+#    prompt = cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + "$> "
     variables = {
         "dotoken": "",
         "domains" :[],
@@ -81,8 +80,10 @@ class Overlord(cmd2.Cmd):
 
         self.project_id = rand
 
+        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( rand, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
         self.deleteproject_id.choices = next(os.walk(dir_path))[1]
         self.loadproject_id.choices = next(os.walk(dir_path))[1]
+        self.cloneproject_id.choices = next(os.walk(dir_path))[1]
         if  os.path.exists(dir_path+"/variables.json"):
             with open(dir_path+'/variables.json', 'r') as filehandle:
                 self.variables = json.load(filehandle)
@@ -134,7 +135,7 @@ class Overlord(cmd2.Cmd):
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
         print(f"""\n{notification} New project with ID {proj} has been created.  {notification}\n""")
-
+        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
 
     def create_dir(self):
         """Creates the project directory"""
@@ -159,9 +160,54 @@ class Overlord(cmd2.Cmd):
             notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
             print(f"""\n{notification} The project with ID {proj} has been loaded {notification}\n""")
         self.update_choices(self.campaign)
+        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
 
     deleteproject_parser = argparse.ArgumentParser(prog='delete')
     deleteproject_id = deleteproject_parser.add_argument('id', type=str, help='example: [ delete <ID> ]')
+
+
+    cloneproject_parser = argparse.ArgumentParser(prog='clone')
+    cloneproject_id = cloneproject_parser.add_argument('id', type=str, help='example: [ clone <ID> ]')
+    cloneproject_parser.add_argument('-n','--name', type=str, help='Name of the new project')
+
+    @cmd2.with_argparser(cloneproject_parser)
+    def do_clone(self,arg):
+        """Clones a project to a new one"""
+        project_to_clone = arg.id
+        dir_path = "projects/" + project_to_clone
+        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        new_path = ""
+        new_project_name = ""
+        if arg.name is None:
+            uniq = True
+            while True:
+                rand = randomString()
+                for p in next(os.walk(dir_path))[1]:
+                    if p == rand:
+                        uniq = False
+                if uniq:
+                    break
+            print(rand)
+            new_path = "projects/" + rand
+            new_project_name  = rand
+        else:
+            new_path = "projects/" + arg.name
+            new_project_name = arg.name    
+
+        if not os.path.exists(new_path):
+            command = 'mkdir ' +new_path
+            os.system(command)
+            shutil.copy(dir_path+'/campaign.json',new_path+'/campaign.json')
+            shutil.copy(dir_path+'/variables.json',new_path+'/variables.json')
+
+            self.deleteproject_id.choices = next(os.walk("projects"))[1]
+            self.loadproject_id.choices = next(os.walk("projects"))[1]
+            self.cloneproject_id.choices = next(os.walk("projects"))[1]
+        
+            print(f"""\n{notification} The project with ID {project_to_clone} has been cloned to {new_project_name}  {notification}\n""")
+            
+        else:
+            print(f"""\n{notification} The project with ID {new_project_name} already exists! {notification}\n""")
 
     @cmd2.with_argparser(deleteproject_parser)
     def do_delete(self,arg):
@@ -179,6 +225,7 @@ class Overlord(cmd2.Cmd):
                 shutil.rmtree("projects/"+arg.id)
                 self.deleteproject_id.choices = next(os.walk("projects"))[1]
                 self.loadproject_id.choices = next(os.walk("projects"))[1]
+                self.cloneproject_id.choices = next(os.walk("projects"))[1]
                 self.update_choices(self.campaign)
                 proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
                 notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
@@ -196,24 +243,31 @@ class Overlord(cmd2.Cmd):
             json.dump(self.variables, filehandle,indent=4)
         self.deleteproject_id.choices = next(os.walk("projects"))[1]
         self.loadproject_id.choices = next(os.walk("projects"))[1]
+        self.cloneproject_id.choices = next(os.walk("projects"))[1]
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
         print(f"""\n{notification} The config files for the project with ID {proj} have been created  {notification}\n""")
 
+
     def do_rename(self,arg):
         """Rename a project"""
-        proj_old = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-        dir_path = "projects/"+self.project_id
-        if os.path.exists(dir_path):
-            os.rename("projects/"+self.project_id, "projects/"+arg)
-        self.project_id = arg
-
-        self.deleteproject_id.choices = next(os.walk("projects"))[1]
-        self.loadproject_id.choices = next(os.walk("projects"))[1]
-
-        proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
-        print(f"""\n{notification} The project with ID {proj_old} has been renamed to {proj} {notification}\n""")
+        if not arg:
+            print(f"""\n{notification} You have to specify a new name for your project! {notification}\n""")
+        else:
+            proj_old = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
+            dir_path = "projects/"+self.project_id
+            if os.path.exists(dir_path):
+                os.rename("projects/"+self.project_id, "projects/"+arg)
+            self.project_id = arg
+
+            self.deleteproject_id.choices = next(os.walk("projects"))[1]
+            self.loadproject_id.choices = next(os.walk("projects"))[1]
+            self.cloneproject_id.choices = next(os.walk("projects"))[1]
+
+            proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
+            print(f"""\n{notification} The project with ID {proj_old} has been renamed to {proj} {notification}\n""")
+            self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
 
     def do_deploy(self,arg):
         """Deploy current  project"""
@@ -256,7 +310,7 @@ class Overlord(cmd2.Cmd):
         elif len(self.campaign) == 0:
              print("No modules are set! [help usemodule]")
         else:
-            dns_records.main(self.variables["domains"],self.campaign,None)
+            dns_records.main(self.variables["domains"],self.campaign,None,self.project_id)
             addModule(dns_records.module,self.campaign)
             self.update_choices(self.campaign)
             dns_records.module={}
@@ -264,7 +318,7 @@ class Overlord(cmd2.Cmd):
     def usemodule_redirector(self, arg):
         """Opens the Redirector module for configuration"""
         if len(self.campaign) != 0:
-            redirector.main(None,self.campaign)
+            redirector.main(None,self.campaign,self.project_id)
             addModule(redirector.module,self.campaign)
             self.update_choices(self.campaign)
             redirector.module={}
@@ -273,7 +327,7 @@ class Overlord(cmd2.Cmd):
 
     def usemodule_c2(self, arg):
         """Opens the C2 module for configuration"""
-        c2.main(self.campaign,None)
+        c2.main(self.campaign,None,self.project_id)
         addModule(c2.module,self.campaign)
         self.update_choices(self.campaign)
         c2.module={}
@@ -297,7 +351,7 @@ class Overlord(cmd2.Cmd):
         elif not self.variables["domains"]:
             print("No domains are set! [help set domains]")
         else:
-            godaddy.main(self.campaign,self.variables["domains"],None)
+            godaddy.main(self.campaign,self.variables["domains"],None,self.project_id)
             addModule(godaddy.module,self.campaign)
             self.update_choices(self.campaign)
             godaddy.module={}
@@ -307,14 +361,14 @@ class Overlord(cmd2.Cmd):
         if not self.variables["domains"]:
             print("No domains are set! [help set domains]")
         else:
-            mail_server.main(self.variables["domains"],self.campaign,None)
+            mail_server.main(self.variables["domains"],self.campaign,None,self.project_id)
             addModule(mail_server.module,self.campaign)
             self.update_choices(self.campaign)
             mail_server.module={}
 
     def usemodule_webserver(self, arg):
         """Opens the webserver module for configuration"""
-        webserver.main(self.campaign,None)
+        webserver.main(self.campaign,None,self.project_id)
         addModule(webserver.module,self.campaign)
         self.update_choices(self.campaign)
         webserver.module={}
@@ -322,7 +376,7 @@ class Overlord(cmd2.Cmd):
 
     def usemodule_gophish(self, arg):
         """Opens the gophish module for configuration"""
-        gophish.main(self.campaign,None)
+        gophish.main(self.campaign,None,self.project_id)
         addModule(gophish.module,self.campaign)
         self.update_choices(self.campaign)
         gophish.module={}
@@ -337,7 +391,7 @@ class Overlord(cmd2.Cmd):
         if a_records == False:
             print("No A records were set! [help usemodule dns_records]")
         else:
-            letsencrypt.main(self.campaign,None) #self.variables["domains"]
+            letsencrypt.main(self.campaign,None,self.project_id) #self.variables["domains"]
             addModule(letsencrypt.module,self.campaign)
             self.update_choices(self.campaign)
             letsencrypt.module={}
@@ -375,7 +429,7 @@ class Overlord(cmd2.Cmd):
         if arg.id == "all":
             self.campaign = []
             notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
-            print(f"""\n{notification} All modules have been deleted to the campaign {notification}\n""")
+            print(f"""\n{notification} All modules have been deleted from the campaign {notification}\n""")
         else:
             for idx,c in enumerate(self.campaign):
                 if arg.id == c["id"]:
@@ -399,56 +453,56 @@ class Overlord(cmd2.Cmd):
                 mod = self.campaign.pop(idx)
 
                 if c["module"] == "c2":
-                    c2.main(self.campaign,mod)
+                    c2.main(self.campaign,mod,self.project_id)
                     addModule(c2.module,self.campaign)
                     self.update_choices(self.campaign)
                     c2.module={}
                     break
 
                 if c["module"] == "dns_record":
-                    dns_records.main(self.variables["domains"],self.campaign,mod)
+                    dns_records.main(self.variables["domains"],self.campaign,mod,self.project_id)
                     addModule(dns_records.module,self.campaign)
                     self.update_choices(self.campaign)
                     dns_records.module={}
                     break
 
                 if c["module"] == "redirector":
-                    redirector.main(mod,self.campaign)
+                    redirector.main(mod,self.campaign,self.project_id)
                     addModule(redirector.module,self.campaign)
                     self.update_choices(self.campaign)
                     redirector.module={}
                     break
 
                 if c["module"] == "gophish":
-                    gophish.main(self.campaign,mod)
+                    gophish.main(self.campaign,mod,self.project_id)
                     addModule(gophish.module,self.campaign)
                     self.update_choices(self.campaign)
                     gophish.module={}
                     break
 
                 if c["module"] == "letsencrypt":
-                    letsencrypt.main(self.campaign,mod) #self.variables["domains"]
+                    letsencrypt.main(self.campaign,mod,self.project_id) #self.variables["domains"]
                     addModule(letsencrypt.module,self.campaign)
                     self.update_choices(self.campaign)
                     letsencrypt.module={}
                     break
 
                 if c["module"] == "mail":
-                    mail_server.main(self.variables["domains"],self.campaign,mod)
+                    mail_server.main(self.variables["domains"],self.campaign,mod,self.project_id)
                     addModule(mail_server.module,self.campaign)
                     self.update_choices(self.campaign)
                     mail_server.module={}
                     break
 
                 if c["module"] == "webserver":
-                    webserver.main(self.campaign,mod)
+                    webserver.main(self.campaign,mod,self.project_id)
                     addModule(webserver.module,self.campaign)
                     self.update_choices(self.campaign)
                     webserver.module={}
                     break
 
                 if c["module"] == "godaddy":
-                    godaddy.main(self.campaign,self.variables["domains"],mod)
+                    godaddy.main(self.campaign,self.variables["domains"],mod,self.project_id)
                     addModule(godaddy.module,self.campaign)
                     self.update_choices(self.campaign)
                     godaddy.module={}
@@ -609,7 +663,7 @@ class Overlord(cmd2.Cmd):
     CMD_CAT_MODULE  = 'Module  (type help <command>)'
     CMD_CAT_PROJECT = 'Project (type help <command>)'
     #Help Menu
-    cmd2.categorize((do_create,do_new,do_save,do_deploy,do_delete,do_load,do_rename), CMD_CAT_PROJECT)
+    cmd2.categorize((do_create,do_new,do_save,do_deploy,do_delete,do_load,do_rename, do_clone), CMD_CAT_PROJECT)
     cmd2.categorize((do_usemodule,do_editmodule,do_delmodule), CMD_CAT_MODULE)
     cmd2.categorize((do_set,do_info), CMD_CAT_GENERAL)
 

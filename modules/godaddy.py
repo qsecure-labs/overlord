@@ -12,7 +12,7 @@ campaign_list = []
 domain_list =[]
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the godaddy module """
-    def __init__(self,campaign,domains,mod):
+    def __init__(self,campaign,domains,mod,project_id):
         global campaign_list
         campaign_list = campaign
         global domain_list 
@@ -23,9 +23,7 @@ class main(list):
 
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = cmd2.ansi.style("Overlord", fg='red', bg='', bold=True, underline=False) + \
-            cmd2.ansi.style("/godaddy", fg='blue', bg='',
-                            bold=True, underline=False) + "$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/godaddy", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
