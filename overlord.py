@@ -20,7 +20,7 @@ import mail_server
 import argparse
 import create
 import godaddy
-#import firewall
+#import firewall1
 
 
 def hide_cmd2_modules(self):
@@ -31,7 +31,7 @@ def hide_cmd2_modules(self):
     self.hidden_commands.append('script')
     self.hidden_commands.append('shortcuts')
     self.hidden_commands.append('pyscript')
-    self.hidden_commands.append('run_pyscript') 
+    self.hidden_commands.append('run_pyscript')
     self.hidden_commands.append('edit')
     self.hidden_commands.append('run_script')
     self.hidden_commands.append('quit')
@@ -41,12 +41,12 @@ class Overlord(cmd2.Cmd):
     os.system('clear')
     version = cmd2.ansi.style("v.0.2", fg='red', bg='',
                              bold=True, underline=False)
-    print(f"""                                                       
-                     _               _        
-  _____   _____ _ __| | ___  _ __ __| |       
- / _ \ \ / / _ \ '__| |/ _ \| '__/ _` |       
-| (_) \ V /  __/ |  | | (_) | | | (_| |       
- \___/ \_/ \___|_|  |_|\___/|_|  \__,_|                                        
+    print(f"""
+                     _               _
+  _____   _____ _ __| | ___  _ __ __| |
+ / _ \ \ / / _ \ '__| |/ _ \| '__/ _` |
+| (_) \ V /  __/ |  | | (_) | | | (_| |
+ \___/ \_/ \___|_|  |_|\___/|_|  \__,_|
                                         {version}
     """)
     intro = "Welcome to Overlord!\nType help or ? to list commands\n"
@@ -85,7 +85,7 @@ class Overlord(cmd2.Cmd):
         self.loadproject_id.choices = next(os.walk(dir_path))[1]
         if  os.path.exists(dir_path+"/variables.json"):
             with open(dir_path+'/variables.json', 'r') as filehandle:
-                self.variables = json.load(filehandle)            
+                self.variables = json.load(filehandle)
 
     def do_clear(self, arg):
         """Clear the screen"""
@@ -100,21 +100,21 @@ class Overlord(cmd2.Cmd):
     def do_version(self, arg):
         """Version"""
         print("version 0.2")
-    
+
     def do_create(self,arg):
         """Creates terraform project from the campaign"""
         dir_path = "projects/"+self.project_id
         if not os.path.exists(dir_path):
             self.do_save(None)
-        create.main(self.campaign,self.variables,self.project_id)                    
+        create.main(self.campaign,self.variables,self.project_id)
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
         print(f"""\n{notification} The terrafrom files for the project with ID {proj} have been created {notification}\n""")
 
     newproject_parser = argparse.ArgumentParser(prog='new')
     newproject_id = newproject_parser.add_argument('id', type=str, nargs="?", help='example: new / new <name> ]')
-    
-    @cmd2.with_argparser(newproject_parser)    
+
+    @cmd2.with_argparser(newproject_parser)
     def do_new(self,arg):
         """Creates new terraform project."""
         dir_path = "projects"
@@ -134,8 +134,8 @@ class Overlord(cmd2.Cmd):
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
         print(f"""\n{notification} New project with ID {proj} has been created.  {notification}\n""")
-        
-    
+
+
     def create_dir(self):
         """Creates the project directory"""
         command = 'mkdir projects/'+self.project_id
@@ -144,7 +144,7 @@ class Overlord(cmd2.Cmd):
 
     loadproject_parser = argparse.ArgumentParser(prog='load')
     loadproject_id = loadproject_parser.add_argument('id', type=str, help='example: [ load <ID> ]')
-    
+
     @cmd2.with_argparser(loadproject_parser)
     def do_load(self,arg):
         """Load a project to overlord"""
@@ -157,7 +157,7 @@ class Overlord(cmd2.Cmd):
             self.project_id = arg.id
             proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
             notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
-            print(f"""\n{notification} The project with ID {proj} has been loaded {notification}\n""")        
+            print(f"""\n{notification} The project with ID {proj} has been loaded {notification}\n""")
         self.update_choices(self.campaign)
 
     deleteproject_parser = argparse.ArgumentParser(prog='delete')
@@ -195,7 +195,7 @@ class Overlord(cmd2.Cmd):
         with open(dir_path+'/variables.json', 'w') as filehandle:
             json.dump(self.variables, filehandle,indent=4)
         self.deleteproject_id.choices = next(os.walk("projects"))[1]
-        self.loadproject_id.choices = next(os.walk("projects"))[1]       
+        self.loadproject_id.choices = next(os.walk("projects"))[1]
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
         print(f"""\n{notification} The config files for the project with ID {proj} have been created  {notification}\n""")
@@ -210,22 +210,22 @@ class Overlord(cmd2.Cmd):
 
         self.deleteproject_id.choices = next(os.walk("projects"))[1]
         self.loadproject_id.choices = next(os.walk("projects"))[1]
-        
+
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
-        print(f"""\n{notification} The project with ID {proj_old} has been renamed to {proj} {notification}\n""")       
+        print(f"""\n{notification} The project with ID {proj_old} has been renamed to {proj} {notification}\n""")
 
     def do_deploy(self,arg):
         """Deploy current  project"""
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
-        print(f"""\n{notification} Started deployment of project with ID {proj} {notification}\n""")   
+        print(f"""\n{notification} Started deployment of project with ID {proj} {notification}\n""")
         os.system(f"""mkdir -p projects/{self.project_id}/.terraform/plugins/linux_amd64 """)
         os.system(f"""cp redbaron/data/plugins/terraform-provider-godaddy_v1.6.4_x4 projects/{self.project_id}/.terraform/plugins/linux_amd64""")
         os.system(f"""cd projects/{self.project_id} && terraform init""")
         os.system(f"""cd projects/{self.project_id} && terraform plan""")
         os.system(f"""cd projects/{self.project_id} && terraform apply -auto-approve""")
-        print(f"""\n{notification} Terraform has finished with the installation {notification}\n""")   
+        print(f"""\n{notification} Terraform has finished with the installation {notification}\n""")
 
     # USEMODULE COMMAND
     # create the top-level parser for the usemodule command
@@ -396,8 +396,8 @@ class Overlord(cmd2.Cmd):
         #Checks the module type and pass it to the correct module for processing
         for idx,c in enumerate(self.campaign):
             if arg.id == c["id"]:
-                mod = self.campaign.pop(idx)   
-                
+                mod = self.campaign.pop(idx)
+
                 if c["module"] == "c2":
                     c2.main(self.campaign,mod)
                     addModule(c2.module,self.campaign)
@@ -411,7 +411,7 @@ class Overlord(cmd2.Cmd):
                     self.update_choices(self.campaign)
                     dns_records.module={}
                     break
-                
+
                 if c["module"] == "redirector":
                     redirector.main(mod,self.campaign)
                     addModule(redirector.module,self.campaign)
@@ -432,7 +432,7 @@ class Overlord(cmd2.Cmd):
                     self.update_choices(self.campaign)
                     letsencrypt.module={}
                     break
-                
+
                 if c["module"] == "mail":
                     mail_server.main(self.variables["domains"],self.campaign,mod)
                     addModule(mail_server.module,self.campaign)
@@ -452,7 +452,7 @@ class Overlord(cmd2.Cmd):
                     addModule(godaddy.module,self.campaign)
                     self.update_choices(self.campaign)
                     godaddy.module={}
-                    break    
+                    break
 
                 # if c["module"] == "firewall":
                 #     firewall.main(self.campaign,mod)
@@ -486,7 +486,7 @@ class Overlord(cmd2.Cmd):
 
     parser_variables = set_subparsers.add_parser('variables', help='Sets the default variables.json to the values that are in memory')
     parser_variables.add_argument('variables',nargs="?", type=str, help='example : [ set variables]')
-    
+
     def set_dotoken(self, arg):
         """Sets the dotoken"""
         self.variables["dotoken"]= arg.dotoken
@@ -497,8 +497,8 @@ class Overlord(cmd2.Cmd):
 
     def set_aws_secret_key(self, arg):
         """Sets the aws_secret_key"""
-        self.variables["aws_secret_key"]= arg.aws_secret_key       
-    
+        self.variables["aws_secret_key"]= arg.aws_secret_key
+
     def set_godaddy_access_key(self, arg):
         """Sets the aws_access_key"""
         self.variables["godaddy_access_key"]= arg.godaddy_access_key
@@ -509,15 +509,15 @@ class Overlord(cmd2.Cmd):
 
     def set_domains(self, arg):
         """Sets the domains"""
-        self.variables["domains"] = arg.domains    
+        self.variables["domains"] = arg.domains
 
     def set_variables(self, arg):
         with open('projects/variables.json', 'w') as filehandle:
-                json.dump(self.variables, filehandle,indent=4)  
+                json.dump(self.variables, filehandle,indent=4)
 
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
         print(f"""\n{notification} Variables have been saved to ./projects/variables.json {notification}\n""")
-    
+
     #Set handler functions for the sub-commands
     parser_variables.set_defaults(func=set_variables)
     parser_dotoken.set_defaults(func=set_dotoken)
@@ -540,7 +540,7 @@ class Overlord(cmd2.Cmd):
             self.do_help('help')
 
     # INFO COMMAND
-    # create the top-level parser for the info command    
+    # create the top-level parser for the info command
     info_parser = argparse.ArgumentParser(prog='info')
     info_mods_id = info_parser.add_argument('id',nargs="?", type=str,choices=modules_ids, help='example: [ info <ID> ]')
 
@@ -555,16 +555,16 @@ class Overlord(cmd2.Cmd):
         if c["module"] == "gophish":
             gophish.cmd_main.do_info(None,c)
         if c["module"] == "letsencrypt":
-            letsencrypt.cmd_main.do_info(None,c)    
+            letsencrypt.cmd_main.do_info(None,c)
         if c["module"] == "mail":
-            mail_server.cmd_main.do_info(None,c)    
+            mail_server.cmd_main.do_info(None,c)
         if c["module"] == "webserver":
-            webserver.cmd_main.do_info(None,c)                
+            webserver.cmd_main.do_info(None,c)
         if c["module"] == "godaddy":
-            godaddy.cmd_main.do_info(None,c)                
+            godaddy.cmd_main.do_info(None,c)
         # if c["module"] == "firewall":
-        #     firewall.cmd_main.do_info(None,c)     
-            
+        #     firewall.cmd_main.do_info(None,c)
+
     @cmd2.with_argparser(info_parser)
     def do_info(self, arg):
         """Prints variable table or contents of a module which was added to the campaign"""
@@ -573,7 +573,7 @@ class Overlord(cmd2.Cmd):
             if arg.id == "all":
                 for c in self.campaign:
                     self.info_table(c)
-            else:                   
+            else:
                 for c in self.campaign:
                     if arg.id == c["id"]:
                         self.info_table(c)
@@ -603,7 +603,7 @@ class Overlord(cmd2.Cmd):
                 x.align["DESCRITPION"] = "l"
             print(x)
 
-    
+
     # Command categories
     CMD_CAT_GENERAL = 'General (type help <command>)'
     CMD_CAT_MODULE  = 'Module  (type help <command>)'
@@ -629,7 +629,7 @@ def updateModulesIdList(campaign,m):
         modules_ids.insert(len(modules_ids),c["id"])
     if len(modules_ids) > 0 and m != "edit":
         modules_ids.insert(len(modules_ids),"all")
-        
+
     return modules_ids
 
 def randomString(stringLength=6):
