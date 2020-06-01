@@ -65,3 +65,7 @@ variable "amis" {
 
   }
 }
+
+variable user {
+    default = "admin"
+}
