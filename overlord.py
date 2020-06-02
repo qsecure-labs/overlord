@@ -216,8 +216,8 @@ class Overlord(cmd2.Cmd):
         if  flag == 'y':
             dir_path = "projects/"+self.project_id+"/.terraform"
             if  os.path.exists(dir_path):
-                os.system(f"""cd projects/{self.project_id} && terraform state rm module.redirect_ns""")
-                os.system(f"""cd projects/{self.project_id} && terraform destroy -auto-approve""")
+                os.system(f"""cd projects/{self.project_id} && /opt/terraform state rm module.redirect_ns""")
+                os.system(f"""cd projects/{self.project_id} && /opt/terraform destroy -auto-approve""")
             notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
             print(f"""\n{notification} Check if terraform exited without an error before you proceed. {notification}\n""")
             flag1 = input(cmd2.ansi.style("Proceding with deleting project directory. Are you sure? [y/N]:", fg='red', bg='',bold=True, underline=False))
@@ -276,9 +276,9 @@ class Overlord(cmd2.Cmd):
         print(f"""\n{notification} Started deployment of project with ID {proj} {notification}\n""")
         os.system(f"""mkdir -p projects/{self.project_id}/.terraform/plugins/linux_amd64 """)
         os.system(f"""cp redbaron/data/plugins/terraform-provider-godaddy_v1.6.4_x4 projects/{self.project_id}/.terraform/plugins/linux_amd64""")
-        os.system(f"""cd projects/{self.project_id} && terraform init""")
-        os.system(f"""cd projects/{self.project_id} && terraform plan""")
-        os.system(f"""cd projects/{self.project_id} && terraform apply -auto-approve""")
+        os.system(f"""cd projects/{self.project_id} && /opt/terraform init""")
+        os.system(f"""cd projects/{self.project_id} && /opt/terraform plan""")
+        os.system(f"""cd projects/{self.project_id} && /opt/terraform apply -auto-approve""")
         print(f"""\n{notification} Terraform has finished with the installation {notification}\n""")
 
     # USEMODULE COMMAND

@@ -2,6 +2,8 @@
 
 apt install python3
 apt install python3-pip
+apt install wget
+apt install unzip
 pip3 install -r requirements.txt
 
 pip install ansible
@@ -15,4 +17,3 @@ wget https://github.com/n3integration/terraform-godaddy/releases/download/v1.6.4
 tar -xvzf terraform-godaddy_linux_amd64.tgz
 rm terraform-godaddy_linux_amd64.tgz
 mv terraform-godaddy_linux_amd64 ../redbaron/data/plugins/terraform-provider-godaddy_v1.6.4_x4
-source ~/.profile
