@@ -16,7 +16,8 @@
         "region": "LON1",
         "provider": "digitalocean",
         "size": "s-1vcpu-1gb",
-        "id": ""
+        "id": "",
+        "distro": "debian"
     },
     "mod_dns_record": {
         "module": "dns_record",
@@ -81,6 +82,7 @@
         "size": ["t2.nano", "t2.micro", "t2.small", "t2.medium", "t2.large", "t2.xlarge", "t2.2xlarge", "a1.medium", "a1.large", "a1.xlarge", "a1.2xlarge", "a1.4xlarge", "t3.nano", "t3.micro", "t3.small", "t3.medium", "t3.large", "t3.xlarge", "t3.2xlarge", "t3a.nano", "t3a.micro", "t3a.small", "t3a.medium", "t3a.large", "t3a.xlarge", "t3a.2xlarge"],
         "default_region": "eu-west-1",
         "default_size": "t2.micro",
+        "supported_distros":  ["debian","kali"],
         "amis": {
             "ap-northeast-1-debian": "ami-b6b568d0",
             "ap-northeast-2-debian": "ami-b7479dd9",
@@ -109,13 +111,15 @@
             "us-east-1-kali": "ami-0c11557d0e4e9c896",
             "us-east-2-kali": "ami-00f7390b60c41a3c0",
             "us-west-1-kali": "ami-09aa8451f267643a9",
-            "us-west-2-kali": "ami-0a967289406d51ad4"
+            "us-west-2-kali": "ami-0a967289406d51ad4"}
         },
         "digitalocean": {
             "regions": ["NYC1", "NYC2", "NYC2", "SFO1", "SFO2", "AMS2", "AMS1", "LON1", "FRA1", "TOR1", "BLR1"],
             "size": ["s-1vcpu-1gb"],
             "default_region": "LON1",
-            "default_size": "s-1vcpu-1gb"
+            "default_size": "s-1vcpu-1gb",
+            "supported_distros":  ["debian"]
         },
-        "providers_list": ["digitalocean", "aws"]
+        "providers_list": ["digitalocean", "aws"],
+        "distros": ["debian","kali"]
     }

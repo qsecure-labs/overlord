@@ -20,6 +20,12 @@ output "redirector_{c["id"]}-ips" {{
     #C2
     def c2(c):
         scripts = ', '.join('"../../redbaron/data/scripts/tools/{0}.sh"'.format(s) for s in c["tools"])
+        user = ""
+        if c["distro"] == "kali":
+          user = "ec2-user"
+        else:
+          user = "admin"
+        
         if c["redirectors"] > 0:
             output = f"""
 module "c2_{c["id"]}" {{
@@ -28,6 +34,8 @@ module "c2_{c["id"]}" {{
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
+    user = "{user}"
+    amis = {{"{c["region"]}"="{c["ami"]}"}}
 }}
 
 module "c2_rdir_{c["id"]}" {{
@@ -56,6 +64,8 @@ module "c2_{c["id"]}" {{
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
+    user = "{user}"
+    amis = {{"{c["region"]}"="{c["ami"]}"}}
 }}
 
 output "c2-{c["id"]}-ips" {{

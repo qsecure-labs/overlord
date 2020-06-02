@@ -105,8 +105,8 @@ class Overlord(cmd2.Cmd):
     def do_create(self,arg):
         """Creates terraform project from the campaign"""
         dir_path = "projects/"+self.project_id
-        if not os.path.exists(dir_path):
-            self.do_save(None)
+        #if not os.path.exists(dir_path):
+        self.do_save(None)
         create.main(self.campaign,self.variables,self.project_id)
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)

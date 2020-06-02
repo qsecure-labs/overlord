@@ -191,6 +191,7 @@ usemodule           Usemodule command help
 
 Project (type help <command>)
 ================================================================================
+clone               Clones a project to a new one
 create              Creates terraform project from the campaign
 delete              Deletes a project
 deploy              Deploy current  project
