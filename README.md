@@ -39,8 +39,8 @@ It was only tested on Kali Linux but it probably work on all Linux x64 systems.
 # Installation
 
 ```bash
-git clone overlord /opt/overlord
-cd /opt/overlord/config
+git clone https://github.com/qsecure-labs/overlord.git
+cd overlord
 chmod +x install.sh
 sudo ./install.sh
 ```
