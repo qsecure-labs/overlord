@@ -7,7 +7,7 @@ Overlord provides a python-based console CLI which is used to build Red Teaming 
 
 A demo infrastructure was set up in our blog post https://blog.qsecure.com.cy/posts/overlord/.
 
-For the full documentation of the tool and how it works visit the Wiki tab at https://github.com/qsecure-labs/overlord/wiki.
+For the full documentation of the tool visit the Wiki tab at https://github.com/qsecure-labs/overlord/wiki.
 
 # Installation
 
