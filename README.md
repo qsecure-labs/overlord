@@ -10,9 +10,10 @@ A demo infrastructure was set up in our blog post https://blog.qsecure.com.cy/po
 # Installation
 
 ```bash
-git clone overlord /opt/overlord
-cd /opt/overlord/config
-./install.sh
+git clone https://github.com/qsecure-labs/overlord.git
+cd overlord/config
+chmod +x install.sh
+sudo ./install.sh
 ```
 
 ## Disclaimer
