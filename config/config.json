@@ -82,7 +82,7 @@
         "size": ["t2.nano", "t2.micro", "t2.small", "t2.medium", "t2.large", "t2.xlarge", "t2.2xlarge", "a1.medium", "a1.large", "a1.xlarge", "a1.2xlarge", "a1.4xlarge", "t3.nano", "t3.micro", "t3.small", "t3.medium", "t3.large", "t3.xlarge", "t3.2xlarge", "t3a.nano", "t3a.micro", "t3a.small", "t3a.medium", "t3a.large", "t3a.xlarge", "t3a.2xlarge"],
         "default_region": "eu-west-1",
         "default_size": "t2.micro",
-        "supported_distros":  ["debian","kali"],
+        "supported_distros":  ["debian","kali","ubuntu"],
         "amis": {
             "ap-northeast-1-debian": "ami-b6b568d0",
             "ap-northeast-2-debian": "ami-b7479dd9",
@@ -111,7 +111,21 @@
             "us-east-1-kali": "ami-0c11557d0e4e9c896",
             "us-east-2-kali": "ami-00f7390b60c41a3c0",
             "us-west-1-kali": "ami-09aa8451f267643a9",
-            "us-west-2-kali": "ami-0a967289406d51ad4"}
+            "us-west-2-kali": "ami-0a967289406d51ad4",
+            "ap-northeast-1-ubuntu": "ami-0f29c17df60493658",
+            "ap-northeast-2-ubuntu": "ami-065a2f32a35b7c52f",
+            "ap-south-1-ubuntu": "ami-05a3a2a452701c0ff",
+            "ap-southeast-1-ubuntu": "ami-05405da5795c2f2e7",
+            "ap-southeast-2-ubuntu": "ami-0243fb2a9c789bb43",
+            "ca-central-1-ubuntu": "ami-07d2c94058f3ca045",
+            "eu-central-1-ubuntu": "ami-07d14b5d47292e022",
+            "eu-west-1-ubuntu": "ami-014aff0119d738e34",
+            "eu-west-2-ubuntu": "ami-0339455b66e82a8ca",
+            "sa-east-1-ubuntu": "ami-0a32099c90454cc7a",
+            "us-east-1-ubuntu": "ami-07d1c0a30a7814597",
+            "us-east-2-ubuntu": "ami-083af2bfea9e15579",
+            "us-west-1-ubuntu": "ami-0b3f68410f4d4fed6",
+            "us-west-2-ubuntu": "ami-0652b0a864db01553"}
         },
         "digitalocean": {
             "regions": ["NYC1", "NYC2", "NYC2", "SFO1", "SFO2", "AMS2", "AMS1", "LON1", "FRA1", "TOR1", "BLR1"],
@@ -121,5 +135,5 @@
             "supported_distros":  ["debian"]
         },
         "providers_list": ["digitalocean", "aws"],
-        "distros": ["debian","kali"]
+        "distros": ["debian","kali","ubuntu"]
     }

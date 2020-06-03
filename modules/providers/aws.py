@@ -40,6 +40,8 @@ output "redirector_{c["id"]}-ips" {{
         user = ""
         if c["distro"] == "kali":
           user = "ec2-user"
+        elif c["distro"] == "ubuntu":
+          user = "ubuntu"
         else:
           user = "admin"
         
