@@ -7,6 +7,10 @@ variable "counter" {
   default = 1
 }
 
+variable "distro" {
+  default = "debian-9-x64"
+}
+
 variable "ansible_playbook" {
   default = ""
   description = "Ansible Playbook to run"

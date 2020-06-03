@@ -74,7 +74,7 @@ resource "null_resource" "ansible_provisioner" {
 
   provisioner "local-exec" {
     #     command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=admin --private-key=../../redbaron/data/ssh_keys/${aws_instance.http-c2.*.public_ip[count.index]} -e host=${aws_instance.http-c2.*.public_ip[count.index]} ${var.ansible_playbook}"
-    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=\"${var.user}\" --private-key=../../redbaron/data/ssh_keys/${aws_instance.http-c2.*.public_ip[count.index]} -e host=${aws_instance.http-c2.*.public_ip[count.index]} ${var.ansible_playbook}"
+    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=${var.user} --private-key=../../redbaron/data/ssh_keys/${aws_instance.http-c2.*.public_ip[count.index]} -e host=${aws_instance.http-c2.*.public_ip[count.index]} ${var.ansible_playbook}"
 
     environment {
       ANSIBLE_HOST_KEY_CHECKING = "False"

@@ -132,7 +132,7 @@
             "size": ["s-1vcpu-1gb"],
             "default_region": "LON1",
             "default_size": "s-1vcpu-1gb",
-            "supported_distros":  ["debian"]
+            "supported_distros":  ["debian","ubuntu"]
         },
         "providers_list": ["digitalocean", "aws"],
         "distros": ["debian","kali","ubuntu"]

@@ -46,7 +46,7 @@ resource "aws_instance" "dns-c2" {
 
     connection {
         type = "ssh"
-        user = "admin"
+        user = "${var.user}"
         private_key = "${tls_private_key.ssh.*.private_key_pem[count.index]}"
     }
   }
@@ -73,7 +73,7 @@ resource "null_resource" "ansible_provisioner" {
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=admin --private-key=../../redbaron/data/ssh_keys/${aws_instance.dns-c2.*.public_ip[count.index]} -e host=${aws_instance.dns-c2.*.public_ip[count.index]} ${var.ansible_playbook}"
+    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=${var.user} --private-key=../../redbaron/data/ssh_keys/${aws_instance.dns-c2.*.public_ip[count.index]} -e host=${aws_instance.dns-c2.*.public_ip[count.index]} ${var.ansible_playbook}"
 
     environment {
       ANSIBLE_HOST_KEY_CHECKING = "False"
@@ -96,7 +96,7 @@ data "template_file" "ssh_config" {
   vars {
     name = "dns_c2_${aws_instance.dns-c2.*.public_ip[count.index]}"
     hostname = "${aws_instance.dns-c2.*.public_ip[count.index]}"
-    user = "admin"
+    user = "${var.user}"
     identityfile = "${path.root}/data/ssh_keys/${aws_instance.dns-c2.*.public_ip[count.index]}"
   }
 

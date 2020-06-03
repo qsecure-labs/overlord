@@ -21,7 +21,7 @@ resource "digitalocean_ssh_key" "ssh_key" {
 
 resource "digitalocean_droplet" "dns-c2" {
   count = "${var.counter}"
-  image = "debian-9-x64"
+  image = "${var.distro}"
   name = "dns-c2-${random_id.server.*.hex[count.index]}"
   region = "${var.available_regions[element(var.regions, count.index)]}"
   ssh_keys = ["${digitalocean_ssh_key.ssh_key.*.id[count.index]}"]

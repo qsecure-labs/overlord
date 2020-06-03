@@ -31,12 +31,17 @@ output "redirector_{c["id"]}-ips" {{
     #C2
     def c2(c):
         scripts = ', '.join('"../../redbaron/data/scripts/tools/{0}.sh"'.format(s) for s in c["tools"])
+        linux_distro = "debian-9-x64"
+        if c["distro"] == "ubuntu":
+          linux_distro = "ubuntu-18-04-x64"
+
         if c["redirectors"] > 0:
             output = f"""
 module "c2_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-c2"
     install = [{scripts}]
     size = "{c["size"]}"
+    distro = "{linux_distro}"
     regions = ["{c["region"]}"]
 }}
 
