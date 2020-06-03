@@ -47,7 +47,9 @@ resource "aws_instance" "http-rdir" {
       "sudo apt-get install -y tmux socat apache2 mosh certbot",
       "sudo a2enmod rewrite proxy proxy_http ssl",
       "sudo systemctl stop apache2",
-      "tmux new -d \"sudo socat TCP4-LISTEN:80,fork TCP4:${element(var.redirect_to, count.index)}:80\" ';' split \"sudo socat TCP4-LISTEN:443,fork TCP4:${element(var.redirect_to, count.index)}:443\""
+      //"tmux new -d \"sudo socat TCP4-LISTEN:80,fork TCP4:${element(var.redirect_to, count.index)}:80\" ';' split \"sudo socat TCP4-LISTEN:443,fork TCP4:${element(var.redirect_to, count.index)}:443\"",
+      "tmux new -d \"sudo socat TCP4-LISTEN:80,fork TCP4:${element(var.redirect_to, count.index)}:${var.http-port}\" ';' split \"sudo socat TCP4-LISTEN:443,fork TCP4:${element(var.redirect_to, count.index)}:${var.https-port}\""
+      
     ]
 
     connection {

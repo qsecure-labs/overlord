@@ -31,6 +31,13 @@ variable "instance_type" {
   default = "t2.medium"
 }
 
+variable "http-port" {
+  default = 80
+}
+
+variable "https-port" {
+  default = 443
+}
 /*
 variable "install" {
   type = "map"

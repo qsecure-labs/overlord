@@ -32,6 +32,13 @@ variable "regions" {
   default = ["LON1"]
 }
 
+variable "http-port" {
+  default = 80
+}
+
+variable "https-port" {
+  default = 443
+}
 variable "available_regions" {
   type = "map"
   default = {

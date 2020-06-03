@@ -2,7 +2,21 @@ class main():
 
     #Redirector
     def redirector(c):
-        output = f"""
+        if c["redirector_id"] == "localhost":
+          output = f"""
+module "redirector_{c["id"]}" {{
+    counter = 1
+    source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"
+    redirect_to = ["{c["redirector_id"]}"]
+    http-port = 8080
+    https-port = 4443
+}}
+output "redirector_{c["id"]}-ips" {{
+  value = "${{module.redirector_{c["id"]}.ips}}"
+}}
+"""
+        else:
+          output = f"""
 module "redirector_{c["id"]}" {{
     counter = 1
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"

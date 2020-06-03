@@ -308,7 +308,7 @@ class Overlord(cmd2.Cmd):
         if not self.variables["domains"]:
             print("No domains are set! [help set domains]")
         elif len(self.campaign) == 0:
-             print("No modules are set! [help usemodule]")
+            print("No modules are set! [help usemodule]")
         else:
             dns_records.main(self.variables["domains"],self.campaign,None,self.project_id)
             addModule(dns_records.module,self.campaign)
@@ -317,13 +317,10 @@ class Overlord(cmd2.Cmd):
 
     def usemodule_redirector(self, arg):
         """Opens the Redirector module for configuration"""
-        if len(self.campaign) != 0:
-            redirector.main(None,self.campaign,self.project_id)
-            addModule(redirector.module,self.campaign)
-            self.update_choices(self.campaign)
-            redirector.module={}
-        else:
-            print("No modules are set! [help usemodule]")
+        redirector.main(None,self.campaign,self.project_id)
+        addModule(redirector.module,self.campaign)
+        self.update_choices(self.campaign)
+        redirector.module={}
 
     def usemodule_c2(self, arg):
         """Opens the C2 module for configuration"""

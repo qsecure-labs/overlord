@@ -85,6 +85,9 @@ class cmd_main(cmd2.Cmd):
         for c in campaign_list:
             if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "mail" and c["module"] != "godaddy":
                 modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
+        
+        #Starting creating localhost redirection
+        modules_ids.insert(len(modules_ids),"localhost")
         self.mod_parser_redirectors.choices = modules_ids
 
     def do_back(self, arg):
