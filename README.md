@@ -41,7 +41,8 @@ It was only tested on Kali Linux but it probably work on all Linux x64 systems.
 ```bash
 git clone overlord /opt/overlord
 cd /opt/overlord/config
-./install.sh
+chmod +x install.sh
+sudo ./install.sh
 ```
 # Documentation
 ## Projects
