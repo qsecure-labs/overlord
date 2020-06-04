@@ -308,6 +308,7 @@ module "redirect_ns_{c["id"]}"{{
     ####################################################################################
     def create_cert(self,c):
         for camp in self.campaign:
+            print(camp)
             if camp["id"] == c["mod_id"].split('-')[0]:
                 if camp["provider"] == "digitalocean":
                     if camp["module"] == "gophish":
@@ -329,7 +330,7 @@ module "create_cert_{c["id"]}" {{
   phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
 }}
 """
-                    elif camp["module"] == "c2":
+                    elif camp["module"] == "c2" or ():
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-dns-do"
@@ -338,6 +339,16 @@ module "create_cert_{c["id"]}" {{
   domain = "{c["domain_name"]}"
   do_token ="${{var.do_token}}"
 #   phishing_server_ip = "${{module.{camp["module"]}_rdir_{camp["id"]}.ips[{str(int(c["mod_id"].split('-')[1])-1)}]}}"
+}}
+"""
+                    elif camp["module"] == "redirector" and camp["redirector_id"] == "localhost" :
+                        output=f"""
+module "create_cert_{c["id"]}" {{
+  source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-dns-do"
+  provider_name ="digitalocean"
+  server_url = "production" #"staging" #"production" #(change this for live)
+  domain = "{c["domain_name"]}"
+  do_token ="${{var.do_token}}"
 }}
 """
 
@@ -371,6 +382,19 @@ module "create_cert_{c["id"]}" {{
 }}
 """
                     elif camp["module"] == "c2":
+                        output=f"""
+module "create_cert_{c["id"]}" {{
+  source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-aws"
+  provider_name ="aws"
+  server_url = "production" #"staging" #"production" #(change this for live)
+  domain = "{c["domain_name"]}"
+  aws_key = "${{var.aws_key}}"
+  aws_secret = "${{var.aws_secret}}"
+  region = "eu-west-1"
+  zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
+}}
+"""
+                    elif camp["module"] == "redirector" and camp["redirector_id"] == "localhost" :
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-aws"

@@ -218,6 +218,8 @@ class Overlord(cmd2.Cmd):
             if  os.path.exists(dir_path):
                 os.system(f"""cd projects/{self.project_id} && /opt/terraform state rm module.redirect_ns""")
                 os.system(f"""cd projects/{self.project_id} && /opt/terraform destroy -auto-approve""")
+                os.system(f"""rm projects/{self.project_id}/terraform.tfstate*""")
+                shutil.rmtree(f"""projects/{self.project_id}/.terraform""")
             notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
             print(f"""\n{notification} Check if terraform exited without an error before you proceed. {notification}\n""")
             flag1 = input(cmd2.ansi.style("Proceding with deleting project directory. Are you sure? [y/N]:", fg='red', bg='',bold=True, underline=False))
