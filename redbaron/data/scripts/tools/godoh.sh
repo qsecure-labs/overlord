@@ -21,12 +21,13 @@ echo "export PATH=$GOPATH/bin:$GOROOT/bin:$PATH" >> /root/.profile
 
 #Installation of go-dep
 
-wget http://ftp.de.debian.org/debian/pool/main/g/go-dep/go-dep_0.5.4-2_amd64.deb
+wget http://tw.archive.ubuntu.com/ubuntu/pool/universe/g/go-dep/go-dep_0.5.4-2_amd64.deb
 dpkg -i go-dep_0.5.4-2_amd64.deb
 
 #Installation of goDoH/
 
 git clone https://github.com/sensepost/goDoH.git /opt/goapps/src/github.com/goDoH
+cd /opt/goapps/src/github.com/goDoH && dep init
 cd /opt/goapps/src/github.com/goDoH && dep ensure
 cd /opt/goapps/src/github.com/goDoH && make key
 cd /opt/goapps/src/github.com/goDoH && mkdir upx_temp
