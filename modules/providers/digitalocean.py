@@ -2,7 +2,18 @@ class main():
 
     #Redirector
     def redirector(c):
-        if c["redirector_id"] == "localhost":
+        if c["redirector_id"] == "localhost" and c["type"]== "dns":
+          output = f"""
+module "redirector_{c["id"]}" {{
+    counter = 1
+    source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-local-rdir"
+    redirect_to = ["{c["redirector_id"]}"]
+}}
+output "redirector_{c["id"]}-ips" {{
+  value = "${{module.redirector_{c["id"]}.ips}}"
+}}
+"""
+        elif c["redirector_id"] == "localhost" and c["type"]== "http":
           output = f"""
 module "redirector_{c["id"]}" {{
     counter = 1
