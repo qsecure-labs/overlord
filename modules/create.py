@@ -59,6 +59,8 @@ class main(list):
                     alphabet = string.ascii_letters + string.digits
                     password = ''.join(secrets.choice(alphabet) for i in range(20))
                     os.system(f"""mkdir -p projects/{self.project_id}/{c["id"]}/""")
+                    os.system(f"""touch projects/{self.project_id}/{c["id"]}/iredmailpass.txt""")
+                    os.system(f"""cd projects/{self.project_id}/{c["id"]}/ && echo {password} > iredmailpass.txt""")
                     os.system(f"""cp redbaron/data/scripts/iredmail.sh projects/{self.project_id}/{c["id"]}/iredmail.sh""")
                     os.system(f"""sed -i 's/domain-to-change.com/{c["domain_name"]}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
                     os.system(f"""sed -i 's/changeme!/{password}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
@@ -308,7 +310,6 @@ module "redirect_ns_{c["id"]}"{{
     ####################################################################################
     def create_cert(self,c):
         for camp in self.campaign:
-            print(camp)
             if camp["id"] == c["mod_id"].split('-')[0]:
                 if camp["provider"] == "digitalocean":
                     if camp["module"] == "gophish":

@@ -205,6 +205,11 @@ output "gophish-{c["id"]}-ips" {{
 
     #Mail
     def mail(c,my_nets_1,my_nets_2,my_nets_3,project_id):
+        data = ""
+        with open (f"projects/{project_id}/{c['id']}/iredmailpass.txt", "r") as myfile:
+            data = myfile.readlines()        
+        data = data[0].strip('\n')
+
         output=f"""
 module "mail_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/mail-server"
@@ -216,6 +221,10 @@ module "mail_{c["id"]}" {{
 
 output "mail-{c["id"]}-ips" {{
   value = "${{module.mail_{c["id"]}.ips}}"
+}}
+
+output "iRedMail credentials" {{
+  value = "postmaster@{c["domain_name"]}:{data}\\n"
 }}
 
 resource "null_resource" "update_iredmail_{c["id"]}" {{
