@@ -1,6 +1,6 @@
 
 resource "null_resource" "lets-encrypt" {
-  count  = "${var.counter}"
+  count  = "${var.count}"
   provisioner "remote-exec" {
     inline = [
       "certbot --apache --non-interactive --agree-tos --email ${var.email} --domain ${var.domain} --pre-hook 'sudo service apache2 stop' --post-hook 'sudo service apache2 start' --dry-run", #--dry-run is for staging not production chage this
