@@ -229,6 +229,7 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
         return output
 
     def dns_records_type(c,record):
+        domain = record.split('"')
         if "v=DMARC1;" in record:
           c["name"] ="_dmarc"
         output=f"""
@@ -236,6 +237,7 @@ module "create_dns_record_{c["id"]}" {{
     source = "../../redbaron/modules/digitalocean/create-dns-record"
     name  = "{c["name"]}"
     type = "{c["type"]}"
+    domain = "{domain[1]}"
     priority= {c["priority"]}
     counter = {c["counter"]}
     records = {{ {record} }}
