@@ -84,10 +84,12 @@ class Overlord(cmd2.Cmd):
         #self.deleteproject_id.choices = next(os.walk(dir_path))[1]
         self.loadproject_id.choices = next(os.walk(dir_path))[1]
         self.cloneproject_id.choices = next(os.walk(dir_path))[1]
+
         if  os.path.exists(dir_path+"/variables.json"):
             with open(dir_path+'/variables.json', 'r') as filehandle:
                 self.variables = json.load(filehandle)
-
+                self.domain_parser_id.choices = self.variables["domains"]
+    
     def do_clear(self, arg):
         """Clear the screen"""
         os.system('clear')
@@ -535,7 +537,8 @@ class Overlord(cmd2.Cmd):
     parser_godaddy_secret_key.add_argument('godaddy_secret_key' ,type=str, help='example : [ set godaddy_secret_key <token>]')
 
     parser_domains = set_subparsers.add_parser('domains', help='Domain names to be used in the campaign (Multilpe domain names can be added)')
-    parser_domains.add_argument('domains',nargs="+", type=str, help='example : [ set domains <google.com microsoft.com ...>]')
+    parser_domains.add_argument('-a','--add',type=str, help='Domain to be added')
+    domain_parser_id = parser_domains.add_argument('-d','--delete',type=str,choices = ("kokos.com","a.com"), help='Domain to be deleted')
 
     parser_variables = set_subparsers.add_parser('variables', help='Sets the default variables.json to the values that are in memory')
     parser_variables.add_argument('variables',nargs="?", type=str, help='example : [ set variables]')
@@ -562,7 +565,15 @@ class Overlord(cmd2.Cmd):
 
     def set_domains(self, arg):
         """Sets the domains"""
-        self.variables["domains"] = arg.domains
+        if arg.add:
+            print(arg.add)
+            self.variables["domains"].insert((len(self.variables["domains"])),arg.add)
+        elif arg.delete:
+            for idx,c in enumerate(self.variables["domains"]):
+                print(idx,c)
+                if arg.delete == c:
+                    self.variables["domains"].pop(idx)
+        self.domain_parser_id.choices = self.variables["domains"]
 
     def set_variables(self, arg):
         with open('projects/variables.json', 'w') as filehandle:
