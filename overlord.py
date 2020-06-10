@@ -189,7 +189,6 @@ class Overlord(cmd2.Cmd):
                         uniq = False
                 if uniq:
                     break
-            print(rand)
             new_path = "projects/" + rand
             new_project_name  = rand
         else:
@@ -566,11 +565,9 @@ class Overlord(cmd2.Cmd):
     def set_domains(self, arg):
         """Sets the domains"""
         if arg.add:
-            print(arg.add)
             self.variables["domains"].insert((len(self.variables["domains"])),arg.add)
         elif arg.delete:
             for idx,c in enumerate(self.variables["domains"]):
-                print(idx,c)
                 if arg.delete == c:
                     self.variables["domains"].pop(idx)
         self.domain_parser_id.choices = self.variables["domains"]

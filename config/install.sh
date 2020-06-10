@@ -14,7 +14,6 @@ wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_am
 unzip terraform_0.11.14_linux_amd64.zip
 mv terraform /opt/terraform
 rm terraform_0.11.14_linux_amd64.zip
-echo 'export PATH="$PATH:/opt"' >> ~/.profile
 
 #download godaddy plugin for terraform
 wget https://github.com/n3integration/terraform-godaddy/releases/download/v1.6.4/terraform-godaddy_linux_amd64.tgz
