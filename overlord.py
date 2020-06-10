@@ -110,9 +110,9 @@ class Overlord(cmd2.Cmd):
         #if not os.path.exists(dir_path):
         self.do_save(None)
         create.main(self.campaign,self.variables,self.project_id)
-        proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
-        print(f"""\n{notification} The terrafrom files for the project with ID {proj} have been created {notification}\n""")
+        # proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
+        # notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        # print(f"""\n{notification} The terrafrom files for the project with ID {proj} have been created {notification}\n""")
 
     newproject_parser = argparse.ArgumentParser(prog='new')
     newproject_id = newproject_parser.add_argument('id', type=str, nargs="?", help='example: new / new <name> ]')

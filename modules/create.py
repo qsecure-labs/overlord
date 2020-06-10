@@ -1,3 +1,4 @@
+import cmd2
 import sys
 import os
 sys.path.insert(0, 'modules/providers')
@@ -37,46 +38,57 @@ class main(list):
         f.write(self.create_general())
         f.write(self.create_dns_names())
 
+        aws_exception = False
         # Check if AWS is used
         for c in self.campaign:
             if c["module"] != "letsencrypt" and c["module"] != "godaddy":
                 if c["provider"] == "aws":
-                    self.variables["aws_region"] = c["region"]
-                    f.write(self.create_aws_vpc())
-                    break
+                    try:
+                        self.variables["aws_region"] = c["region"]
+                        f.write(self.create_aws_vpc())
+                        break
+                    except:
+                        print ("At least one AWS module should be used in the dependent modules!")
+                        aws_exception = True
+                        break
+        
+        if not aws_exception:
+            for c in self.campaign:
+                if c["module"] == "c2":
+                    f.write(self.create_c2(c))
+                if c["module"] == "redirector":
+                    f.write(self.create_redirector(c))
+                if c["module"] == "webserver":
+                    f.write(self.create_webserver(c))
+                if c["module"] == "gophish":
+                    f.write(self.create_gophish(c))
+                if c["module"] == "mail":
+                    if not os.path.exists(f"""projects/{self.project_id}/{c["id"]}/"""):
+                        alphabet = string.ascii_letters + string.digits
+                        password = ''.join(secrets.choice(alphabet) for i in range(20))
+                        os.system(f"""mkdir -p projects/{self.project_id}/{c["id"]}/""")
+                        os.system(f"""touch projects/{self.project_id}/{c["id"]}/iredmailpass.txt""")
+                        os.system(f"""cd projects/{self.project_id}/{c["id"]}/ && echo {password} > iredmailpass.txt""")
+                        os.system(f"""cp redbaron/data/scripts/iredmail.sh projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                        os.system(f"""sed -i 's/domain-to-change.com/{c["domain_name"]}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                        os.system(f"""sed -i 's/changeme!/{password}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                    f.write(self.create_mail(c))
+                if c["module"] == "dns_record":
+                    f.write(self.create_dns_records_type(c))
+                if c["module"] == "letsencrypt":
+                    f.write(self.create_cert(c))
+                if c["module"] == "godaddy":
+                    f.write(self.redirect_ns(c))
+                # if c["module"] == "firewall":
+                #     f.write(self.create_firewall(c))
+            f.close
 
-        for c in self.campaign:
-            if c["module"] == "c2":
-                f.write(self.create_c2(c))
-            if c["module"] == "redirector":
-                f.write(self.create_redirector(c))
-            if c["module"] == "webserver":
-                f.write(self.create_webserver(c))
-            if c["module"] == "gophish":
-               f.write(self.create_gophish(c))
-            if c["module"] == "mail":
-                if not os.path.exists(f"""projects/{self.project_id}/{c["id"]}/"""):
-                    alphabet = string.ascii_letters + string.digits
-                    password = ''.join(secrets.choice(alphabet) for i in range(20))
-                    os.system(f"""mkdir -p projects/{self.project_id}/{c["id"]}/""")
-                    os.system(f"""touch projects/{self.project_id}/{c["id"]}/iredmailpass.txt""")
-                    os.system(f"""cd projects/{self.project_id}/{c["id"]}/ && echo {password} > iredmailpass.txt""")
-                    os.system(f"""cp redbaron/data/scripts/iredmail.sh projects/{self.project_id}/{c["id"]}/iredmail.sh""")
-                    os.system(f"""sed -i 's/domain-to-change.com/{c["domain_name"]}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
-                    os.system(f"""sed -i 's/changeme!/{password}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
-                f.write(self.create_mail(c))
-            if c["module"] == "dns_record":
-                f.write(self.create_dns_records_type(c))
-            if c["module"] == "letsencrypt":
-                f.write(self.create_cert(c))
-            if c["module"] == "godaddy":
-                f.write(self.redirect_ns(c))
-            # if c["module"] == "firewall":
-            #     f.write(self.create_firewall(c))
-        f.close
+            #Create the variables.tf file:
+            q.write(self.create_variables())
 
-        #Create the variables.tf file:
-        q.write(self.create_variables())
+            proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
+            notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+            print(f"""\n{notification} The terrafrom files for the project with ID {proj} have been created {notification}\n""")
 
 
     def categorize_domains(self):
