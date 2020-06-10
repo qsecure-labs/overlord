@@ -62,29 +62,6 @@ resource "aws_instance" "dns-c2" {
 
 }
 
-resource "null_resource" "ansible_provisioner" {
-  count = "${signum(length(var.ansible_playbook)) == 1 ? var.count : 0}"
-
-  depends_on = ["aws_instance.dns-c2"]
-
-  triggers {
-    droplet_creation = "${join("," , aws_instance.dns-c2.*.id)}"
-    policy_sha1 = "${sha1(file(var.ansible_playbook))}"
-  }
-
-  provisioner "local-exec" {
-    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=${var.user} --private-key=../../redbaron/data/ssh_keys/${aws_instance.dns-c2.*.public_ip[count.index]} -e host=${aws_instance.dns-c2.*.public_ip[count.index]} ${var.ansible_playbook}"
-
-    environment {
-      ANSIBLE_HOST_KEY_CHECKING = "False"
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 data "template_file" "ssh_config" {
 
   count    = "${var.count}"

@@ -132,29 +132,6 @@ resource "aws_instance" "gophish-server" {
 
 }
 
-resource "null_resource" "ansible_provisioner" {
-  count = "${signum(length(var.ansible_playbook)) == 1 ? var.count : 0}"
-
-  depends_on = ["aws_instance.gophish-server"]
-
-  triggers {
-    droplet_creation = "${join("," , aws_instance.gophish-server.*.id)}"
-    policy_sha1 = "${sha1(file(var.ansible_playbook))}"
-  }
-
-  provisioner "local-exec" {
-    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=admin --private-key=../../redbaron/data/ssh_keys/${aws_instance.gophish-server.*.public_ip[count.index]} -e host=${aws_instance.gophish-server.*.public_ip[count.index]} ${var.ansible_playbook}"
-
-    environment {
-      ANSIBLE_HOST_KEY_CHECKING = "False"
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
 data "template_file" "ssh_config" {
 
   count    = "${var.count}"

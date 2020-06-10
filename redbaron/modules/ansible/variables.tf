@@ -7,7 +7,6 @@ variable "ip" {
 }
 
 variable "user" {
-  default = "root"
   description = "User to authenticate as"
 }
 
@@ -22,10 +21,3 @@ variable "envs" {
   type    = "list"
   description = "Environment variables"
 }
-
-/*
-variable "dry_run" {
-  default = true
-  description = "Do dry run"
-}
-*/
