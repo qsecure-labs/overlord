@@ -1,0 +1,15 @@
+- name: Network Getting Started First Playbook
+  gather_facts: false
+  hosts: all
+  tasks:
+    - name: Install git
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+      become: true
+    - name: git clone Impacket
+      git:
+        repo: https://github.com/CoreSecurity/impacket.git
+        dest: /tmp/impacket
+      become: true

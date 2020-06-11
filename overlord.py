@@ -20,6 +20,7 @@ import mail_server
 import argparse
 import create
 import godaddy
+import ansible
 #import firewall
 
 
@@ -298,6 +299,7 @@ class Overlord(cmd2.Cmd):
     parser_letsencrypt = usemodule_subparsers.add_parser('letsencrypt', help='Settings to create letsencrypt instance')
     parser_redirector = usemodule_subparsers.add_parser('redirector', help='Settings to create redirector instance')
     parser_godaddy = usemodule_subparsers.add_parser('godaddy', help='Settings to create godaddy NS redirection in a provider of choice')
+    parser_ansible = usemodule_subparsers.add_parser('ansible', help='Settings to install asnible playbooks')
     #parser_firewall = usemodule_subparsers.add_parser('firewall', help='firewall help')
 
     def update_choices(self,camp):
@@ -331,6 +333,13 @@ class Overlord(cmd2.Cmd):
         addModule(c2.module,self.campaign)
         self.update_choices(self.campaign)
         c2.module={}
+
+    def usemodule_ansible(self, arg):
+        """Opens the C2 module for configuration"""
+        ansible.main(self.campaign,None,self.project_id)
+        addModule(ansible.module,self.campaign)
+        self.update_choices(self.campaign)
+        ansible.module={}
 
     # TODO: Maybe in a future update
     # def usemodule_firewall(self, arg):
@@ -405,6 +414,8 @@ class Overlord(cmd2.Cmd):
     parser_letsencrypt.set_defaults(func=usemodule_letsencrypt)
     parser_redirector.set_defaults(func=usemodule_redirector)
     parser_godaddy.set_defaults(func=usemodule_godaddy)
+    parser_ansible.set_defaults(func=usemodule_ansible)
+
     # parser_firewall.set_defaults(func=usemodule_firewall)
 
     @cmd2.with_argparser(usemodule_parser)
@@ -508,12 +519,20 @@ class Overlord(cmd2.Cmd):
                     godaddy.module={}
                     break
 
+                if c["module"] == "ansible":
+                    ansible.main(self.campaign,mod,self.project_id)
+                    addModule(ansible.module,self.campaign)
+                    self.update_choices(self.campaign)
+                    ansible.module={}
+                    break
+
                 # if c["module"] == "firewall":
                 #     firewall.main(self.campaign,mod)
                 #     addModule(firewall.module,self.campaign)
                 #     self.update_choices(self.campaign)
                 #     firewall.module={}
                 #     break
+
     # SET COMMAND
     # create the top-level parser for the set command
     set_parser = argparse.ArgumentParser(prog='set')
@@ -623,6 +642,8 @@ class Overlord(cmd2.Cmd):
             webserver.cmd_main.do_info(None,c)
         if c["module"] == "godaddy":
             godaddy.cmd_main.do_info(None,c)
+        if c["module"] == "ansible":
+            ansible.cmd_main.do_info(None,c)
         # if c["module"] == "firewall":
         #     firewall.cmd_main.do_info(None,c)
 

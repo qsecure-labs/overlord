@@ -68,6 +68,12 @@
         "domain": "",
         "id": ""
     },
+    "mod_ansible": {
+        "module": "ansible",
+        "hosts": "",
+        "playbook": "",
+        "id": ""
+    },
     "mod_firewall": {
         "module": "firewall",
         "provider": "digitalocean",

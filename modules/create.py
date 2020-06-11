@@ -41,7 +41,7 @@ class main(list):
         aws_exception = False
         # Check if AWS is used
         for c in self.campaign:
-            if c["module"] != "letsencrypt" and c["module"] != "godaddy":
+            if c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible":
                 if c["provider"] == "aws":
                     try:
                         self.variables["aws_region"] = c["region"]
@@ -79,6 +79,8 @@ class main(list):
                     f.write(self.create_cert(c))
                 if c["module"] == "godaddy":
                     f.write(self.redirect_ns(c))
+                if c["module"] == "ansible":
+                    f.write(self.create_ansible(c))
                 # if c["module"] == "firewall":
                 #     f.write(self.create_firewall(c))
             f.close
@@ -150,7 +152,7 @@ default = [{domain_string_do}]
 }}\n"""
         # Check if digitalocean is used.
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "ansible":
                 if c["provider"] == "digitalocean":
                     output = output +f"""
 variable "do_token" {{
@@ -159,7 +161,7 @@ default = "{self.variables["dotoken"]}"
                     break
         # Check if aws is used.
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "ansible":
                 if c["provider"] == "aws":
                     output = output +f"""
 variable "aws_key" {{
@@ -202,7 +204,7 @@ terraform {
 """
         # Check if digitalocean is used.
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "ansible":
                 if c["provider"] == "digitalocean":
                     output = output +"""
 provider "digitalocean" {
@@ -212,7 +214,7 @@ provider "digitalocean" {
 
         # Check if aws is used.
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "ansible":
                 if c["provider"] == "aws":
                     output = output +"""
 provider "aws" {
@@ -515,4 +517,59 @@ module "create_cert_{c["id"]}" {{
             output = digitalocean.main.mail(c,my_nets_1,my_nets_2,my_nets_3,self.project_id)
         elif c["provider"] == "aws":
             output = aws.main.mail(c,my_nets_1,my_nets_2,my_nets_3,self.project_id)
+        return output
+    ####################################################################################
+    # Ansible:
+    ####################################################################################
+    def create_ansible(self,c):
+        output = ""
+        user = "root"
+        for host in c["hosts"]:
+            if "-" in host:
+                for mod in self.campaign:
+                    if mod["id"] == host.split("/")[0].split("-")[0]:
+                        if mod["provider"] == "aws":
+                            user = "admin"
+                        elif mod["provider"] == "digitalocean":
+                            user = "root"
+                output += f"""
+module "ansible_{host.split("/")[0]}_{c["id"]}" {{
+source    = "../../redbaron/modules/ansible"
+user      = "{user}"
+ip        = "${{module.{host.split("/")[1]}_rdir_{host.split("/")[0].split("-")[0]}.ips[{int(host.split("/")[0].split("-")[1]) - 1}]}}"
+playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
+}}
+"""
+            else:
+                for mod in self.campaign:
+                    if mod["id"] == host.split("/")[0]:
+                        if mod["provider"] == "aws":
+                            if mod["module"] != "c2": # Support for other providers only on c2 at the moment
+                                user = "admin"
+                            elif mod["distro"] == "debian":
+                                user = "admin"
+                            elif mod["distro"] == "kali":
+                                user = "ec2-user"
+                            elif mod["distro"] == "ubuntu":
+                                user = "ubuntu"
+                        elif mod["provider"] == "digitalocean":
+                            user = "root"
+
+                output += f"""
+module "ansible_{host.split("/")[0]}_{c["id"]}" {{
+source    = "../../redbaron/modules/ansible"
+user      = "{user}"
+ip        = "${{module.{host.split("/")[1]}_{host.split("/")[0]}.ips[0]}}"
+playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
+}}
+"""
+
+
+        #    for camp in self.campaign:
+        #         if camp["id"] in i:
+        #             if "-" in i:
+        #                 my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+"rdir_"+camp["id"]+".ips["+str(int(i.split('-')[1])-1)+"]}"))
+        #                 break
+        #             else:
+   
         return output
