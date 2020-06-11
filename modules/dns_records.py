@@ -203,15 +203,17 @@ class cmd_main(cmd2.Cmd):
 
         if arg.provider == "aws":
             for c in campaign_list:
-                if c["provider"] == "aws":
-                    aws_flag = True
+                if c["module"] != "ansible":
+                    if c["provider"] == "aws":
+                        aws_flag = True
             if not aws_flag:
                 print("No aws module was set! Returing without setting the value")
                 return
         if arg.provider == "digitalocean":
             for c in campaign_list:
-                if c["provider"] == "digitalocean":
-                    do_flag = True
+                if c["module"] != "ansible":
+                    if c["provider"] == "digitalocean":
+                        do_flag = True
             if not do_flag:
                 print("No digitalocean module was set! Returing without setting the value")     
                 return
