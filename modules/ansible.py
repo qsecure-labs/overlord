@@ -43,7 +43,7 @@ class cmd_main(cmd2.Cmd):
     """cmd2 instance for firewall module"""
     # The mod dictionary for the firewall module
     mod = {}
-
+    playbooks_list =  []
     providers_list = []
 
     def __init__(self):
@@ -58,8 +58,6 @@ class cmd_main(cmd2.Cmd):
             with open(dir_path+'/config.json', 'r') as filehandle:
                 config = json.load(filehandle) 
                 self.mod = config["mod_ansible"]
-                # self.providers_list = config["providers_list"]
-
         else:
             print("The config/config.json file does not exists! Exiting...")
             return True  
@@ -73,14 +71,18 @@ class cmd_main(cmd2.Cmd):
         # Create list with modules id
         modules_ids=[]
         for c in campaign_list:
-            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy":
+            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible":
                 modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                 for i in range(c["redirectors"]):
                     modules_ids.insert(len(modules_ids),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
 
         self.module_hosts_parser.choices = modules_ids      
+        
+        # Load the playbooks 
+        dir_path = "redbaron/data/playbooks"
+        for pb in os.listdir(dir_path):
+            self.playbooks_list.append(pb)
 
-        self.module_hosts_parser.choices = modules_ids     
     def do_back(self, arg):
         """Return to main menu"""
         return True
@@ -119,7 +121,7 @@ class cmd_main(cmd2.Cmd):
     module_hosts_parser = parser_hosts.add_argument('hosts',nargs="+", type=str, help='example : [set hosts <id> ]')
 
     parser_playbook = set_subparsers.add_parser('playbook', help='playbook to be used')
-    parser_playbook.add_argument('playbook', type=str, help='example : [set playbook <playbook name> ]')    
+    parser_playbook.add_argument('playbook', type=str,choices=playbooks_list, help='example : [set playbook <playbook name> ]')    
 
     def set_mod(self, arg):
         """Sets the hosts variable"""
