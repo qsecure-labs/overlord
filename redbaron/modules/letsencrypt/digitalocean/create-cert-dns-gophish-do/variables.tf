@@ -7,11 +7,6 @@ variable "do_token" {
 variable "domain" {
 }
 
-variable "subject_alternative_names" {
-  type = "map"
-  default = {}
-}
-
 variable "server_url" {
   default = "staging" #"production"
 }
@@ -28,8 +23,5 @@ variable "reg_email" {
   default = "nobody@kokos.com"
 }
 
-variable "key_type" {
-  default = 4096
-}
 variable "phishing_server_ip" {
 }

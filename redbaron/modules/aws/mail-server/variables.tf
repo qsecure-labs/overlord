@@ -14,11 +14,6 @@ variable "instance_type" {
   default = "t2.micro"
 }
 
-variable "install" {
-  type = "list"
-  default = []
-}
-
 variable "amis" {
   type = "map"
   default = {
