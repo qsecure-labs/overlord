@@ -9,7 +9,7 @@ resource "null_resource" "ansible_provisioner" {
   }
 
   provisioner "local-exec" {
-    command = "ansible-playbook --private-key=../../redbaron/data/ssh_keys/${var.ip} --user ${var.user} -i ${var.ip}, ${var.playbook}"
+    command = "ansible-playbook --private-key=../../redbaron/data/ssh_keys/${var.ip} --user ${var.user} -i ${var.ip}, ${var.playbook} -e ansible_python_interpreter=/usr/bin/python3"
 
     environment {
       ANSIBLE_HOST_KEY_CHECKING = "False"
