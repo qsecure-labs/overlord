@@ -12,7 +12,7 @@ campaign_list = []
 
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the c2 module """
-    def __init__(self,campaign,mod):
+    def __init__(self,campaign,mod,project_id):
         global campaign_list
         campaign_list = campaign
 
@@ -22,9 +22,7 @@ class main(list):
 
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = cmd2.ansi.style("Overlord", fg='red', bg='', bold=True, underline=False) + \
-            cmd2.ansi.style("/c2", fg='blue', bg='',
-                            bold=True, underline=False) + "$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/c2", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
@@ -51,7 +49,7 @@ class cmd_main(cmd2.Cmd):
     type_list = ["http","dns"]
     providers_list = []
     size_list = []
-
+    distros_list = []
 
     def __init__(self):
         super().__init__()
@@ -73,7 +71,12 @@ class cmd_main(cmd2.Cmd):
                         self.module_regions_parser.choices = self.available_regions_list
                         self.size_list = config[prov]["size"]
                         self.module_size_parser.choices = self.size_list
-
+                        self.distros_list = config["distros"]
+                        self.module_distro_parser.choices = config[prov]["supported_distros"]
+                        if self.mod["provider"] == "aws":
+                            self.mod["ami"] = config["aws"]["amis"][self.mod["region"]+"-"+self.mod["distro"]]
+                        else:
+                            self.mod["ami"] = ""
         else:
             print("The config/config.json file does not exists! Exiting...")
             return True   
@@ -106,6 +109,7 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["id", mod["id"], "N/A", "Module ID"])
             x.add_row(["type", mod["type"], "yes", "Type of c2 Accepted values are: HTTP/DNS."])
             x.add_row(["provider", mod["provider"], "yes", "Provider to be used "])
+            x.add_row(["distro", mod["distro"], "yes", "Distro to be used"])
             x.add_row(["region",mod["region"] , "yes", "Regions to create Droplet in."])
             x.add_row(["size",mod["size"] , "yes", "Droplet size to launch. "])
             x.add_row(["redirectors",mod["redirectors"] , "yes", "Number of redirectors to launch for each c2."])
@@ -118,6 +122,7 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["id", self.mod["id"], "N/A", "Module ID"])
             x.add_row(["type", self.mod["type"], "yes", "Type of c2 Accepted values are: HTTP/DNS."])
             x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used "])
+            x.add_row(["distro", self.mod["distro"], "yes", "Distro to be used"])
             x.add_row(["region",self.mod["region"] , "yes", "Regions to create Droplet in."])
             x.add_row(["size",self.mod["size"] , "yes", "Droplet size to launch"])
             x.add_row(["redirectors",self.mod["redirectors"] , "yes", "Number of redirectors to launch for each c2. "])
@@ -154,6 +159,10 @@ class cmd_main(cmd2.Cmd):
     parser_size = set_subparsers.add_parser('size', help='Size of the droplet.')
     module_size_parser = parser_size.add_argument('size', type=str, help='example: [ set size <s-1vcpu-1gb>] ')
 
+    # create the parser for the "distro" sub-command
+    parser_distro = set_subparsers.add_parser('distro', help='Distro to be used ')
+    module_distro_parser = parser_distro.add_argument('distro',choices=distros_list, type=str, help='example: [ set distro <debian> ]')
+
     def set_region(self, arg):
         """Sets the region variable"""
         self.mod["region"]= arg.region
@@ -189,10 +198,16 @@ class cmd_main(cmd2.Cmd):
                     if self.mod["provider"] == prov:
                         self.available_regions_list = config[prov]["regions"]
                         self.module_regions_parser.choices = self.available_regions_list
+                        self.mod["distro"] = "debian" # It must always defaults to debian (digital-ocean does not support kali)
+                        self.module_distro_parser.choices = config[prov]["supported_distros"]
                         self.size_list = config[prov]["size"]
                         self.module_size_parser.choices = self.size_list
                         self.mod["region"] = config[prov]["default_region"]
                         self.mod["size"] = config[prov]["default_size"]
+                        if self.mod["provider"] == "aws":
+                            self.mod["ami"] = config["aws"]["amis"][self.mod["region"]+"-"+self.mod["distro"]]
+                        else:
+                            self.mod["ami"] = ""
 
     def set_tools(self, arg):
         """Sets the tools variable"""
@@ -201,7 +216,20 @@ class cmd_main(cmd2.Cmd):
     def set_size(self, arg):
         """Sets the size variable"""
         self.mod["size"]= arg.size
-    
+
+    def set_distro(self, arg):
+        """Sets the distro variable"""
+        self.mod["distro"] = arg.distro
+        #checks if provider is aws to load correct ami
+        if self.mod["provider"] == "aws":
+            dir_path = "config"
+            if  os.path.exists(dir_path+"/config.json"):
+                with open(dir_path+'/config.json', 'r') as filehandle:
+                    config = json.load(filehandle) 
+                    self.mod["ami"] = config["aws"]["amis"][self.mod["region"]+"-"+self.mod["distro"]]
+        else:
+            self.mod["ami"] = ""
+
     #Set handler functions for the sub-commands
     parser_size.set_defaults(func=set_size)
     parser_region.set_defaults(func=set_region)
@@ -209,6 +237,7 @@ class cmd_main(cmd2.Cmd):
     parser_type.set_defaults(func=set_type)
     parser_provider.set_defaults(func=set_provider)
     parser_tools.set_defaults(func=set_tools)
+    parser_distro.set_defaults(func=set_distro)
 
     @cmd2.with_argparser(set_parser)
     def do_set(self, args):

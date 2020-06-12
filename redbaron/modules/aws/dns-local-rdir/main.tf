@@ -15,13 +15,13 @@ resource "tls_private_key" "ssh" {
   rsa_bits = 4096
 }
 
-resource "aws_key_pair" "http-c2" {
+resource "aws_key_pair" "dns-rdir" {
   count = "${var.count}"
-  key_name = "http-c2-key-${random_id.server.*.hex[count.index]}"
+  key_name = "dns-rdir-key-${random_id.server.*.hex[count.index]}"
   public_key = "${tls_private_key.ssh.*.public_key_openssh[count.index]}"
 }
 
-resource "aws_instance" "http-c2" {
+resource "aws_instance" "dns-rdir" {
   // Currently, variables in provider fields are not supported :(
   // This severely limits our ability to spin up instances in diffrent regions
   // https://github.com/hashicorp/terraform/issues/11578
@@ -31,22 +31,27 @@ resource "aws_instance" "http-c2" {
   count = "${var.count}"
 
   tags = {
-    Name = "http-c2-${random_id.server.*.hex[count.index]}"
+    Name = "dns-rdir-${random_id.server.*.hex[count.index]}"
   }
 
   ami = "${var.amis[data.aws_region.current.name]}"
   instance_type = "${var.instance_type}"
-  key_name = "${aws_key_pair.http-c2.*.key_name[count.index]}"
-  vpc_security_group_ids = ["${aws_security_group.http-c2.id}"]
+  key_name = "${aws_key_pair.dns-rdir.*.key_name[count.index]}"
+  vpc_security_group_ids = ["${aws_security_group.dns-rdir.id}"]
   subnet_id = "${var.subnet_id}"
   associate_public_ip_address = true
 
   provisioner "remote-exec" {
-    scripts = "${concat(list("../../redbaron/data/scripts/core_deps.sh"), var.install)}"
+    inline = [
+        "sudo apt-get update",
+        "sudo apt-get install -y tmux socat mosh",
+        #"tmux new -d \"sudo socat udp4-recvfrom:53,reuseaddr,fork udp4-sendto:${element(var.redirect_to, count.index)}:53\""
+        "tmux new -d \"sudo socat udp4-LISTEN:53,fork tcp4:localhost:2222\""
+    ]
 
     connection {
         type = "ssh"
-        user = "${var.user}"
+        user = "admin"
         private_key = "${tls_private_key.ssh.*.private_key_pem[count.index]}"
     }
   }
@@ -69,13 +74,13 @@ data "template_file" "ssh_config" {
 
   template = "${file("../../redbaron/data/templates/ssh_config.tpl")}"
 
-  depends_on = ["aws_instance.http-c2"]
+  depends_on = ["aws_instance.dns-rdir"]
 
   vars {
-    name = "dns_rdir_${aws_instance.http-c2.*.public_ip[count.index]}"
-    hostname = "${aws_instance.http-c2.*.public_ip[count.index]}"
-    user = "${var.user}"
-    identityfile = "${path.root}/data/ssh_keys/${aws_instance.http-c2.*.public_ip[count.index]}"
+    name = "dns_rdir_${aws_instance.dns-rdir.*.public_ip[count.index]}"
+    hostname = "${aws_instance.dns-rdir.*.public_ip[count.index]}"
+    user = "admin"
+    identityfile = "${path.root}/data/ssh_keys/${aws_instance.dns-rdir.*.public_ip[count.index]}"
   }
 
 }

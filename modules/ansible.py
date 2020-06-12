@@ -9,21 +9,20 @@ import json
 
 module = {}
 campaign_list = []
-domain_list =[]
+
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the godaddy module """
-    def __init__(self,campaign,domains,mod,project_id):
+    def __init__(self,campaign,mod,project_id):
         global campaign_list
         campaign_list = campaign
-        global domain_list 
-        domain_list = domains
+
         if mod is not None:
             global module
             module = mod
 
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/godaddy", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/ansible", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
@@ -41,16 +40,16 @@ def hide_cmd2_modules(self):
     self.hidden_commands.append('load')
 
 class cmd_main(cmd2.Cmd):
-    """cmd2 instance for godaddy module"""
-    # The mod dictionary for the godaddy module
+    """cmd2 instance for firewall module"""
+    # The mod dictionary for the firewall module
     mod = {}
-
+    playbooks_list =  []
     providers_list = []
 
     def __init__(self):
         super().__init__()
         global module
-        global domain_list
+        global campaign_list
         # Hide the Quit funcitionality
         hide_cmd2_modules(self)
 
@@ -58,11 +57,7 @@ class cmd_main(cmd2.Cmd):
         if  os.path.exists(dir_path+"/config.json"):
             with open(dir_path+'/config.json', 'r') as filehandle:
                 config = json.load(filehandle) 
-                self.mod = config["mod_godaddy"]
-                self.providers_list = config["providers_list"]
-                # self.module_provider_parser.choices = self.providers_list
-                self.module_domain_parser.choices = domain_list
-
+                self.mod = config["mod_ansible"]
         else:
             print("The config/config.json file does not exists! Exiting...")
             return True  
@@ -72,12 +67,25 @@ class cmd_main(cmd2.Cmd):
             self.mod = dict(module)
         else:
             self.mod["id"] = randomString()
+
+        # Create list with modules id
+        modules_ids=[]
+        for c in campaign_list:
+            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible":
+                modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
+                for i in range(c["redirectors"]):
+                    modules_ids.insert(len(modules_ids),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
+
+        self.module_hosts_parser.choices = modules_ids      
         
+        # Load the playbooks 
+        dir_path = "redbaron/data/playbooks"
+        for pb in os.listdir(dir_path):
+            self.playbooks_list.append(pb)
 
     def do_back(self, arg):
         """Return to main menu"""
         return True
-
 
     def do_clear(self, arg):
         """Clears screen"""
@@ -89,17 +97,17 @@ class cmd_main(cmd2.Cmd):
             x = PrettyTable()
             x.title = mod["module"] + "/"+ mod["id"]
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
-            x.add_row(["id", mod["id"], "N/A", "Module ID"])
-            x.add_row(["provider", mod["provider"], "N/A", "Autoloaded from domain"])
-            x.add_row(["domain", mod["domain"], "yes", "Domain to be used"])
+            x.add_row(["id", mod["id"], "N/A", "Module ID"])      
+            x.add_row(["hosts", mod["hosts"], "yes", "Module to be used"])
+            x.add_row(["playbook", mod["playbook"], "yes", "Playbook to be used"])                  
             x.align["DESCRITPION"] = "l"
         else:
             x = PrettyTable()
-            x.title = 'Godaddy module'
+            x.title = 'Ansible module'
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
-            x.add_row(["id", self.mod["id"], "N/A", "Module ID"])
-            x.add_row(["provider", self.mod["provider"], "N/A", "Autoloaded from domain"])
-            x.add_row(["domain", self.mod["domain"], "yes", "Domain to be used"])
+            x.add_row(["id", self.mod["id"], "N/A", "Module ID"])   
+            x.add_row(["hosts", self.mod["hosts"], "yes", "Module to be used"])
+            x.add_row(["playbook", self.mod["playbook"], "yes", "Playbook to be used"])                 
             x.align["DESCRITPION"] = "l"
         print(x)
 
@@ -108,37 +116,24 @@ class cmd_main(cmd2.Cmd):
     set_parser = argparse.ArgumentParser(prog='set')
     set_subparsers = set_parser.add_subparsers(title='set-commands', help='Sets the variables of the module')
 
-    # create the parser for the "provider" sub-command
-    # parser_provider = set_subparsers.add_parser('provider', help='Provider to be used')
-    # module_provider_parser = parser_provider.add_argument('provider',choices=providers_list, type=str, help='example : [set provider <digitalocean> ]')
+    # create the parser for the "hosts" sub-command
+    parser_hosts = set_subparsers.add_parser('hosts', help='hosts to be used')
+    module_hosts_parser = parser_hosts.add_argument('hosts',nargs="+", type=str, help='example : [set hosts <id> ]')
 
-    # create the parser for the "domain" sub-command
-    parser_domain = set_subparsers.add_parser('domain', help='Domain to be used')
-    module_domain_parser = parser_domain.add_argument('domain',choices=providers_list, type=str, help='example : [set domain <domain> ]')
-  
-    # def set_provider(self, arg):
-    #     """Sets the provider variable"""
-    #     self.mod["provider"]= arg.provider
+    parser_playbook = set_subparsers.add_parser('playbook', help='playbook to be used')
+    parser_playbook.add_argument('playbook', type=str,choices=playbooks_list, help='example : [set playbook <playbook name> ]')    
 
-    def set_domain(self, arg):
-        """Sets the domain variable"""
-        exception_flag = False
-        for mod in campaign_list:
-            if mod["module"] == "dns_record":
-                if arg.domain == list(mod["records"].keys())[0]:
-                    self.mod["domain"]= arg.domain
-                    self.mod["provider"]= mod["provider"]
-                    exception_flag = False
-                    break
-                else:
-                    exception_flag = True
-        
-        if exception_flag:
-            print ("A DNS record must be set for the specified domain before redirecting the NS!")
-        
+    def set_mod(self, arg):
+        """Sets the hosts variable"""
+        self.mod["hosts"]= arg.hosts
+
+    def set_playbook(self, arg):
+        """Sets the =playbook variable"""
+        self.mod["playbook"]= arg.playbook    
+
     #Set handler functions for the sub-commands
-    # parser_provider.set_defaults(func=set_provider)
-    parser_domain.set_defaults(func=set_domain)
+    parser_hosts.set_defaults(func=set_mod)
+    parser_playbook.set_defaults(func=set_playbook)
 
     @cmd2.with_argparser(set_parser)
     def do_set(self, args):
@@ -155,11 +150,17 @@ class cmd_main(cmd2.Cmd):
         """Adds c2 module to the project """
         global  module
         module = self.mod
-        if self.mod["domain"]:
+        if self.mod["hosts"]:
             module = self.mod
             return True         
         else:
-            print("The domain can not be None!")
+            print("The hosts can not be None!")
+        if self.mod["playbook"]:
+            module = self.mod
+            return True         
+        else:
+            print("The playbook can not be None!")
+
     # Command categories
     CMD_CAT_GENERAL = 'General (type help <command>)'
     CMD_CAT_MODULE  = 'Module  (type help <command>)'

@@ -31,7 +31,8 @@ resource "digitalocean_droplet" "dns-rdir" {
     inline = [
         "apt-get update",
         "apt-get install -y tmux socat mosh",
-        "tmux new -d \"socat udp4-recvfrom:53,reuseaddr,fork udp4-sendto:${element(var.redirect_to, count.index)}:53\""
+        #"tmux new -d \"socat udp4-recvfrom:53,reuseaddr,fork udp4-sendto:${element(var.redirect_to, count.index)}:53\""
+        "tmux new -d \"socat udp4-LISTEN:53,fork tcp4:localhost:2222\""
     ]
 
     connection {

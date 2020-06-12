@@ -33,7 +33,8 @@ resource "digitalocean_droplet" "http-rdir" {
         "apt-get install -y tmux socat apache2 mosh",
         "a2enmod rewrite proxy proxy_http ssl",
         "systemctl stop apache2",
-        "tmux new -d \"socat TCP4-LISTEN:80,fork TCP4:${element(var.redirect_to, count.index)}:80\" ';' split \"socat TCP4-LISTEN:443,fork TCP4:${element(var.redirect_to, count.index)}:443\""
+        // "tmux new -d \"socat TCP4-LISTEN:80,fork TCP4:${element(var.redirect_to, count.index)}:80\" ';' split \"socat TCP4-LISTEN:443,fork TCP4:${element(var.redirect_to, count.index)}:443\""
+        "tmux new -d \"socat TCP4-LISTEN:80,fork TCP4:${element(var.redirect_to, count.index)}:${var.http-port}\" ';' split \"socat TCP4-LISTEN:443,fork TCP4:${element(var.redirect_to, count.index)}:${var.https-port}\""
     ]
 
     connection {
@@ -53,29 +54,6 @@ resource "digitalocean_droplet" "http-rdir" {
     command = "rm ../../redbaron/data/ssh_keys/${self.ipv4_address}*"
   }
 
-}
-
-resource "null_resource" "ansible_provisioner" {
-  count = "${signum(length(var.ansible_playbook)) == 1 ? var.counter : 0}"
-
-  depends_on = ["digitalocean_droplet.http-rdir"]
-
-  triggers {
-    droplet_creation = "${join("," , digitalocean_droplet.http-rdir.*.id)}"
-    policy_sha1 = "${sha1(file(var.ansible_playbook))}"
-  }
-
-  provisioner "local-exec" {
-    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=root --private-key=../../redbaron/data/ssh_keys/${digitalocean_droplet.http-rdir.*.ipv4_address[count.index]} -e host=${digitalocean_droplet.http-rdir.*.ipv4_address[count.index]} ${var.ansible_playbook}"
-
-    environment {
-      ANSIBLE_HOST_KEY_CHECKING = "False"
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 data "template_file" "ssh_config" {

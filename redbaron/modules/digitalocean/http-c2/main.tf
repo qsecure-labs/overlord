@@ -21,7 +21,7 @@ resource "digitalocean_ssh_key" "ssh_key" {
 
 resource "digitalocean_droplet" "http-c2" {
   count = "${var.counter}"
-  image = "debian-9-x64"
+  image = "${var.distro}"
   name = "http-c2-${random_id.server.*.hex[count.index]}"
   region = "${var.available_regions[element(var.regions, count.index)]}"
   ssh_keys = ["${digitalocean_ssh_key.ssh_key.*.id[count.index]}"]
@@ -44,29 +44,6 @@ resource "digitalocean_droplet" "http-c2" {
   provisioner "local-exec" {
     when = "destroy"
     command = "rm ../../redbaron/data/ssh_keys/${self.ipv4_address}*"
-  }
-}
-
-resource "null_resource" "ansible_provisioner" {
-  count = "${signum(length(var.ansible_playbook)) == 1 ? var.counter : 0}"
-
-  depends_on = ["digitalocean_droplet.http-c2"]
-
-  triggers {
-    droplet_creation = "${join("," , digitalocean_droplet.http-c2.*.id)}"
-    policy_sha1 = "${sha1(file(var.ansible_playbook))}"
-  }
-
-  provisioner "local-exec" {
-    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=root --private-key=../../redbaron/data/ssh_keys/${digitalocean_droplet.http-c2.*.ipv4_address[count.index]} -e host=${digitalocean_droplet.http-c2.*.ipv4_address[count.index]} ${var.ansible_playbook}"
-
-    environment {
-      ANSIBLE_HOST_KEY_CHECKING = "False"
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 

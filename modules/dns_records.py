@@ -14,7 +14,7 @@ modules_ids = []
 
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the dns_records module """
-    def __init__(self,domains,campaign,mod):
+    def __init__(self,domains,campaign,mod,project_id):
         global domain_names
         global campaign_list
         global module
@@ -26,9 +26,7 @@ class main(list):
 
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = cmd2.ansi.style("Overlord", fg='red', bg='', bold=True, underline=False) + \
-            cmd2.ansi.style("/dns_records", fg='blue', bg='',
-                            bold=True, underline=False) + "$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/dns_records", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
@@ -84,7 +82,7 @@ class cmd_main(cmd2.Cmd):
         # Create list with modules id
         modules_ids = []
         for c in campaign_list:
-            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy":
+            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy" and  c["module"] != "ansible":
                 if c["module"] == "mail" or c["module"] == "redirector":
                     modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                 else:
@@ -174,7 +172,7 @@ class cmd_main(cmd2.Cmd):
             self.module_recrod_parser.choices = modules_ids
         else:
             for c in campaign_list:
-                    if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "redirector" and c["module"] != "godaddy":
+                    if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "redirector" and c["module"] != "godaddy" and  c["module"] != "ansible":
                         if c["module"] == "mail":
                             modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                         else:
@@ -205,15 +203,17 @@ class cmd_main(cmd2.Cmd):
 
         if arg.provider == "aws":
             for c in campaign_list:
-                if c["provider"] == "aws":
-                    aws_flag = True
+                if c["module"] != "ansible":
+                    if c["provider"] == "aws":
+                        aws_flag = True
             if not aws_flag:
                 print("No aws module was set! Returing without setting the value")
                 return
         if arg.provider == "digitalocean":
             for c in campaign_list:
-                if c["provider"] == "digitalocean":
-                    do_flag = True
+                if c["module"] != "ansible":
+                    if c["provider"] == "digitalocean":
+                        do_flag = True
             if not do_flag:
                 print("No digitalocean module was set! Returing without setting the value")     
                 return
@@ -294,9 +294,10 @@ class cmd_main(cmd2.Cmd):
             print("The variable records can not be None!")      
         elif self.mod["provider"] == "digitalocean":
             for c in campaign_list:
-                if c["provider"] == "digitalocean":
-                    do_flag = True
-                    break
+                if c["module"] != "ansible":
+                    if c["provider"] == "digitalocean":
+                        do_flag = True
+                        break
             if not do_flag:
                 print("No digitalocean module was set!")
             else:
@@ -304,9 +305,10 @@ class cmd_main(cmd2.Cmd):
                 return True       
         elif self.mod["provider"] == "aws":
             for c in campaign_list:
-                if c["provider"] == "aws":
-                    aws_flag = True
-                    break
+                if c["module"] != "ansible":
+                    if c["provider"] == "aws":
+                        aws_flag = True
+                        break
             if not aws_flag:
                 print("No aws module was set!")
             else:
