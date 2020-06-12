@@ -3,8 +3,9 @@ terraform {
 }
 
 resource "godaddy_domain_record" "gd-fancy-domain" {
-  domain = "${var.domain}"
+  domain = var.domain
 
   # // specify any custom nameservers for your domain
-  nameservers = ["${var.nameservers}"]
+  nameservers = var.nameservers
 }
+

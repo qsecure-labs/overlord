@@ -1,13 +1,19 @@
-variable "domain" {}
+variable "domain" {
+}
 
-variable "aws_key" {}
+variable "aws_key" {
+}
 
-variable "aws_secret" {}
+variable "aws_secret" {
+}
 
-variable "zone" {}
+variable "zone" {
+}
 
-variable "region" {}
+variable "region" {
+}
 
 variable "reg_email" {
   default = "nobody@kokos.com"
 }
+

@@ -1,14 +1,18 @@
-variable "type" {}
+variable "type" {
+}
 
-variable "name" {}
+variable "name" {
+}
 
 variable "ttl" {
   default = 600
 }
 
 variable "records" {
-  type = "list"
+  type    = list(string)
   default = []
 }
 
-variable "zone" {}
+variable "zone" {
+}
+

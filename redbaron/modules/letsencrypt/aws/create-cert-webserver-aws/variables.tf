@@ -3,9 +3,10 @@ variable "domain" {
 }
 
 variable "phishing_server_ip" {
-    # type = "list"
+  # type = "list"
 }
 
 variable "email" {
   default = "fakeemail@a.com "
 }
+

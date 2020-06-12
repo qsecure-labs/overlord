@@ -1,5 +1,5 @@
 variable "install" {
-  type = "list"
+  type    = list(string)
   default = []
 }
 
@@ -12,12 +12,12 @@ variable "size" {
 }
 
 variable "regions" {
-  type = "list"
+  type    = list(string)
   default = ["LON1"]
 }
 
 variable "available_regions" {
-  type = "map"
+  type = map(string)
   default = {
     "NYC1" = "nyc1"
     "NYC2" = "nyc2"
@@ -33,3 +33,4 @@ variable "available_regions" {
     "BLR1" = "blr1"
   }
 }
+

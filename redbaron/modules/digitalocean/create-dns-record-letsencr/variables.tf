@@ -1,8 +1,11 @@
-variable "domain" {}
+variable "domain" {
+}
 
-variable "type" {}
+variable "type" {
+}
 
-variable "name" {}
+variable "name" {
+}
 
 variable "counter" {
   default = 1
@@ -13,13 +16,14 @@ variable "ttl" {
 }
 
 variable "records" {
-  type = "map"
+  type = map(string)
 }
 
 variable "phishing_server_ip" {
-    type = "list"
+  type = list(string)
 }
 
 variable "email" {
   default = "fakeemail@a.com "
 }
+

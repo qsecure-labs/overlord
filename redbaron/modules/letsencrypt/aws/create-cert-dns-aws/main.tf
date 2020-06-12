@@ -7,23 +7,23 @@ resource "tls_private_key" "private_key" {
 }
 
 resource "acme_registration" "reg" {
-  account_key_pem = "${tls_private_key.private_key.private_key_pem}"
-  email_address   = "${var.reg_email}"
+  account_key_pem = tls_private_key.private_key.private_key_pem
+  email_address   = var.reg_email
 }
 
 resource "acme_certificate" "certificate" {
-  account_key_pem           = "${acme_registration.reg.account_key_pem}"
-  common_name               = "${var.domain}"
+  account_key_pem = acme_registration.reg.account_key_pem
+  common_name     = var.domain
 
   dns_challenge {
     provider = "route53"
 
-    config {
-     AWS_ACCESS_KEY_ID  = "${var.aws_key}"
-     AWS_SECRET_ACCESS_KEY = "${var.aws_secret}"
-     AWS_REGION = "${var.region}"
-     AWS_HOSTED_ZONE_ID = "${var.zone}"
-   }
+    config = {
+      AWS_ACCESS_KEY_ID     = var.aws_key
+      AWS_SECRET_ACCESS_KEY = var.aws_secret
+      AWS_REGION            = var.region
+      AWS_HOSTED_ZONE_ID    = var.zone
+    }
   }
 
   provisioner "local-exec" {
@@ -31,7 +31,8 @@ resource "acme_certificate" "certificate" {
   }
 
   provisioner "local-exec" {
-    when = "destroy"
+    when    = destroy
     command = "rm ../../redbaron/data/certificates/${self.common_name}*"
   }
 }
+

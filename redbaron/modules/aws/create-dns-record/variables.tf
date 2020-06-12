@@ -1,4 +1,5 @@
-variable "type" {}
+variable "type" {
+}
 
 variable "counter" {
   default = 1
@@ -9,7 +10,10 @@ variable "ttl" {
 }
 
 variable "records" {
-  type = "map"
+  type    = map(any)
   default = {}
 }
-variable "zone" {}
+
+variable "zone" {
+}
+
