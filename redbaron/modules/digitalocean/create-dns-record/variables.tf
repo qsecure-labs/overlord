@@ -4,6 +4,9 @@ variable "type" {
 variable "name" {
 }
 
+variable "domain" {
+}
+
 variable "counter" {
   default = 1
 }

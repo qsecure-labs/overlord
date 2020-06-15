@@ -8,7 +8,6 @@ data "external" "get_public_ip" {
 
 resource "aws_security_group" "http-rdir" {
   count = var.counter
-  
   # name = "${random_string.name_sg.result}"
   name        = "http-c2-rdir-${random_id.server[count.index].hex}"
   description = "Security group created by Red Baron"

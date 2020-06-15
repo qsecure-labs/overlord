@@ -38,7 +38,7 @@ resource "aws_instance" "phishing-server" {
   ami                         = var.amis[data.aws_region.current.name]
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.phishing-server[count.index].key_name
-  vpc_security_group_ids      = [aws_security_group.phishing-server.id]
+  vpc_security_group_ids      = [aws_security_group.phishing-server[count.index].id]
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true
 

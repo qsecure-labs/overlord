@@ -6,7 +6,7 @@ terraform {
 resource "digitalocean_record" "record" {
   name     = var.name
   count    = var.counter
-  domain   = element(keys(var.records), count.index)
+  domain   = var.domain
   type     = var.type
   value    = var.records[element(keys(var.records), count.index)]
   ttl      = var.ttl

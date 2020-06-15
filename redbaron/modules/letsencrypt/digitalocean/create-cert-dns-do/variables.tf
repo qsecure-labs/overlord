@@ -12,7 +12,7 @@ variable "server_url" {
 }
 
 variable "server_urls" {
-  type = map(string)
+  type = map(any)
   default = {
     "staging"    = "https://acme-staging-v02.api.letsencrypt.org/directory"
     "production" = "https://acme-v02.api.letsencrypt.org/directory"

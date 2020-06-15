@@ -6,18 +6,18 @@ data "aws_region" "current" {
 }
 
 resource "random_id" "server" {
-  count       = var.count
+  count       = var.counter
   byte_length = 4
 }
 
 resource "tls_private_key" "ssh" {
-  count     = var.count
+  count     = var.counter
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
 resource "aws_key_pair" "dns-rdir" {
-  count      = var.count
+  count      = var.counter
   key_name   = "dns-rdir-key-${random_id.server[count.index].hex}"
   public_key = tls_private_key.ssh[count.index].public_key_openssh
 }
@@ -29,7 +29,7 @@ resource "aws_instance" "dns-rdir" {
 
   //provider = "aws.${element(var.regions, count.index)}"
 
-  count = var.count
+  count = var.counter
 
   tags = {
     Name = "dns-rdir-${random_id.server[count.index].hex}"
@@ -38,7 +38,7 @@ resource "aws_instance" "dns-rdir" {
   ami                         = var.amis[data.aws_region.current.name]
   instance_type               = var.instance_type
   key_name                    = aws_key_pair.dns-rdir[count.index].key_name
-  vpc_security_group_ids      = [aws_security_group.dns-rdir.id]
+  vpc_security_group_ids      = [aws_security_group.dns-rdir[count.index].id]
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true
 
@@ -68,7 +68,7 @@ resource "aws_instance" "dns-rdir" {
 }
 
 data "template_file" "ssh_config" {
-  count = var.count
+  count = var.counter
 
   template = file("../../redbaron/data/templates/ssh_config.tpl")
 
@@ -83,7 +83,7 @@ data "template_file" "ssh_config" {
 }
 
 resource "null_resource" "gen_ssh_config" {
-  count = var.count
+  count = var.counter
 
   triggers = {
     template_rendered = data.template_file.ssh_config[count.index].rendered

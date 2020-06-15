@@ -7,6 +7,8 @@ data "external" "get_ip" {
 }
 
 resource "aws_security_group" "mail-server" {
+  count = var.counter
+
   name        = "mail-server-${random_id.server[count.index].hex}"
   description = "Security group created by Red Baron"
   vpc_id      = var.vpc_id
