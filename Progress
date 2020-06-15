@@ -14,9 +14,9 @@ AWS
     phishing-server-gophish - OK
 
 DIGITALOCEAN
-    create-dns-record
+    create-dns-record - OK
     create-dns-record-letsencr
-    create-domain
+    create-domain - OK
     dns-c2 - OK
     dns-local-rdir
     dns-rdir - OK
