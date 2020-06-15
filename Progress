@@ -1,7 +1,6 @@
 AWS
     http-rdir - OK
     http-c2 - OK
-    domain-front - WILL NOT BE TESTED
     dns-rdir - OK
     dns-local-rdir - OK
     dns-c2 - OK
@@ -14,21 +13,21 @@ AWS
     phishing-server-gophish - OK
 
 DIGITALOCEAN
-    create-dns-record - OK
-    create-dns-record-letsencr
+    create-dns-record - OK    
     create-domain - OK
     dns-c2 - OK
-    dns-local-rdir
+    dns-local-rdir - OK
     dns-rdir - OK
     http-c2 - OK
     http-rdir - OK
-    mail-server
-    phishing-server
-    phishing-server-gophish
+    mail-server - OK
+    phishing-server - OK
+    phishing-server-gophish - OK
 
-ANSIBLE
+ANSIBLE - OK
 
 GODADDY
+    redirect-nameservers - OK
 
 LETSENCRYPT
     aws/create-cert-dns-aws
