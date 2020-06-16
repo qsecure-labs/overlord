@@ -6,7 +6,7 @@ terraform {
 resource "aws_route53_record" "record" {
   count   = var.counter
   zone_id = var.zone
-  name    = element(keys(var.records), count.index)
+  name    = var.name
   type    = var.type
   ttl     = var.ttl
   # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to

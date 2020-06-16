@@ -243,7 +243,7 @@ module "redirect_ns_{c["id"]}"{{
 module "redirect_ns_{c["id"]}"{{
   source = "../../redbaron/modules/godaddy/redirect-nameservers"
   domain = "{c["domain"]}"
-  nameservers = ["${{module.public_zone.name_servers[{public_zone}]}}"]
+  nameservers = module.public_zone.name_servers[{public_zone}]
 }}
 """
         return output
@@ -444,12 +444,12 @@ module "create_cert_{c["id"]}" {{
                 if len(value.split('-')) > 1:
                     for camp in self.campaign:
                         if camp["id"] == value.split('-')[0]:
-                            record = f""" "{key}" = "${{module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[{str(int(value.split('-',1)[1])-1)}]}}" """
+                            record = f""" "{key}" = module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[{str(int(value.split('-',1)[1])-1)}] """
                             break
                 else:
                     for camp in self.campaign:
                         if camp["id"] == value:
-                            record = f""" "{key}" = "${{module.{camp["module"]}_{value}.ips[0]}}" """
+                            record = f""" "{key}" = module.{camp["module"]}_{value}.ips """
                             break
                 value = self.aws_domains.index(key)
                 output = aws.main.dns_records_type(c,record,value)

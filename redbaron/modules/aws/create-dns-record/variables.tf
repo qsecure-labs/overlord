@@ -1,6 +1,9 @@
 variable "type" {
 }
 
+variable "name" {
+}
+
 variable "counter" {
   default = 1
 }

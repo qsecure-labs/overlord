@@ -107,7 +107,7 @@ class Overlord(cmd2.Cmd):
         dir_path = "projects/"+self.project_id
         self.do_save(None)
         create.main(self.campaign,self.variables,self.project_id)
- 
+
     newproject_parser = argparse.ArgumentParser(prog='new')
     newproject_id = newproject_parser.add_argument('id', type=str, nargs="?", help='example: new / new <name> ]')
 
@@ -263,7 +263,7 @@ class Overlord(cmd2.Cmd):
         notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
         print(f"""\n{notification} Started deployment of project with ID {proj} {notification}\n""")
         os.system(f"""mkdir -p projects/{self.project_id}/.terraform/plugins/linux_amd64 """)
-        os.system(f"""cp redbaron/data/plugins/terraform-provider-godaddy_v1.6.4_x4 projects/{self.project_id}/.terraform/plugins/linux_amd64""")
+        os.system(f"""cp redbaron/data/plugins/terraform-provider-godaddy_v1.7.3_x4 projects/{self.project_id}/.terraform/plugins/linux_amd64/terraform-provider-godaddy_v1.7.3_x4""")
         os.system(f"""cd projects/{self.project_id} && /opt/terraform init""")
         os.system(f"""cd projects/{self.project_id} && /opt/terraform plan""")
         os.system(f"""cd projects/{self.project_id} && /opt/terraform apply -auto-approve""")

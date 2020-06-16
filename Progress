@@ -6,28 +6,28 @@ AWS
     dns-c2 - OK
     create-vpc - OK
     create-hosted-zone - OK
-    create-dns-txt-record - OK
+    create-dns-txt-record
     create-dns-record - OK
-    mail-server - OK
+    mail-server
     phishing-server - OK
     phishing-server-gophish - OK
 
 DIGITALOCEAN
-    create-dns-record - OK    
-    create-domain - OK
-    dns-c2 - OK
-    dns-local-rdir - OK
-    dns-rdir - OK
-    http-c2 - OK
-    http-rdir - OK
-    mail-server - OK
-    phishing-server - OK
-    phishing-server-gophish - OK
+    create-dns-record    
+    create-domain
+    dns-c2
+    dns-local-rdir
+    dns-rdir
+    http-c2
+    http-rdir
+    mail-server
+    phishing-server
+    phishing-server-gophish
 
-ANSIBLE - OK
+ANSIBLE
 
 GODADDY
-    redirect-nameservers - OK
+    redirect-nameservers
 
 LETSENCRYPT
     aws/create-cert-dns-aws
