@@ -5,7 +5,6 @@ class main():
         if c["redirector_id"] == "localhost" and c["type"]== "dns":
           output = f"""
 module "redirector_{c["id"]}" {{
-    //counter = 1
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-local-rdir"
     redirect_to = ["localhost"]
     instance_type = "{c["size"]}"
@@ -22,7 +21,6 @@ output "{c["id"]} - Run the following command on your internal DNS server" {{
         elif c["redirector_id"] == "localhost" and c["type"]== "http":
           output = f"""
 module "redirector_{c["id"]}" {{
-    //counter = 1
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"
     redirect_to = ["localhost"]
     instance_type = "{c["size"]}"
@@ -41,7 +39,6 @@ output "{c["id"]} - Run the following command on your internal HTTP server" {{
         else:
           output = f"""
 module "redirector_{c["id"]}" {{
-    //counter = 1
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"
     redirect_to = "${{module.{c["redirector_id"].split("/")[1]}_{c["redirector_id"].split("/")[0]}.ips}}"
     instance_type = "{c["size"]}"
@@ -78,7 +75,6 @@ module "c2_{c["id"]}" {{
 }}
 
 module "c2_rdir_{c["id"]}" {{
-    //counter = {c["redirectors"]}
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"
     redirect_to = "${{module.c2_{c["id"]}.ips}}"
     instance_type = "{c["size"]}"
@@ -125,7 +121,6 @@ module "webserver_{c["id"]}" {{
 }}
 
 module "webserver_rdir_{c["id"]}" {{
-    //counter = {c["redirectors"]}
     source = "../../redbaron/modules/{c["provider"]}/http-rdir"
     redirect_to = "${{module.webserver_{c["id"]}.ips}}"
     instance_type = "{c["size"]}"
@@ -170,7 +165,6 @@ module "gophish_{c["id"]}" {{
 }}
 
 module "gophish_rdir_{c["id"]}" {{
-    //counter = {c["redirectors"]}
     source = "../../redbaron/modules/{c["provider"]}/http-rdir"
     redirect_to = "${{module.gophish_{c["id"]}.ips}}"
     instance_type = "{c["size"]}"
@@ -265,7 +259,6 @@ module "create_dns_record_{c["id"]}" {{
     source = "../../redbaron/modules/aws/create-dns-record"
     name  = "{c["name"]}"
     type = "{c["type"]}"
-    //counter = {c["counter"]}
     records = {{ {record} }}
     zone = "${{module.public_zone.public_zones_ids[{value}]}}"
 }}\n"""
@@ -278,7 +271,6 @@ module "create_dns_record_{value}" {{
     source = "../../redbaron/modules/aws/create-dns-txt-record"
     name  = ""
     type = "TXT"
-    //counter = 1
     records = [{record}]
     zone = "${{module.public_zone.public_zones_ids[{value}]}}"
 }}\n"""

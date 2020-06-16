@@ -202,7 +202,6 @@ class cmd_main(cmd2.Cmd):
                         self.mod["region"] = config[prov]["default_region"]
                         self.mod["size"] = config[prov]["default_size"]
                         
-
     def set_domain_name(self, arg):
         """Sets the domain_name variable"""
         self.mod["domain_name"]= arg.domain_name

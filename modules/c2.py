@@ -101,7 +101,6 @@ class cmd_main(cmd2.Cmd):
 
     def do_info(self,mod):
         """Prints variable table"""
-        #TODO Future update take descriptions from a file
         if mod :
             x = PrettyTable()
             x.title = mod["module"] + "/" +mod["id"]

@@ -97,17 +97,6 @@ class main(list):
         self.do_domains  =[]
         self.aws_domains =[]
 
-        #OLD
-        # for camp in self.campaign:
-        #     if camp["module"] == "dns_record":
-        #         if camp["type"] == "A" and (camp["name"] == "@" or camp["name"] == ""):
-        #             if camp["provider"] == "digitalocean":
-        #                 for k in camp["records"].keys():
-        #                     self.do_domains.append(k)
-        #             elif camp["provider"] == "aws":
-        #                 for k in camp["records"].keys():
-        #                     self.aws_domains.append(k)
-
         for camp in self.campaign:
             if camp["module"] == "dns_record":
                 if camp["provider"] == "digitalocean":
@@ -563,13 +552,4 @@ ip        = "${{module.{host.split("/")[1]}_{host.split("/")[0]}.ips[0]}}"
 playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
 }}
 """
-
-
-        #    for camp in self.campaign:
-        #         if camp["id"] in i:
-        #             if "-" in i:
-        #                 my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+"rdir_"+camp["id"]+".ips["+str(int(i.split('-')[1])-1)+"]}"))
-        #                 break
-        #             else:
-   
         return output

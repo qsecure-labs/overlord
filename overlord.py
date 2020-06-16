@@ -51,7 +51,6 @@ class Overlord(cmd2.Cmd):
                                         {version}
     """)
     intro = "Welcome to Overlord!\nType help or ? to list commands\n"
-#    prompt = cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + "$> "
     variables = {
         "dotoken": "",
         "domains" :[],
@@ -66,7 +65,6 @@ class Overlord(cmd2.Cmd):
 
     def __init__(self):
         super().__init__()
-        # self.default_to_shell = True
         hide_cmd2_modules(self)
         #Initialize project ID
         dir_path = "projects"
@@ -82,7 +80,6 @@ class Overlord(cmd2.Cmd):
         self.project_id = rand
 
         self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( rand, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
-        #self.deleteproject_id.choices = next(os.walk(dir_path))[1]
         self.loadproject_id.choices = next(os.walk(dir_path))[1]
         self.cloneproject_id.choices = next(os.walk(dir_path))[1]
 
@@ -108,13 +105,9 @@ class Overlord(cmd2.Cmd):
     def do_create(self,arg):
         """Creates terraform project from the campaign"""
         dir_path = "projects/"+self.project_id
-        #if not os.path.exists(dir_path):
         self.do_save(None)
         create.main(self.campaign,self.variables,self.project_id)
-        # proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-        # notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
-        # print(f"""\n{notification} The terrafrom files for the project with ID {proj} have been created {notification}\n""")
-
+ 
     newproject_parser = argparse.ArgumentParser(prog='new')
     newproject_id = newproject_parser.add_argument('id', type=str, nargs="?", help='example: new / new <name> ]')
 
@@ -145,7 +138,6 @@ class Overlord(cmd2.Cmd):
         command = 'mkdir projects/'+self.project_id
         os.system(command)
 
-
     loadproject_parser = argparse.ArgumentParser(prog='load')
     loadproject_id = loadproject_parser.add_argument('id', type=str, help='example: [ load <ID> ]')
 
@@ -164,10 +156,6 @@ class Overlord(cmd2.Cmd):
             print(f"""\n{notification} The project with ID {proj} has been loaded {notification}\n""")
         self.update_choices(self.campaign)
         self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
-
-    # deleteproject_parser = argparse.ArgumentParser(prog='delete')
-    # deleteproject_id = deleteproject_parser.add_argument('id', type=str, help='example: [ delete <ID> ]')
-
 
     cloneproject_parser = argparse.ArgumentParser(prog='clone')
     cloneproject_id = cloneproject_parser.add_argument('id', type=str, help='example: [ clone <ID> ]')
@@ -202,7 +190,6 @@ class Overlord(cmd2.Cmd):
             shutil.copy(dir_path+'/campaign.json',new_path+'/campaign.json')
             shutil.copy(dir_path+'/variables.json',new_path+'/variables.json')
 
-            #self.deleteproject_id.choices = next(os.walk("projects"))[1]
             self.loadproject_id.choices = next(os.walk("projects"))[1]
             self.cloneproject_id.choices = next(os.walk("projects"))[1]
         
@@ -227,7 +214,6 @@ class Overlord(cmd2.Cmd):
             flag1 = input(cmd2.ansi.style("Proceding with deleting project directory. Are you sure? [y/N]:", fg='red', bg='',bold=True, underline=False))
             if flag1 == "y":
                 shutil.rmtree("projects/"+self.project_id)
-                #self.deleteproject_id.choices = next(os.walk("projects"))[1]
                 self.loadproject_id.choices = next(os.walk("projects"))[1]
                 self.cloneproject_id.choices = next(os.walk("projects"))[1]
                 self.update_choices(self.campaign)
@@ -245,7 +231,6 @@ class Overlord(cmd2.Cmd):
             json.dump(self.campaign, filehandle,indent=4)
         with open(dir_path+'/variables.json', 'w') as filehandle:
             json.dump(self.variables, filehandle,indent=4)
-        #self.deleteproject_id.choices = next(os.walk("projects"))[1]
         self.loadproject_id.choices = next(os.walk("projects"))[1]
         self.cloneproject_id.choices = next(os.walk("projects"))[1]
         proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
@@ -265,7 +250,6 @@ class Overlord(cmd2.Cmd):
                 os.rename("projects/"+self.project_id, "projects/"+arg)
             self.project_id = arg
 
-            #self.deleteproject_id.choices = next(os.walk("projects"))[1]
             self.loadproject_id.choices = next(os.walk("projects"))[1]
             self.cloneproject_id.choices = next(os.walk("projects"))[1]
 
@@ -415,7 +399,6 @@ class Overlord(cmd2.Cmd):
     parser_redirector.set_defaults(func=usemodule_redirector)
     parser_godaddy.set_defaults(func=usemodule_godaddy)
     parser_ansible.set_defaults(func=usemodule_ansible)
-
     # parser_firewall.set_defaults(func=usemodule_firewall)
 
     @cmd2.with_argparser(usemodule_parser)

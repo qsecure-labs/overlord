@@ -70,7 +70,7 @@
     },
     "mod_ansible": {
         "module": "ansible",
-        "hosts": "",
+        "hosts": [],
         "playbook": "",
         "id": ""
     },

@@ -72,9 +72,6 @@ class cmd_main(cmd2.Cmd):
         else:
             self.mod["id"] = randomString()
         
-        # TODO add functionality for wirldcard certificates:
-        # https://medium.com/@saurabh6790/generate-wildcard-ssl-certificate-using-lets-encrypt-certbot-273e432794d7
-
         self.domain_list = []
         self.record_list = []
         for c in campaign_list:

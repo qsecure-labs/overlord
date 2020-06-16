@@ -75,7 +75,7 @@ class cmd_main(cmd2.Cmd):
                 modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                 for i in range(c["redirectors"]):
                     modules_ids.insert(len(modules_ids),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
-
+        modules_ids.insert(len(modules_ids),"all")
         self.module_hosts_parser.choices = modules_ids      
         
         # Load the playbooks 
@@ -125,7 +125,14 @@ class cmd_main(cmd2.Cmd):
 
     def set_mod(self, arg):
         """Sets the hosts variable"""
-        self.mod["hosts"]= arg.hosts
+        if 'all' in arg.hosts:
+            for c in campaign_list:
+                if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible":
+                    self.mod["hosts"].insert(len(self.mod["hosts"]),(c["id"]+"/"+c["module"]))
+                    for i in range(c["redirectors"]):
+                        self.mod["hosts"].insert(len(self.mod["hosts"]),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
+        else:       
+            self.mod["hosts"]= arg.hosts
 
     def set_playbook(self, arg):
         """Sets the =playbook variable"""

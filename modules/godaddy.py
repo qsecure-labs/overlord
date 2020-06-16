@@ -60,7 +60,6 @@ class cmd_main(cmd2.Cmd):
                 config = json.load(filehandle) 
                 self.mod = config["mod_godaddy"]
                 self.providers_list = config["providers_list"]
-                # self.module_provider_parser.choices = self.providers_list
                 self.module_domain_parser.choices = domain_list
 
         else:
@@ -108,18 +107,10 @@ class cmd_main(cmd2.Cmd):
     set_parser = argparse.ArgumentParser(prog='set')
     set_subparsers = set_parser.add_subparsers(title='set-commands', help='Sets the variables of the module')
 
-    # create the parser for the "provider" sub-command
-    # parser_provider = set_subparsers.add_parser('provider', help='Provider to be used')
-    # module_provider_parser = parser_provider.add_argument('provider',choices=providers_list, type=str, help='example : [set provider <digitalocean> ]')
-
     # create the parser for the "domain" sub-command
     parser_domain = set_subparsers.add_parser('domain', help='Domain to be used')
     module_domain_parser = parser_domain.add_argument('domain',choices=providers_list, type=str, help='example : [set domain <domain> ]')
   
-    # def set_provider(self, arg):
-    #     """Sets the provider variable"""
-    #     self.mod["provider"]= arg.provider
-
     def set_domain(self, arg):
         """Sets the domain variable"""
         exception_flag = False
@@ -137,7 +128,6 @@ class cmd_main(cmd2.Cmd):
             print ("A DNS record must be set for the specified domain before redirecting the NS!")
         
     #Set handler functions for the sub-commands
-    # parser_provider.set_defaults(func=set_provider)
     parser_domain.set_defaults(func=set_domain)
 
     @cmd2.with_argparser(set_parser)

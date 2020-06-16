@@ -47,7 +47,7 @@ class cmd_main(cmd2.Cmd):
     """cmd2 instance for dns_records module"""
 
     providers_list = []
-    types_list = ["A","MX","TXT"] #["AAAA", "CAA", "CNAME", "MX", "NAPTR", "NS", "PTR", "SOA", "SPF", "SRV"]
+    types_list = ["A","MX","TXT"]
     values_list = ["v=DMARC1; p=none; sp=none;","v=spf1 mx -all"]
     # The mod dictionary for the dns_records module    
     mod ={}
