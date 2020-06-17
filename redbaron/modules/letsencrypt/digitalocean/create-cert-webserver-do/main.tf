@@ -10,7 +10,7 @@ resource "null_resource" "lets-encrypt" {
       host        = var.phishing_server_ip
       type        = "ssh"
       user        = "root"
-      private_key = file("../../redbaron/data/ssh_keys/${var.phishing_server_ip}")
+      private_key = file("ssh_keys/${var.phishing_server_ip}")
     }
   }
 }

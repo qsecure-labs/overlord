@@ -49,12 +49,12 @@ resource "aws_instance" "phishing-server" {
   }
 
   provisioner "local-exec" {
-    command = "echo \"${tls_private_key.ssh[count.index].private_key_pem}\" > ../../redbaron/data/ssh_keys/${self.public_ip} && echo \"${tls_private_key.ssh[count.index].public_key_openssh}\" > ../../redbaron/data/ssh_keys/${self.public_ip}.pub && chmod 600 ../../redbaron/data/ssh_keys/*"
+    command = "echo \"${tls_private_key.ssh[count.index].private_key_pem}\" > ssh_keys/${self.public_ip} && echo \"${tls_private_key.ssh[count.index].public_key_openssh}\" > ssh_keys/${self.public_ip}.pub && chmod 600 ssh_keys/*"
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "rm ../../redbaron/data/ssh_keys/${self.public_ip}*"
+    command = "rm ssh_keys/${self.public_ip}*"
   }
 }
 
@@ -69,7 +69,7 @@ data "template_file" "ssh_config" {
     name         = "dns_rdir_${aws_instance.phishing-server[count.index].public_ip}"
     hostname     = aws_instance.phishing-server[count.index].public_ip
     user         = "admin"
-    identityfile = "${path.root}/data/ssh_keys/${aws_instance.phishing-server[count.index].public_ip}"
+    identityfile = "${abspath(path.root)}/data/ssh_keys/${aws_instance.phishing-server[count.index].public_ip}"
   }
 }
 
@@ -81,12 +81,12 @@ resource "null_resource" "gen_ssh_config" {
   }
 
   provisioner "local-exec" {
-    command = "echo '${data.template_file.ssh_config[count.index].rendered}' > ../../redbaron/data/ssh_configs/config_${random_id.server[count.index].hex}"
+    command = "echo '${data.template_file.ssh_config[count.index].rendered}' > ssh_configs/config_${random_id.server[count.index].hex}"
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "rm ../../redbaron/data/ssh_configs/config_${random_id.server[count.index].hex}"
+    command = "rm ssh_configs/config_${random_id.server[count.index].hex}"
   }
 }
 

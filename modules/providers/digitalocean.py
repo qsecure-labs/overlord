@@ -220,7 +220,7 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
         host = module.mail_{c["id"]}.ips[0][0]
         type = "ssh"
         user = "root"
-        private_key = file("../../redbaron/data/ssh_keys/${{module.mail_{c["id"]}.ips[0][0]}}")
+        private_key = file("ssh_keys/${{module.mail_{c["id"]}.ips[0][0]}}")
     }}
   }}
 }}

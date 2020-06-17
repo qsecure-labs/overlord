@@ -135,8 +135,10 @@ class Overlord(cmd2.Cmd):
 
     def create_dir(self):
         """Creates the project directory"""
-        command = 'mkdir projects/'+self.project_id
-        os.system(command)
+        os.system('mkdir projects/'+self.project_id)
+        os.system('mkdir projects/'+self.project_id+'/ssh_keys')
+        os.system('mkdir projects/'+self.project_id+'/ssh_configs')
+        os.system('mkdir projects/'+self.project_id+'/certificates')
 
     loadproject_parser = argparse.ArgumentParser(prog='load')
     loadproject_id = loadproject_parser.add_argument('id', type=str, help='example: [ load <ID> ]')

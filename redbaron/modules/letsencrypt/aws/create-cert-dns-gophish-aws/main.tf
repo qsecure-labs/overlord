@@ -27,28 +27,28 @@ resource "acme_certificate" "certificate" {
   }
 
   provisioner "local-exec" {
-    command = "echo \"${self.private_key_pem}\" > ../../redbaron/data/certificates/${self.common_name}_privkey.pem && echo \"${self.certificate_pem}\" > ../../redbaron/data/certificates/${self.common_name}_cert.pem"
+    command = "echo \"${self.private_key_pem}\" > certificates/${self.common_name}_privkey.pem && echo \"${self.certificate_pem}\" > certificates/${self.common_name}_cert.pem"
   }
 
   provisioner "file" {
-    source      = "../../redbaron/data/certificates/${var.domain}_privkey.pem"
+    source      = "certificates/${var.domain}_privkey.pem"
     destination = "/tmp/${var.domain}_privkey.pem"
     connection {
       host        = var.phishing_server_ip
       type        = "ssh"
       user        = "admin"
-      private_key = file("../../redbaron/data/ssh_keys/${var.phishing_server_ip}")
+      private_key = file("ssh_keys/${var.phishing_server_ip}")
     }
   }
 
   provisioner "file" {
-    source      = "../../redbaron/data/certificates/${var.domain}_cert.pem"
+    source      = "certificates/${var.domain}_cert.pem"
     destination = "/tmp/${var.domain}_cert.pem"
     connection {
       host        = var.phishing_server_ip
       type        = "ssh"
       user        = "admin"
-      private_key = file("../../redbaron/data/ssh_keys/${var.phishing_server_ip}")
+      private_key = file("ssh_keys/${var.phishing_server_ip}")
     }
   }
 
@@ -68,13 +68,13 @@ resource "acme_certificate" "certificate" {
       host        = var.phishing_server_ip
       type        = "ssh"
       user        = "admin"
-      private_key = file("../../redbaron/data/ssh_keys/${var.phishing_server_ip}")
+      private_key = file("ssh_keys/${var.phishing_server_ip}")
     }
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "rm ../../redbaron/data/certificates/${self.common_name}*"
+    command = "rm certificates/${self.common_name}*"
   }
 }
 

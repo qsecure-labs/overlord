@@ -27,12 +27,12 @@ resource "acme_certificate" "certificate" {
   }
 
   provisioner "local-exec" {
-    command = "echo \"${self.private_key_pem}\" > ../../redbaron/data/certificates/${self.common_name}_privkey.pem && echo \"${self.certificate_pem}\" > ../../redbaron/data/certificates/${self.common_name}_cert.pem"
+    command = "echo \"${self.private_key_pem}\" > certificates/${self.common_name}_privkey.pem && echo \"${self.certificate_pem}\" > certificates/${self.common_name}_cert.pem"
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "rm ../../redbaron/data/certificates/${self.common_name}*"
+    command = "rm certificates/${self.common_name}*"
   }
 }
 

@@ -38,12 +38,12 @@ resource "digitalocean_droplet" "mail-server" {
   }
 
   provisioner "local-exec" {
-    command = "echo \"${tls_private_key.ssh[count.index].private_key_pem}\" > ../../redbaron/data/ssh_keys/${self.ipv4_address} && echo \"${tls_private_key.ssh[count.index].public_key_openssh}\" > ../../redbaron/data/ssh_keys/${self.ipv4_address}.pub && chmod 600 ../../redbaron/data/ssh_keys/*"
+    command = "echo \"${tls_private_key.ssh[count.index].private_key_pem}\" > ssh_keys/${self.ipv4_address} && echo \"${tls_private_key.ssh[count.index].public_key_openssh}\" > ssh_keys/${self.ipv4_address}.pub && chmod 600 ssh_keys/*"
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "rm ../../redbaron/data/ssh_keys/${self.ipv4_address}*"
+    command = "rm ssh_keys/${self.ipv4_address}*"
   }
   provisioner "file" {
     source      = var.path
@@ -82,7 +82,7 @@ data "template_file" "ssh_config" {
     name         = "mail_server_${digitalocean_droplet.mail-server[count.index].ipv4_address}"
     hostname     = digitalocean_droplet.mail-server[count.index].ipv4_address
     user         = "root"
-    identityfile = "${path.root}/data/ssh_keys/${digitalocean_droplet.mail-server[count.index].ipv4_address}"
+    identityfile = "${abspath(path.root)}/data/ssh_keys/${digitalocean_droplet.mail-server[count.index].ipv4_address}"
   }
 }
 
@@ -94,12 +94,12 @@ resource "null_resource" "gen_ssh_config" {
   }
 
   provisioner "local-exec" {
-    command = "echo '${data.template_file.ssh_config[count.index].rendered}' > ../../redbaron/data/ssh_configs/config_${random_id.server[count.index].hex}"
+    command = "echo '${data.template_file.ssh_config[count.index].rendered}' > ssh_configs/config_${random_id.server[count.index].hex}"
   }
 
   provisioner "local-exec" {
     when    = destroy
-    command = "rm ../../redbaron/data/ssh_configs/config_${random_id.server[count.index].hex}"
+    command = "rm ssh_configs/config_${random_id.server[count.index].hex}"
   }
 }
 
