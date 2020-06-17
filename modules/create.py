@@ -439,13 +439,13 @@ module "create_cert_{c["id"]}" {{
             if c["type"] == "A":
                 if len(value.split('-')) > 1:
                     for camp in self.campaign:
-                        if camp["id"] == value.split('-')[0]:
+                        if camp["id"] == value.split('-')[0]: #TODO - AWS does not work with more than one redirectors 
                             record = f""" "{key}" = module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[{str(int(value.split('-',1)[1])-1)}] """
                             break
                 else:
                     for camp in self.campaign:
                         if camp["id"] == value:
-                            record = f""" "{key}" = module.{camp["module"]}_{value}.ips """
+                            record = f""" "{key}" = module.{camp["module"]}_{value}.ips[0] """
                             break
                 value = self.aws_domains.index(key)
                 output = aws.main.dns_records_type(c,record,value)
