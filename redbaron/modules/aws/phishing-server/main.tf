@@ -45,7 +45,7 @@ resource "aws_instance" "phishing-server" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
-      "sudo apt-get install -y tmux apache2 certbot mosh",
+      "sudo apt-get install -y tmux apache2 certbot python3-certbot-apache",
       "sudo a2enmod ssl",
       "sudo systemctl stop apache2",
     ]

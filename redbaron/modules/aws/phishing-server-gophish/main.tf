@@ -54,7 +54,7 @@ resource "aws_instance" "gophish-server" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
-      "sudo apt-get install -y tmux certbot mosh",
+      "sudo apt-get install -y tmux",
     ]
 
     connection {
