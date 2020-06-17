@@ -124,19 +124,19 @@ module "create_vpc" {
         domain_string_do = ', '.join('"{0}"'.format(d) for d in  self.do_domains)
         output=f"""
 variable "domain" {{
-type    = "list"
+type    = list
 default = [{domain_string}]
 }}\n"""
         if len(self.aws_domains ) != 0:
             output= output + f"""
 variable "aws_domain" {{
-type    = "list"
+type    = list
 default = [{domain_string_aws}]
 }}\n"""
         if len(self.do_domains ) != 0:
             output= output + f"""
 variable "do_domain" {{
-type    = "list"
+type    = list
 default = [{domain_string_do}]
 }}\n"""
         # Check if digitalocean is used.
@@ -451,7 +451,7 @@ module "create_cert_{c["id"]}" {{
                 output = aws.main.dns_records_type(c,record,value)
                 return output
             if c["type"] == "MX":
-                record = f""" "{key}" = "{c["priority"]} {value}" """
+                record = f""" "{key}" = ["{c["priority"]} {value}"] """
                 value = self.aws_domains.index(key)
                 output = aws.main.dns_records_type(c,record,value)
                 return output

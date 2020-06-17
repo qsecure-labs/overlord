@@ -217,7 +217,7 @@ output "mail-{c["id"]}-ips" {{
   value = "${{module.mail_{c["id"]}.ips}}"
 }}
 
-output "iRedMail_credentials" {{
+output "iRedMail_credentials_{c["id"]}" {{
   value = "postmaster@{c["domain_name"]}:{data}\\n"
 }}
 
@@ -242,10 +242,10 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
     ]
 
     connection {{
-        host = "${{module.mail_{c["id"]}.ips[0]}}"
+        host = module.mail_{c["id"]}.ips[0][0]
         type = "ssh"
         user = "admin"
-        private_key = "${{file("../../redbaron/data/ssh_keys/${{module.mail_{c["id"]}.ips[0]}}")}}"
+        private_key = "${{file("../../redbaron/data/ssh_keys/${{module.mail_{c["id"]}.ips[0][0]}}")}}"
     }}
   }}
 }}
