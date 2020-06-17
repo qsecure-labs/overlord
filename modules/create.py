@@ -183,10 +183,6 @@ variable "godaddy_secret" {{
 
     def create_general(self):
         output ="""
-terraform {
-    required_version = ">= 0.11.0"
-}
-
 ###################################################################################################################
 #                                                Providers                                                        #
 ###################################################################################################################
@@ -197,7 +193,7 @@ terraform {
                 if c["provider"] == "digitalocean":
                     output = output +"""
 provider "digitalocean" {
-    token = "${var.do_token}"
+    token = var.do_token
 }"""
                     break
 
@@ -207,9 +203,9 @@ provider "digitalocean" {
                 if c["provider"] == "aws":
                     output = output +"""
 provider "aws" {
-  region     = "${var.aws_region}"
-  access_key = "${var.aws_key}"
-  secret_key = "${var.aws_secret}"
+  region     = var.aws_region
+  access_key = var.aws_key
+  secret_key = var.aws_secret
 }
 """
                     break
@@ -217,8 +213,8 @@ provider "aws" {
             if c["module"] == "godaddy":
                 output = output +"""
 provider "godaddy" {
-  key =  "${var.godaddy_key}"
-  secret = "${var.godaddy_secret}"
+  key =  var.godaddy_key
+  secret = var.godaddy_secret
 }
 """
                 break
@@ -322,7 +318,7 @@ module "create_cert_{c["id"]}" {{
   provider_name = "digitalocean"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  do_token = "${{var.do_token}}"
+  do_token = var.do_token
   phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
@@ -341,7 +337,7 @@ module "create_cert_{c["id"]}" {{
   provider_name = "digitalocean"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  do_token = "${{var.do_token}}"
+  do_token = var.do_token
 }}
 """
                     elif camp["module"] == "redirector" and camp["redirector_id"] == "localhost" :
@@ -351,7 +347,7 @@ module "create_cert_{c["id"]}" {{
   provider_name = "digitalocean"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  do_token ="${{var.do_token}}"
+  do_token = var.do_token
 }}
 """
 
@@ -367,8 +363,8 @@ module "create_cert_{c["id"]}" {{
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-gophish-aws"
   domain = "{c["domain_name"]}"
-  aws_key = "${{var.aws_key}}"
-  aws_secret = "${{var.aws_secret}}"
+  aws_key = var.aws_key
+  aws_secret = var.aws_secret
   region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
   server_url = "production"
@@ -389,8 +385,8 @@ module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-aws"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  aws_key = "${{var.aws_key}}"
-  aws_secret = "${{var.aws_secret}}"
+  aws_key = var.aws_key
+  aws_secret = var.aws_secret
   region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
 }}
@@ -401,8 +397,8 @@ module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-aws"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  aws_key = "${{var.aws_key}}"
-  aws_secret = "${{var.aws_secret}}"
+  aws_key = var.aws_key
+  aws_secret = var.aws_secret
   region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
 }}
