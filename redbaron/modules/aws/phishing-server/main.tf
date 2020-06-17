@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 data "aws_region" "current" {
 }
 
@@ -23,12 +19,6 @@ resource "aws_key_pair" "phishing-server" {
 }
 
 resource "aws_instance" "phishing-server" {
-  // Currently, variables in provider fields are not supported :(
-  // This severely limits our ability to spin up instances in diffrent regions
-  // https://github.com/hashicorp/terraform/issues/11578
-
-  //provider = "aws.${element(var.regions, count.index)}"
-
   count = var.counter
 
   tags = {

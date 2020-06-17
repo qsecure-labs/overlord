@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 data "aws_region" "current" {
 }
 
@@ -23,12 +19,6 @@ resource "aws_key_pair" "mail-server" {
 }
 
 resource "aws_instance" "mail-server" {
-  // Currently, variables in provider fields are not supported :(
-  // This severely limits our ability to spin up instances in diffrent regions
-  // https://github.com/hashicorp/terraform/issues/11578
-
-  //provider = "aws.${element(var.regions, count.index)}"
-
   count = var.counter
 
   tags = {
@@ -54,7 +44,7 @@ resource "aws_instance" "mail-server" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
-      "sudo apt-get install -y tmux mosh",
+      "sudo apt-get install -y tmux",
     ]
 
     connection {
@@ -66,7 +56,6 @@ resource "aws_instance" "mail-server" {
   }
 
   provisioner "file" {
-    #source      = "../../redbaron/data/scripts/iredmail.sh"
     source      = var.path
     destination = "/tmp/iredmail.sh"
 

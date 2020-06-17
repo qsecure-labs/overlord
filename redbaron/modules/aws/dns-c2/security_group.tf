@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 data "external" "get_public_ip" {
   program = ["bash", "../../redbaron/data/scripts/get_public_ip.sh"]
 }

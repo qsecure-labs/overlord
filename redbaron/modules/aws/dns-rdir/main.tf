@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 data "aws_region" "current" {
 }
 
@@ -23,12 +19,6 @@ resource "aws_key_pair" "dns-rdir" {
 }
 
 resource "aws_instance" "dns-rdir" {
-  // Currently, variables in provider fields are not supported :(
-  // This severely limits our ability to spin up instances in diffrent regions
-  // https://github.com/hashicorp/terraform/issues/11578
-
-  //provider = "aws.${element(var.regions, count.index)}"
-
   count = var.counter
 
   tags = {
@@ -45,7 +35,7 @@ resource "aws_instance" "dns-rdir" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
-      "sudo apt-get install -y tmux socat mosh",
+      "sudo apt-get install -y tmux socat",
       "tmux new -d \"sudo socat udp4-recvfrom:53,reuseaddr,fork udp4-sendto:${element(var.redirect_to, count.index)}:53\"",
     ]
 

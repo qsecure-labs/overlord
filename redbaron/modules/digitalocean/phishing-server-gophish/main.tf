@@ -30,7 +30,7 @@ resource "digitalocean_droplet" "phishing-server" {
   provisioner "remote-exec" {
     inline = [
       "apt-get update",
-      "apt-get install -y tmux mosh",
+      "apt-get install -y tmux",
     ]
 
     connection {

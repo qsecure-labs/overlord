@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 resource "random_id" "server" {
   count       = var.counter
   byte_length = 4
@@ -30,7 +26,7 @@ resource "digitalocean_droplet" "mail-server" {
   provisioner "remote-exec" {
     inline = [
       "apt-get update",
-      "apt-get install -y tmux mosh",
+      "apt-get install -y tmux",
     ]
 
     connection {
@@ -50,7 +46,6 @@ resource "digitalocean_droplet" "mail-server" {
     command = "rm ../../redbaron/data/ssh_keys/${self.ipv4_address}*"
   }
   provisioner "file" {
-    #source      = "../../redbaron/data/scripts/iredmail.sh"
     source      = var.path
     destination = "/tmp/iredmail.sh"
     connection {

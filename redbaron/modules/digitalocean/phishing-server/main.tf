@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 resource "random_id" "server" {
   count       = var.counter
   byte_length = 4
@@ -30,7 +26,7 @@ resource "digitalocean_droplet" "phishing-server" {
   provisioner "remote-exec" {
     inline = [
       "apt-get update",
-      "apt-get install -y tmux apache2 certbot mosh python-certbot-apache",
+      "apt-get install -y tmux apache2 certbot python-certbot-apache",
       "a2enmod ssl",
       "systemctl stop apache2",
     ]

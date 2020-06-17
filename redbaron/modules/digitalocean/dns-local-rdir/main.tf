@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 resource "random_id" "server" {
   count       = var.counter
   byte_length = 4
@@ -30,7 +26,7 @@ resource "digitalocean_droplet" "dns-rdir" {
   provisioner "remote-exec" {
     inline = [
       "apt-get update",
-      "apt-get install -y tmux socat mosh",
+      "apt-get install -y tmux socat",
       "tmux new -d \"socat udp4-LISTEN:53,fork tcp4:localhost:2222\"",
     ]
 

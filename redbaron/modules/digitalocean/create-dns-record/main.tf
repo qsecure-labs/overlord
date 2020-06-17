@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 # Add a record to the domain
 resource "digitalocean_record" "record" {
   name     = var.name

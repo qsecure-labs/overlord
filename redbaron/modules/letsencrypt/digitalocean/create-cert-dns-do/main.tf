@@ -1,5 +1,4 @@
 provider "acme" {
-  # server_url = "https://acme-v02.api.letsencrypt.org/directory" #"https://acme-staging-v02.api.letsencrypt.org/directory"
   server_url = var.server_urls[var.server_url]
 }
 
@@ -17,7 +16,7 @@ resource "acme_certificate" "certificate" {
   common_name     = var.domain
 
   dns_challenge {
-    provider = var.provider_name #"digitalocean"
+    provider = var.provider_name
 
     config = {
       DO_AUTH_TOKEN = var.do_token

@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 resource "random_id" "server" {
   count       = var.counter
   byte_length = 4
@@ -30,7 +26,7 @@ resource "digitalocean_droplet" "http-rdir" {
   provisioner "remote-exec" {
     inline = [
       "apt-get update",
-      "apt-get install -y tmux socat apache2 mosh",
+      "apt-get install -y tmux socat apache2",
       "a2enmod rewrite proxy proxy_http ssl",
       "systemctl stop apache2",
       "tmux new -d \"socat TCP4-LISTEN:80,fork TCP4:${element(var.redirect_to, count.index)}:${var.http-port}\" ';' split \"socat TCP4-LISTEN:443,fork TCP4:${element(var.redirect_to, count.index)}:${var.https-port}\"",

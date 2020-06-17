@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 resource "null_resource" "ansible_provisioner" {
   triggers = {
     policy_sha1 = filesha1(var.playbook)
