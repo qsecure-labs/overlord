@@ -8,32 +8,32 @@ AWS
     create-hosted-zone - OK
     create-dns-txt-record
     create-dns-record - OK
-    mail-server
+    mail-server - OK
     phishing-server - OK
     phishing-server-gophish - OK
 
 DIGITALOCEAN
-    create-dns-record    
-    create-domain
-    dns-c2
-    dns-local-rdir
-    dns-rdir
-    http-c2
-    http-rdir
-    mail-server
-    phishing-server
-    phishing-server-gophish
+    create-dns-record - OK    
+    create-domain - OK
+    dns-c2 - OK
+    dns-local-rdir - OK
+    dns-rdir - OK
+    http-c2 - OK
+    http-rdir - OK
+    mail-server - OK
+    phishing-server - OK
+    phishing-server-gophish - OK
 
-ANSIBLE
+ANSIBLE - OK
 
 GODADDY
-    redirect-nameservers
+    redirect-nameservers - OK
 
 LETSENCRYPT
     aws/create-cert-dns-aws
     aws/create-cert-dns-gophish-aws
     aws/create-cert-webserver-aws
 
-    digitalocean/create-cert-webserver-do
-    digitalocean/create-cert-dns-gophish-do
-    digitalocean/create-cert-dns-do
+    digitalocean/create-cert-webserver-do - OK
+    digitalocean/create-cert-dns-gophish-do - OK
+    digitalocean/create-cert-dns-do - OK

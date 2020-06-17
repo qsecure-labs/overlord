@@ -319,11 +319,11 @@ module "redirect_ns_{c["id"]}"{{
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-dns-gophish-do"
-  provider_name ="digitalocean"
+  provider_name = "digitalocean"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  do_token ="${{var.do_token}}"
-  phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
+  do_token = "${{var.do_token}}"
+  phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
                     elif camp["module"] == "webserver":
@@ -331,25 +331,24 @@ module "create_cert_{c["id"]}" {{
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-webserver-do"
   domain = "{c["domain_name"]}"
-  phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
+  phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
                     elif camp["module"] == "c2" or ():
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-dns-do"
-  provider_name ="digitalocean"
+  provider_name = "digitalocean"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  do_token ="${{var.do_token}}"
-#   phishing_server_ip = "${{module.{camp["module"]}_rdir_{camp["id"]}.ips[{str(int(c["mod_id"].split('-')[1])-1)}]}}"
+  do_token = "${{var.do_token}}"
 }}
 """
                     elif camp["module"] == "redirector" and camp["redirector_id"] == "localhost" :
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-dns-do"
-  provider_name ="digitalocean"
+  provider_name = "digitalocean"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
   do_token ="${{var.do_token}}"
@@ -367,14 +366,13 @@ module "create_cert_{c["id"]}" {{
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-gophish-aws"
-  provider_name ="aws"
   domain = "{c["domain_name"]}"
   aws_key = "${{var.aws_key}}"
   aws_secret = "${{var.aws_secret}}"
   region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
   server_url = "production"
-  phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
+  phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
                     elif camp["module"] == "webserver":
@@ -382,14 +380,13 @@ module "create_cert_{c["id"]}" {{
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-webserver-aws"
   domain = "{c["domain_name"]}"
-  phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
+  phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
                     elif camp["module"] == "c2":
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-aws"
-  provider_name ="aws"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
   aws_key = "${{var.aws_key}}"
@@ -402,7 +399,6 @@ module "create_cert_{c["id"]}" {{
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-aws"
-  provider_name ="aws"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
   aws_key = "${{var.aws_key}}"
@@ -427,12 +423,12 @@ module "create_cert_{c["id"]}" {{
                 if len(value.split('-')) > 1:
                     for camp in self.campaign:
                         if camp["id"] == value.split('-')[0]:
-                            record = f""" "{key}" = "${{module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[{str(int(value.split('-',1)[1])-1)}]}}" """
+                            record = f""" "{key}" = module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[0][{str(int(value.split('-',1)[1])-1)}]"""
                             break
                 else:
                     for camp in self.campaign:
                         if camp["id"] == value:
-                            record = f""" "{key}" = "${{module.{camp["module"]}_{value}.ips[0]}}" """
+                            record = f""" "{key}" = module.{camp["module"]}_{value}.ips[0][0] """
                             break
             if c["type"] == "MX" or c["type"] == "TXT":
                 record = f""" "{key}" = "{value}" """
@@ -493,10 +489,10 @@ module "create_cert_{c["id"]}" {{
             for camp in self.campaign:
                 if camp["id"] in i:
                     if "-" in i:
-                        my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+"rdir_"+camp["id"]+".ips["+str(int(i.split('-')[1])-1)+"]}"))
+                        my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+"rdir_"+camp["id"]+".ips[0]["+str(int(i.split('-')[1])-1)+"]}"))
                         break
                     else:
-                        my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+camp["id"]+".ips[0]}"))
+                        my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+camp["id"]+".ips[0][0]}"))
                         break
         my_nets_1 = ' '.join("{0}".format(s) for s in my_nets)
         my_nets_2 = ', '.join("'{0}'".format(s) for s in my_nets)
@@ -525,7 +521,7 @@ module "create_cert_{c["id"]}" {{
 module "ansible_{host.split("/")[0]}_{c["id"]}" {{
 source    = "../../redbaron/modules/ansible"
 user      = "{user}"
-ip        = "${{module.{host.split("/")[1]}_rdir_{host.split("/")[0].split("-")[0]}.ips[{int(host.split("/")[0].split("-")[1]) - 1}]}}"
+ip        = module.{host.split("/")[1]}_rdir_{host.split("/")[0].split("-")[0]}.ips[0][{int(host.split("/")[0].split("-")[1]) - 1}]
 playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
 }}
 """
@@ -548,7 +544,7 @@ playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
 module "ansible_{host.split("/")[0]}_{c["id"]}" {{
 source    = "../../redbaron/modules/ansible"
 user      = "{user}"
-ip        = "${{module.{host.split("/")[1]}_{host.split("/")[0]}.ips[0]}}"
+ip        = module.{host.split("/")[1]}_{host.split("/")[0]}.ips[0][0]
 playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
 }}
 """

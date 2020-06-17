@@ -73,8 +73,9 @@ class cmd_main(cmd2.Cmd):
         for c in campaign_list:
             if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible":
                 modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
-                for i in range(c["redirectors"]):
-                    modules_ids.insert(len(modules_ids),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
+                if c["module"] != "redirector":
+                    for i in range(c["redirectors"]):
+                        modules_ids.insert(len(modules_ids),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
         modules_ids.insert(len(modules_ids),"all")
         self.module_hosts_parser.choices = modules_ids      
         

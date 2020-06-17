@@ -16,7 +16,7 @@ variable "ttl" {
 }
 
 variable "records" {
-  type = map(string)
+  type = map(any)
 }
 
 variable "priority" {

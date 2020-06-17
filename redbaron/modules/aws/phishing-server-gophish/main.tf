@@ -54,7 +54,7 @@ resource "aws_instance" "gophish-server" {
   provisioner "remote-exec" {
     inline = [
       "sudo apt-get update",
-      "sudo apt-get install -y tmux apache2 certbot mosh",
+      "sudo apt-get install -y tmux certbot mosh",
     ]
 
     connection {
@@ -128,8 +128,6 @@ resource "aws_instance" "gophish-server" {
       "sudo /tmp/gophish_install.sh",
     ]
 
-    # "sudo /opt/goapps/src/github.com/gophish/gophish/gophish &"
-    # "sudo /opt/goapps/src/github.com/gophish/gophish/gophish &"
     connection {
       host        = coalesce(self.public_ip, self.private_ip)
       type        = "ssh"

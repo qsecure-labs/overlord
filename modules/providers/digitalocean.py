@@ -13,7 +13,7 @@ output "redirector_{c["id"]}-ips" {{
   value = "${{module.redirector_{c["id"]}.ips}}"
 }}
 output "{c["id"]}_Run_the_following_command_on_your_internal_HTTP_server" {{
-  value = "\\n\\nsocat tcp4-LISTEN:53,fork udp:localhost:53\\nsudo autossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0]}} -N -R 2222:localhost:53 root@${{module.redirector_{c["id"]}.ips[0]}}\\n"
+  value = "\\n\\nsocat tcp4-LISTEN:53,fork udp:localhost:53\\nsudo autossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0][0]}} -N -R 2222:localhost:53 root@${{module.redirector_{c["id"]}.ips[0][0]}}\\n"
 }}
 """
         elif c["redirector_id"] == "localhost" and c["type"]== "http":
@@ -29,7 +29,7 @@ output "redirector_{c["id"]}-ips" {{
   value = "${{module.redirector_{c["id"]}.ips}}"
 }}
 output "{c["id"]}_Run_the_following_command_on_your_internal_HTTP_server" {{
-  value = "\\n\\nautossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0]}} -N -R 8080:localhost:80 root@${{module.redirector_{c["id"]}.ips[0]}}\\nautossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0]}} -N -R 4443:localhost:443 root@${{module.redirector_{c["id"]}.ips[0]}}\\n"
+  value = "\\n\\nautossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0][0]}} -N -R 8080:localhost:80 root@${{module.redirector_{c["id"]}.ips[0][0]}}\\nautossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0][0]}} -N -R 4443:localhost:443 root@${{module.redirector_{c["id"]}.ips[0][0]}}\\n"
 }}
 """
         else:
