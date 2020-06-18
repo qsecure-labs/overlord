@@ -82,7 +82,7 @@ data "template_file" "ssh_config" {
     name         = "mail_server_${digitalocean_droplet.mail-server[count.index].ipv4_address}"
     hostname     = digitalocean_droplet.mail-server[count.index].ipv4_address
     user         = "root"
-    identityfile = "${abspath(path.root)}/data/ssh_keys/${digitalocean_droplet.mail-server[count.index].ipv4_address}"
+    identityfile = "${abspath(path.root)}/ssh_keys/${digitalocean_droplet.mail-server[count.index].ipv4_address}"
   }
 }
 

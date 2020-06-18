@@ -68,7 +68,7 @@ data "template_file" "ssh_config" {
     name         = "dns_rdir_${aws_instance.dns-rdir[count.index].public_ip}"
     hostname     = aws_instance.dns-rdir[count.index].public_ip
     user         = "admin"
-    identityfile = "${abspath(path.root)}/data/ssh_keys/${aws_instance.dns-rdir[count.index].public_ip}"
+    identityfile = "${abspath(path.root)}/ssh_keys/${aws_instance.dns-rdir[count.index].public_ip}"
   }
 }
 

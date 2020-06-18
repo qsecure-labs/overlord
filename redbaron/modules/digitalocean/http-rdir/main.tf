@@ -61,7 +61,7 @@ data "template_file" "ssh_config" {
     name         = "http_rdir_${digitalocean_droplet.http-rdir[count.index].ipv4_address}"
     hostname     = digitalocean_droplet.http-rdir[count.index].ipv4_address
     user         = "root"
-    identityfile = "${abspath(path.root)}/data/ssh_keys/${digitalocean_droplet.http-rdir[count.index].ipv4_address}"
+    identityfile = "${abspath(path.root)}/ssh_keys/${digitalocean_droplet.http-rdir[count.index].ipv4_address}"
   }
 }
 

@@ -76,6 +76,7 @@ module "c2_{c["id"]}" {{
 
 module "c2_rdir_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"
+    counter = {c["redirectors"]}
     redirect_to = flatten("${{module.c2_{c["id"]}.ips}}")
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
@@ -124,6 +125,7 @@ module "webserver_rdir_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/http-rdir"
     redirect_to = flatten("${{module.webserver_{c["id"]}.ips}}")
     instance_type = "{c["size"]}"
+    counter = {c["redirectors"]}
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
 }}
@@ -168,6 +170,7 @@ module "gophish_rdir_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/http-rdir"
     redirect_to = flatten("${{module.gophish_{c["id"]}.ips}}")
     instance_type = "{c["size"]}"
+    counter = {c["redirectors"]}
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
 }}

@@ -67,10 +67,10 @@ data "template_file" "ssh_config" {
   depends_on = [aws_instance.http-c2]
 
   vars = {
-    name         = "dns_rdir_${aws_instance.http-c2[count.index].public_ip}"
+    name         = "http_c2_${aws_instance.http-c2[count.index].public_ip}"
     hostname     = aws_instance.http-c2[count.index].public_ip
     user         = var.user
-    identityfile = "${abspath(path.root)}/data/ssh_keys/${aws_instance.http-c2[count.index].public_ip}"
+    identityfile = "${abspath(path.root)}/ssh_keys/${aws_instance.http-c2[count.index].public_ip}"
   }
 }
 
