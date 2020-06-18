@@ -1,24 +1,17 @@
 # phishing-server-gophish
 
-#On development ( no changes from normal phishing server)
-
-Creates a droplet in DigitalOcean to be used as a phishing server. SSH keys for each droplet will be outputted to the ssh_keys folder.
-
-# Example
-
-```hcl
-module "phishing_server" {
-  source = "./modules/digitalocean/phishing-server"
-}
-```
+Creates a droplet in Digital Ocean to be used as a phishing server. SSH keys for each droplet will be outputted to the ssh_keys folder.
 
 # Arguments
 
-| Name                      | Required | Value Type | Description
-|---------------------------| -------- | ---------- | -----------
-|`counter`                    | No       | Integer    | Number of droplets to launch. Defaults to `1`.
-|`size`                     | No       | String     | Droplet size to launch. Defaults to `1gb with 25 GB disk`.
-|`regions`                  | No       | List       | Regions to create Droplet(s) in. Defaults to `NYC1`. Accepted values are NYC1/2/3, SFO1/2, AMS2/3, SGP1, LON1, FRA1, TOR1, BLR1.
+| Name                      | Required | Value Type   | Description
+|---------------------------| -------- | ------------ | -----------
+|`install`                  | No       | List         | Scripts to run on droplet creation. Defaults to "./scripts/core_deps.sh".
+|`counter`                  | Yes      | Integer      | Number of droplets to launch. Defaults to 1.
+|`size`                     | No       | String       | Droplet size to launch. Defaults to `1gb with 25 GB disk`.
+|`regions`                  | Yes      | List(string) | Regions to create Droplet(s) in. Defaults to `NYC1`. Accepted values are NYC1/2/3, SFO1/2, AMS2/3, SGP1, LON1, FRA1, TOR1, BLR1.
+|`available_regions`        | No       | Map(string)  | Regions to choose from in the regions variable
+
 
 # Outputs
 
