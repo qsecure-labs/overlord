@@ -1,7 +1,3 @@
-terraform {
-  required_version = ">= 0.11.0"
-}
-
 resource "random_id" "server" {
   count       = var.counter
   byte_length = 4

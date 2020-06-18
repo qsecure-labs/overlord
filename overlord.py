@@ -40,7 +40,7 @@ def hide_cmd2_modules(self):
 class Overlord(cmd2.Cmd):
     """Main Menu for Overlord."""
     os.system('clear')
-    version = cmd2.ansi.style("v.0.2", fg='red', bg='',
+    version = cmd2.ansi.style("v.1.0", fg='red', bg='',
                              bold=True, underline=False)
     print(f"""
                      _               _
@@ -100,7 +100,7 @@ class Overlord(cmd2.Cmd):
 
     def do_version(self, arg):
         """Version"""
-        print("version 0.2")
+        print("version 1.0")
 
     def do_create(self,arg):
         """Creates terraform project from the campaign"""
