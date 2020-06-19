@@ -4,13 +4,13 @@ Runs an ansible playbook on a specific resource
 
 # Arguments
 
-| Name                      | Required | Value Type   | Description
-|---------------------------| -------- | ------------ | -----------
-|`playbook`                 | Yes      | String       | Playbook to run
-|`ip`                       | Yes      | String       | Host to run playbook on
-|`user`                     | Yes      | String       | User to authenticate as over SSH
-|`arguments`                | No       | List(string) | Additional Ansible arguments
-|`envs`                     | No       | List(string) | Environment variable to pass to Ansible
+| Name                      | Value Type   | Description
+|---------------------------| ------------ | -----------
+|`playbook`                 | String       | Playbook to run
+|`ip`                       | String       | Host to run playbook on
+|`user`                     | String       | User to authenticate as over SSH
+|`arguments`                | List(string) | Additional Ansible arguments
+|`envs`                     | List(string) | Environment variable to pass to Ansible
 
 
 # Outputs

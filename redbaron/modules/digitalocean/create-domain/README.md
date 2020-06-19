@@ -4,10 +4,10 @@ Adds a domain list to Digital Ocean
 
 # Arguments
 
-| Name                      | Required | Value Type   | Description
-|---------------------------| -------- | ------------ | -----------
-|`name`                     | Yes      | List(string) | The domain names to add 
-|`counter`                  | Yes      | Integer      | The domain names to add 
+| Name                      | Value Type   | Description
+|---------------------------| ------------ | -----------
+|`name`                     | List(string) | The domain names to add 
+|`counter`                  | Integer      | The domain names to add 
 
 # Output
 | Name                      | Value Type | Description

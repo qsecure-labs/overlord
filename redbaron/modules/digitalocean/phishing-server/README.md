@@ -4,12 +4,12 @@ Creates a droplet in DigitalOcean to be used as a phishing server. SSH keys for 
 
 # Arguments
 
-| Name                      | Required | Value Type | Description
-|---------------------------| -------- | ---------- | -----------
-|`counter`                  | No       | Integer    | Number of droplets to launch. Defaults to `1`.
-|`size`                     | No       | String     | Droplet size to launch. Defaults to `1gb with 25 GB disk`.
-|`regions`                  | No       | List       | Regions to create Droplet(s) in. Defaults to `NYC1`. Accepted values are NYC1/2/3, SFO1/2, AMS2/3, SGP1, LON1, FRA1, TOR1, BLR1.
-|`available_regions`        | No       | Map(string)| Regions to choose from in the regions variable
+| Name                      | Value Type | Description
+|---------------------------| ---------- | -----------
+|`counter`                  | Integer    | Number of droplets to launch. Defaults to `1`.
+|`size`                     | String     | Droplet size to launch. Defaults to `1gb with 25 GB disk`.
+|`regions`                  | List       | Regions to create Droplet(s) in. Defaults to `NYC1`. Accepted values are NYC1/2/3, SFO1/2, AMS2/3, SGP1, LON1, FRA1, TOR1, BLR1.
+|`available_regions`        | Map(string)| Regions to choose from in the regions variable
 
 # Outputs
 
