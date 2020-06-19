@@ -256,13 +256,21 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
 """
         return output
 
-    def dns_records_type(c,record,value):
+    def dns_records_type(c,record,value,godaddy_id,aws_domains):
+      domain = record.split('"')
+      id_domain = 0
+      for idx,d in enumerate(aws_domains):
+        if domain[1] in aws_domains[idx]:
+          id_domain = idx
+          break
+      if not godaddy_id:
         if not c["name"]:
           output=f"""
 module "create_dns_record_{c["id"]}" {{
     source = "../../redbaron/modules/aws/create-dns-record"
     name  = "{list(c["records"])[0]}"
     type = "{c["type"]}"
+    counter = 1
     records = {{ {record} }}
     zone = module.public_zone.public_zones_ids[{value}]
 }}\n"""
@@ -272,10 +280,33 @@ module "create_dns_record_{c["id"]}" {{
     source = "../../redbaron/modules/aws/create-dns-record"
     name  = "{c["name"]}.{list(c["records"])[0]}"
     type = "{c["type"]}"
+    counter = 1
     records = {{ {record} }}
     zone = module.public_zone.public_zones_ids[{value}]
 }}\n"""
-        return output
+      else:
+        if not c["name"]:
+          output=f"""
+module "create_dns_record_{c["id"]}" {{
+    source = "../../redbaron/modules/aws/create-dns-record"
+    name  = "{list(c["records"])[0]}"
+    type = "{c["type"]}"
+    counter = module.redirect_ns_{godaddy_id}.redirected
+    records = {{ {record} }}
+    zone = module.public_zone.public_zones_ids[{value}]
+}}\n"""
+        else:
+          output=f"""
+module "create_dns_record_{c["id"]}" {{
+    source = "../../redbaron/modules/aws/create-dns-record"
+    name  = "{c["name"]}.{list(c["records"])[0]}"
+    type = "{c["type"]}"
+    counter = module.redirect_ns_{godaddy_id}.redirected
+    records = {{ {record} }}
+    zone = module.public_zone.public_zones_ids[{value}]
+}}\n"""
+
+      return output
 
 
     def dns_records_type_txt(record,value):

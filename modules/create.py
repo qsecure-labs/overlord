@@ -440,12 +440,27 @@ module "create_cert_{c["id"]}" {{
                             record = f""" "{key}" = module.{camp["module"]}_{value}.ips[0] """
                             break
                 value = self.aws_domains.index(key)
-                output = aws.main.dns_records_type(c,record,value)
+
+                #Godaddy dependancy
+                godaddy_aws_id = ""
+                for camp in self.campaign:
+                    if camp["module"] == "godaddy" and camp["provider"] == "aws":
+                        if camp["domain"] == key:
+                            godaddy_aws_id = camp["id"]
+
+                output = aws.main.dns_records_type(c,record,value,godaddy_aws_id,self.aws_domains)
                 return output
             if c["type"] == "MX":
                 record = f""" "{key}" = ["{c["priority"]} {value}"] """
                 value = self.aws_domains.index(key)
-                output = aws.main.dns_records_type(c,record,value)
+                #Godaddy dependancy
+                godaddy_aws_id = ""
+                for camp in self.campaign:
+                    if camp["module"] == "godaddy" and camp["provider"] == "aws":
+                        if camp["domain"] == key:
+                            godaddy_aws_id = camp["id"]
+                    
+                output = aws.main.dns_records_type(c,record,value,godaddy_aws_id,self.aws_domains)
                 return output
             if c["type"] == "TXT":
                 txt_rec_list = []
@@ -460,11 +475,18 @@ module "create_cert_{c["id"]}" {{
                             txt_rec_list[self.aws_domains.index(key)] = txt_rec_list[self.aws_domains.index(key)] +" , \""+value +"\""
 
                     #Replace 3 fist characters in the list
+                    #Godaddy dependancy
+                    godaddy_aws_id = ""
+                    for camp in self.campaign:
+                        if camp["module"] == "godaddy" and camp["provider"] == "aws":
+                            if camp["domain"] == key:
+                                godaddy_aws_id = camp["id"]
                     output = ""
+
                     for idx,t in enumerate(txt_rec_list):
                         if len(t) != 0:
                             txt_rec_list[idx] = t[3:]
-                            output = output + aws.main.dns_records_type_txt(txt_rec_list[idx],idx)
+                            output = output + aws.main.dns_records_type_txt(txt_rec_list[idx],idx,godaddy_aws_id,self.aws_domains)
                     return output
                 else:
                     return output
