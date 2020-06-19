@@ -283,6 +283,16 @@ module "redirect_ns_{c["id"]}"{{
         return output
 
     ####################################################################################
+    # firewall
+    ####################################################################################
+    # def create_firewall(self,c):
+    #     if c["provider"] == "digitalocean":
+    #         output = digitalocean.main.firewall(c)
+    #     elif c["provider"] == "aws":
+    #         output = aws.main.firewall(c)
+    #     return output
+
+    ####################################################################################
     # DNS_NAMES
     ####################################################################################
     def create_dns_names(self):
@@ -290,6 +300,8 @@ module "redirect_ns_{c["id"]}"{{
         if len(self.aws_domains ) != 0:
             domain_string_aws = ', '.join('"{0}"'.format(d) for d in  self.aws_domains)
             output = output + aws.main.create_dns_name(domain_string_aws)
+        if len(self.do_domains) != 0:
+            output= output + digitalocean.main.create_dns_name()
         return output
 
     ####################################################################################
@@ -353,7 +365,7 @@ module "create_cert_{c["id"]}" {{
   domain = "{c["domain_name"]}"
   aws_key = var.aws_key
   aws_secret = var.aws_secret
-  region = var.aws_region
+  region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
   server_url = "production"
   phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
@@ -375,7 +387,7 @@ module "create_cert_{c["id"]}" {{
   domain = "{c["domain_name"]}"
   aws_key = var.aws_key
   aws_secret = var.aws_secret
-  region = var.aws_region
+  region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
 }}
 """
@@ -387,7 +399,7 @@ module "create_cert_{c["id"]}" {{
   domain = "{c["domain_name"]}"
   aws_key = var.aws_key
   aws_secret = var.aws_secret
-  region = var.aws_region
+  region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
 }}
 """

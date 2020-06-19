@@ -243,3 +243,37 @@ module "create_dns_record_{c["id"]}" {{
     records = {{ {record} }}
 }}\n"""
         return output
+
+
+    def create_dns_name():
+        output= """
+###################################################################################################################
+#                                          DNS DIGITALOCEAN                                                       #
+###################################################################################################################
+module "create_domain_name_do" {
+    source = "../../redbaron/modules/digitalocean/create-domain"
+    counter = "${length("${var.do_domain}")}"
+    name = "${var.do_domain}"
+}\n"""
+        return output
+
+#     def firewall(c):
+#       mod, mod_type = c["mod_id"].split('/')
+#       output=f"""
+# ###################################################################################################################
+# #                                          FIREWALL                                                           #
+# ###################################################################################################################
+# resource "digitalocean_firewall" "{c["id"]}" {{
+#   name = "{c["rule"]}_{c["port"]}_{c["id"]}"
+
+#   droplet_ids = ["${{module.{mod_type}_{mod}.id}}"]
+
+#   {c["rule"]}_rule {{
+#       protocol           = "{c["protocol"]}"
+#       port_range         = "{c["port"]}"
+#       source_addresses   = ["0.0.0.0/0", "::/0"]
+#   }}
+# }}
+# """
+#       print(output)
+#       return output
