@@ -11,10 +11,10 @@ resource "null_resource" "lets-encrypt" {
     ]
 
     connection {
-        host = "${var.phishing_server_ip}"
+        host = var.phishing_server_ip
         type = "ssh"
         user = "admin"
-        private_key = "${file("ssh_keys/${var.phishing_server_ip}")}"
+        private_key = file("ssh_keys/${var.phishing_server_ip}")
     }
   }
 }
