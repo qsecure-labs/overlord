@@ -3,16 +3,17 @@
 Creates a Let's Encrypt TLS certificate for the specified domain using the DNS challenge. It stores the certificates on the ~/data/certificates
 
 # Arguments
-| Name                      | Required | Value Type | Description
-|---------------------------| -------- | ---------- | -----------
-|`domains`                  | Yes      | List       | The certificate's primary domain that the certificate will be recognized for.
-|`subject_alternative_names`| No       | Map        | The certificate's subject alternative domains that this certificate will also be recognized for.
-|`count`                    | No       | Integer    | Number of certificates to create. Defaults to 1.
-|`provider_name`            | No       | String     | Provider to use for the DNS challenge. Defaults to "route53".
-|`do_token`                 | Yes      | String     | Digital Ocean Token
-|`server_url`               | No       | String     | Registration server URL to use. Valid values are "staging" and "production". Defaults to "production".
-|`reg_email`                | No       | String     | Email to use for certificate registration. Defaults to "nobody@example.com"
-|`key_type`                 | No       | Integer    | The key type for the certificate's private key. Defaults to 4096.
+| Name                      | Value Type | Description
+|---------------------------| --------   | ---------- 
+|`domain`                   | String       | The certificate's primary domain that the certificate will be recognized for.
+|`server_url`               | String     | Registration server URL to use. Valid values are "staging" and "production". Defaults to "production".
+|`aws_key `                 | String     | AWS key to authenticate
+|`aws_secret `              | String     | AWS key to authenticate
+|`zone`                     | String     | Route53 hosted zone
+|`region`                   | Integer    | AWS region - e.g. eu-west-1
+|`server_url`               | map(string)     | Registration server URL to use. Valid values are "staging" and "production". Defaults to "production".
+|`reg_email`                | Integer    | Email address to register the certificate
+|`phishing_server_ip`       | Integer    | Email address to register the certificate
 
 # Outputs
 

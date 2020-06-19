@@ -1,6 +1,10 @@
 variable "domain" {
 }
 
+variable "server_url" {
+  default = "staging" #"production"
+}
+
 variable "aws_key" {
 }
 
@@ -11,10 +15,6 @@ variable "zone" {
 }
 
 variable "region" {
-}
-
-variable "server_url" {
-  default = "staging" #"production"
 }
 
 variable "server_urls" {
