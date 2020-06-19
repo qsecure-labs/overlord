@@ -13,7 +13,7 @@ modules_ids = []
 
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the c2 module """
-    def __init__(self,mod,campaign):
+    def __init__(self,mod,campaign,project_id):
         global campaign_list
         global module
 
@@ -24,9 +24,7 @@ class main(list):
         
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = cmd2.ansi.style("Overlord", fg='red', bg='', bold=True, underline=False) + \
-            cmd2.ansi.style("/redirector", fg='blue', bg='',
-                            bold=True, underline=False) + "$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/redirector", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
@@ -85,8 +83,11 @@ class cmd_main(cmd2.Cmd):
 
         # Create list with modules id
         for c in campaign_list:
-            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "mail":
+            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "mail" and c["module"] != "godaddy":
                 modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
+        
+        #Starting creating localhost redirection
+        modules_ids.insert(len(modules_ids),"localhost")
         self.mod_parser_redirectors.choices = modules_ids
 
     def do_back(self, arg):

@@ -2,11 +2,45 @@ class main():
 
     #Redirector
     def redirector(c):
-        output = f"""
+        if c["redirector_id"] == "localhost" and c["type"]== "dns":
+          output = f"""
 module "redirector_{c["id"]}" {{
-    //counter = 1
+    source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-local-rdir"
+    redirect_to = ["localhost"]
+    instance_type = "{c["size"]}"
+    vpc_id = "${{module.create_vpc.vpc_id}}"
+    subnet_id = "${{module.create_vpc.subnet_id}}"
+}}
+output "redirector_{c["id"]}-ips" {{
+  value = "${{module.redirector_{c["id"]}.ips}}"
+}}
+output "{c["id"]}_Run_the_following_command_on_your_internal_HTTP_server" {{
+  value = "\\n\\nsocat tcp4-LISTEN:53,fork udp:localhost:53\\nsudo autossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0][0]}} -N -R 2222:localhost:53 admin@${{module.redirector_{c["id"]}.ips[0][0]}}\\n"
+}}
+""" 
+        elif c["redirector_id"] == "localhost" and c["type"]== "http":
+          output = f"""
+module "redirector_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"
-    redirect_to = "${{module.{c["redirector_id"].split("/")[1]}_{c["redirector_id"].split("/")[0]}.ips}}"
+    redirect_to = ["localhost"]
+    instance_type = "{c["size"]}"
+    vpc_id = "${{module.create_vpc.vpc_id}}"
+    subnet_id = "${{module.create_vpc.subnet_id}}"
+    http-port = 8080
+    https-port = 4443
+}}
+output "redirector_{c["id"]}-ips" {{
+  value = "${{module.redirector_{c["id"]}.ips}}"
+}}
+output "{c["id"]}_Run_the_following_command_on_your_internal_HTTP_server" {{
+  value = "\\n\\nautossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0][0]}} -N -R 8080:localhost:80 admin@${{module.redirector_{c["id"]}.ips[0][0]}}\\nautossh -M 11166 -i ${{module.redirector_{c["id"]}.ips[0][0]}} -N -R 4443:localhost:443 admin@${{module.redirector_{c["id"]}.ips[0][0]}}\\n"
+}}
+"""        
+        else:
+          output = f"""
+module "redirector_{c["id"]}" {{
+    source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"
+    redirect_to = flatten("${{module.{c["redirector_id"].split("/")[1]}_{c["redirector_id"].split("/")[0]}.ips}}")
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
@@ -20,6 +54,14 @@ output "redirector_{c["id"]}-ips" {{
     #C2
     def c2(c):
         scripts = ', '.join('"../../redbaron/data/scripts/tools/{0}.sh"'.format(s) for s in c["tools"])
+        user = ""
+        if c["distro"] == "kali":
+          user = "ec2-user"
+        elif c["distro"] == "ubuntu":
+          user = "ubuntu"
+        else:
+          user = "admin"
+        
         if c["redirectors"] > 0:
             output = f"""
 module "c2_{c["id"]}" {{
@@ -28,12 +70,14 @@ module "c2_{c["id"]}" {{
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
+    user = "{user}"
+    amis = {{"{c["region"]}"="{c["ami"]}"}}
 }}
 
 module "c2_rdir_{c["id"]}" {{
-    //counter = {c["redirectors"]}
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-rdir"
-    redirect_to = "${{module.c2_{c["id"]}.ips}}"
+    counter = {c["redirectors"]}
+    redirect_to = flatten("${{module.c2_{c["id"]}.ips}}")
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
@@ -56,6 +100,8 @@ module "c2_{c["id"]}" {{
     instance_type = "{c["size"]}"
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
+    user = "{user}"
+    amis = {{"{c["region"]}"="{c["ami"]}"}}
 }}
 
 output "c2-{c["id"]}-ips" {{
@@ -76,10 +122,10 @@ module "webserver_{c["id"]}" {{
 }}
 
 module "webserver_rdir_{c["id"]}" {{
-    //counter = {c["redirectors"]}
     source = "../../redbaron/modules/{c["provider"]}/http-rdir"
-    redirect_to = "${{module.webserver_{c["id"]}.ips}}"
+    redirect_to = flatten("${{module.webserver_{c["id"]}.ips}}")
     instance_type = "{c["size"]}"
+    counter = {c["redirectors"]}
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
 }}
@@ -121,10 +167,10 @@ module "gophish_{c["id"]}" {{
 }}
 
 module "gophish_rdir_{c["id"]}" {{
-    //counter = {c["redirectors"]}
     source = "../../redbaron/modules/{c["provider"]}/http-rdir"
-    redirect_to = "${{module.gophish_{c["id"]}.ips}}"
+    redirect_to = flatten("${{module.gophish_{c["id"]}.ips}}")
     instance_type = "{c["size"]}"
+    counter = {c["redirectors"]}
     vpc_id = "${{module.create_vpc.vpc_id}}"
     subnet_id = "${{module.create_vpc.subnet_id}}"
 }}
@@ -156,6 +202,11 @@ output "gophish-{c["id"]}-ips" {{
 
     #Mail
     def mail(c,my_nets_1,my_nets_2,my_nets_3,project_id):
+        data = ""
+        with open (f"projects/{project_id}/{c['id']}/iredmailpass.txt", "r") as myfile:
+            data = myfile.readlines()        
+        data = data[0].strip('\n')
+
         output=f"""
 module "mail_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/mail-server"
@@ -167,6 +218,10 @@ module "mail_{c["id"]}" {{
 
 output "mail-{c["id"]}-ips" {{
   value = "${{module.mail_{c["id"]}.ips}}"
+}}
+
+output "iRedMail_credentials_{c["id"]}" {{
+  value = "postmaster@{c["domain_name"]}:{data}\\n"
 }}
 
 resource "null_resource" "update_iredmail_{c["id"]}" {{
@@ -190,10 +245,10 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
     ]
 
     connection {{
-        host = "${{module.mail_{c["id"]}.ips[0]}}"
+        host = module.mail_{c["id"]}.ips[0][0]
         type = "ssh"
         user = "admin"
-        private_key = "${{file("../../redbaron/data/ssh_keys/${{module.mail_{c["id"]}.ips[0]}}")}}"
+        private_key = file("ssh_keys/${{module.mail_{c["id"]}.ips[0][0]}}")
     }}
   }}
 }}
@@ -201,17 +256,57 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
 """
         return output
 
-    def dns_records_type(c,record,value):
-        output=f"""
+    def dns_records_type(c,record,value,godaddy_id,aws_domains):
+      domain = record.split('"')
+      id_domain = 0
+      for idx,d in enumerate(aws_domains):
+        if domain[1] in aws_domains[idx]:
+          id_domain = idx
+          break
+      if not godaddy_id:
+        if not c["name"]:
+          output=f"""
 module "create_dns_record_{c["id"]}" {{
     source = "../../redbaron/modules/aws/create-dns-record"
-    name  = "{c["name"]}"
+    name  = "{list(c["records"])[0]}"
     type = "{c["type"]}"
-    //counter = {c["counter"]}
+    counter = 1
     records = {{ {record} }}
-    zone = "${{module.public_zone.public_zones_ids[{value}]}}"
+    zone = module.public_zone.public_zones_ids[{value}]
 }}\n"""
-        return output
+        else:
+          output=f"""
+module "create_dns_record_{c["id"]}" {{
+    source = "../../redbaron/modules/aws/create-dns-record"
+    name  = "{c["name"]}.{list(c["records"])[0]}"
+    type = "{c["type"]}"
+    counter = 1
+    records = {{ {record} }}
+    zone = module.public_zone.public_zones_ids[{value}]
+}}\n"""
+      else:
+        if not c["name"]:
+          output=f"""
+module "create_dns_record_{c["id"]}" {{
+    source = "../../redbaron/modules/aws/create-dns-record"
+    name  = "{list(c["records"])[0]}"
+    type = "{c["type"]}"
+    counter = module.redirect_ns_{godaddy_id}.redirected
+    records = {{ {record} }}
+    zone = module.public_zone.public_zones_ids[{value}]
+}}\n"""
+        else:
+          output=f"""
+module "create_dns_record_{c["id"]}" {{
+    source = "../../redbaron/modules/aws/create-dns-record"
+    name  = "{c["name"]}.{list(c["records"])[0]}"
+    type = "{c["type"]}"
+    counter = module.redirect_ns_{godaddy_id}.redirected
+    records = {{ {record} }}
+    zone = module.public_zone.public_zones_ids[{value}]
+}}\n"""
+
+      return output
 
 
     def dns_records_type_txt(record,value):
@@ -220,9 +315,8 @@ module "create_dns_record_{value}" {{
     source = "../../redbaron/modules/aws/create-dns-txt-record"
     name  = ""
     type = "TXT"
-    //counter = 1
     records = [{record}]
-    zone = "${{module.public_zone.public_zones_ids[{value}]}}"
+    zone = module.public_zone.public_zones_ids[{value}]
 }}\n"""
         return output
 
@@ -247,8 +341,3 @@ module "public_zone" {{
 """
         return output
 
-    # def firewall(c):
-    #   print("ime mesa AWS")
-    #   print(c)
-    #   output=f""""""
-    #   return output

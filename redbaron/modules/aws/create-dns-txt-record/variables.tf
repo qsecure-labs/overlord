@@ -1,9 +1,7 @@
-variable "type" {}
+variable "type" {
+}
 
-variable "name" {}
-
-variable "counter" {
-  default = 1
+variable "name" {
 }
 
 variable "ttl" {
@@ -11,8 +9,10 @@ variable "ttl" {
 }
 
 variable "records" {
-  type = "list"
+  type    = list(string)
   default = []
 }
 
-variable "zone" {}
+variable "zone" {
+}
+

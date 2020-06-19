@@ -1,3 +1,4 @@
 output "records" {
-  value = "${var.records}"
+  value = var.records
 }
+

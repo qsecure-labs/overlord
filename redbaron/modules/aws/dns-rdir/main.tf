@@ -1,126 +1,91 @@
-terraform {
-  required_version = ">= 0.11.0"
+data "aws_region" "current" {
 }
 
-data "aws_region" "current" {}
-
 resource "random_id" "server" {
-  count = "${var.count}"
+  count       = var.counter
   byte_length = 4
 }
 
 resource "tls_private_key" "ssh" {
-  count = "${var.count}"
+  count     = var.counter
   algorithm = "RSA"
-  rsa_bits = 4096
+  rsa_bits  = 4096
 }
 
 resource "aws_key_pair" "dns-rdir" {
-  count = "${var.count}"
-  key_name = "dns-rdir-key-${random_id.server.*.hex[count.index]}"
-  public_key = "${tls_private_key.ssh.*.public_key_openssh[count.index]}"
+  count      = var.counter
+  key_name   = "dns-rdir-key-${random_id.server[count.index].hex}"
+  public_key = tls_private_key.ssh[count.index].public_key_openssh
 }
 
 resource "aws_instance" "dns-rdir" {
-  // Currently, variables in provider fields are not supported :(
-  // This severely limits our ability to spin up instances in diffrent regions
-  // https://github.com/hashicorp/terraform/issues/11578
-
-  //provider = "aws.${element(var.regions, count.index)}"
-
-  count = "${var.count}"
+  count = var.counter
 
   tags = {
-    Name = "dns-rdir-${random_id.server.*.hex[count.index]}"
+    Name = "dns-rdir-${random_id.server[count.index].hex}"
   }
 
-  ami = "${var.amis[data.aws_region.current.name]}"
-  instance_type = "${var.instance_type}"
-  key_name = "${aws_key_pair.dns-rdir.*.key_name[count.index]}"
-  vpc_security_group_ids = ["${aws_security_group.dns-rdir.id}"]
-  subnet_id = "${var.subnet_id}"
+  ami                         = var.amis[data.aws_region.current.name]
+  instance_type               = var.instance_type
+  key_name                    = aws_key_pair.dns-rdir[count.index].key_name
+  vpc_security_group_ids      = [aws_security_group.dns-rdir[count.index].id]
+  subnet_id                   = var.subnet_id
   associate_public_ip_address = true
 
   provisioner "remote-exec" {
     inline = [
-        "sudo apt-get update",
-        "sudo apt-get install -y tmux socat mosh",
-        "tmux new -d \"sudo socat udp4-recvfrom:53,reuseaddr,fork udp4-sendto:${element(var.redirect_to, count.index)}:53\""
+      "sudo apt-get update",
+      "sudo apt-get install -y tmux socat",
+      "tmux new -d \"sudo socat udp4-recvfrom:53,reuseaddr,fork udp4-sendto:${element(var.redirect_to, count.index)}:53\"",
     ]
 
     connection {
-        type = "ssh"
-        user = "admin"
-        private_key = "${tls_private_key.ssh.*.private_key_pem[count.index]}"
+      host        = coalesce(self.public_ip, self.private_ip)
+      type        = "ssh"
+      user        = "admin"
+      private_key = tls_private_key.ssh[count.index].private_key_pem
     }
   }
 
   provisioner "local-exec" {
-    command = "echo \"${tls_private_key.ssh.*.private_key_pem[count.index]}\" > ../../redbaron/data/ssh_keys/${self.public_ip} && echo \"${tls_private_key.ssh.*.public_key_openssh[count.index]}\" > ../../redbaron/data/ssh_keys/${self.public_ip}.pub && chmod 600 ../../redbaron/data/ssh_keys/*"
+    command = "echo \"${tls_private_key.ssh[count.index].private_key_pem}\" > ssh_keys/${self.public_ip} && echo \"${tls_private_key.ssh[count.index].public_key_openssh}\" > ssh_keys/${self.public_ip}.pub && chmod 600 ssh_keys/*"
   }
 
   provisioner "local-exec" {
-    when = "destroy"
-    command = "rm ../../redbaron/data/ssh_keys/${self.public_ip}*"
-  }
-
-}
-
-resource "null_resource" "ansible_provisioner" {
-  count = "${signum(length(var.ansible_playbook)) == 1 ? var.count : 0}"
-
-  depends_on = ["aws_instance.dns-rdir"]
-
-  triggers {
-    droplet_creation = "${join("," , aws_instance.dns-rdir.*.id)}"
-    policy_sha1 = "${sha1(file(var.ansible_playbook))}"
-  }
-
-  provisioner "local-exec" {
-    command = "ansible-playbook ${join(" ", compact(var.ansible_arguments))} --user=admin --private-key=../../redbaron/data/ssh_keys/${aws_instance.dns-rdir.*.public_ip[count.index]} -e host=${aws_instance.dns-rdir.*.public_ip[count.index]} ${var.ansible_playbook}"
-
-    environment {
-      ANSIBLE_HOST_KEY_CHECKING = "False"
-    }
-  }
-
-  lifecycle {
-    create_before_destroy = true
+    when    = destroy
+    command = "rm ssh_keys/${self.public_ip}*"
   }
 }
 
 data "template_file" "ssh_config" {
+  count = var.counter
 
-  count    = "${var.count}"
+  template = file("../../redbaron/data/templates/ssh_config.tpl")
 
-  template = "${file("../../redbaron/data/templates/ssh_config.tpl")}"
+  depends_on = [aws_instance.dns-rdir]
 
-  depends_on = ["aws_instance.dns-rdir"]
-
-  vars {
-    name = "dns_rdir_${aws_instance.dns-rdir.*.public_ip[count.index]}"
-    hostname = "${aws_instance.dns-rdir.*.public_ip[count.index]}"
-    user = "admin"
-    identityfile = "${path.root}/data/ssh_keys/${aws_instance.dns-rdir.*.public_ip[count.index]}"
+  vars = {
+    name         = "dns_rdir_${aws_instance.dns-rdir[count.index].public_ip}"
+    hostname     = aws_instance.dns-rdir[count.index].public_ip
+    user         = "admin"
+    identityfile = "${abspath(path.root)}/ssh_keys/${aws_instance.dns-rdir[count.index].public_ip}"
   }
-
 }
 
 resource "null_resource" "gen_ssh_config" {
+  count = var.counter
 
-  count = "${var.count}"
-
-  triggers {
-    template_rendered = "${data.template_file.ssh_config.*.rendered[count.index]}"
+  triggers = {
+    template_rendered = data.template_file.ssh_config[count.index].rendered
   }
 
   provisioner "local-exec" {
-    command = "echo '${data.template_file.ssh_config.*.rendered[count.index]}' > ../../redbaron/data/ssh_configs/config_${random_id.server.*.hex[count.index]}"
+    command = "echo '${data.template_file.ssh_config[count.index].rendered}' > ssh_configs/config_${random_id.server[count.index].hex}"
   }
 
   provisioner "local-exec" {
-    when = "destroy"
-    command = "rm ../../redbaron/data/ssh_configs/config_${random_id.server.*.hex[count.index]}"
+    when    = destroy
+    command = "rm ssh_configs/config_${random_id.server[count.index].hex}"
   }
-
 }
+

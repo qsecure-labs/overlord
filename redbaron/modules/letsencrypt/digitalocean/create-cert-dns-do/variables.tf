@@ -2,14 +2,9 @@ variable "provider_name" {
 }
 
 variable "do_token" {
-  
-}
-variable "domain" {
 }
 
-variable "subject_alternative_names" {
-  type = "map"
-  default = {}
+variable "domain" {
 }
 
 variable "server_url" {
@@ -17,9 +12,9 @@ variable "server_url" {
 }
 
 variable "server_urls" {
-  type = "map"
+  type = map(any)
   default = {
-    "staging" = "https://acme-staging-v02.api.letsencrypt.org/directory"
+    "staging"    = "https://acme-staging-v02.api.letsencrypt.org/directory"
     "production" = "https://acme-v02.api.letsencrypt.org/directory"
   }
 }
@@ -28,6 +23,3 @@ variable "reg_email" {
   default = "nobody@kokos.com"
 }
 
-variable "key_type" {
-  default = 4096
-}

@@ -1,5 +1,7 @@
-variable "domain" {}
-
-variable "nameservers"{
-  type    = "list"
+variable "domain" {
 }
+
+variable "nameservers" {
+  type = list(string)
+}
+

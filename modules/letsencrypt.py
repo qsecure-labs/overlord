@@ -14,7 +14,7 @@ campaign_list = []
 
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the letsencrypt module """
-    def __init__(self,campaign,mod): #domains
+    def __init__(self,campaign,mod,project_id): #domains
         global campaign_list
         global module
 
@@ -25,9 +25,7 @@ class main(list):
 
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = cmd2.ansi.style("Overlord", fg='red', bg='', bold=True, underline=False) + \
-            cmd2.ansi.style("/letsencrypt", fg='blue', bg='',
-                            bold=True, underline=False) + "$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/letsencrypt", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
@@ -74,9 +72,6 @@ class cmd_main(cmd2.Cmd):
         else:
             self.mod["id"] = randomString()
         
-        # TODO add functionality for wirldcard certificates:
-        # https://medium.com/@saurabh6790/generate-wildcard-ssl-certificate-using-lets-encrypt-certbot-273e432794d7
-
         self.domain_list = []
         self.record_list = []
         for c in campaign_list:

@@ -2,13 +2,15 @@ variable "domain" {
   # type = "list"
 }
 
-variable "count" {
+variable "counter" {
   default = 1
 }
+
 variable "phishing_server_ip" {
-    # type = "list"
+  # type = "list"
 }
 
 variable "email" {
   default = "fakeemail@a.com"
 }
+

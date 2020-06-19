@@ -1,7 +1,8 @@
 variable "name" {
-    type = "list"
+  type = list(string)
 }
 
 variable "counter" {
   default = 1
 }
+

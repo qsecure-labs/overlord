@@ -15,7 +15,7 @@ modules_ids = []
 
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the mail module """
-    def __init__(self,domains,campaign,mod):
+    def __init__(self,domains,campaign,mod,project_id):
         global module
         global domain_names
         global campaign_list
@@ -27,9 +27,7 @@ class main(list):
 
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = cmd2.ansi.style("Overlord", fg='red', bg='', bold=True, underline=False) + \
-            cmd2.ansi.style("/mail", fg='blue', bg='',
-                            bold=True, underline=False) + "$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/mail", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
@@ -92,7 +90,7 @@ class cmd_main(cmd2.Cmd):
     
         # Create list with modules id
         for c in campaign_list:
-            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "mail" and c["module"] != "redirector" and c["module"] != "godaddy":
+            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "mail" and c["module"] != "redirector" and c["module"] != "godaddy" and c["module"] != "ansible":
                 modules_ids.insert(len(modules_ids),(c["id"]))
                 for i in range(c["redirectors"]):
                     modules_ids.insert(len(modules_ids),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
@@ -204,7 +202,6 @@ class cmd_main(cmd2.Cmd):
                         self.mod["region"] = config[prov]["default_region"]
                         self.mod["size"] = config[prov]["default_size"]
                         
-
     def set_domain_name(self, arg):
         """Sets the domain_name variable"""
         self.mod["domain_name"]= arg.domain_name

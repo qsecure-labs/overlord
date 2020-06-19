@@ -2,38 +2,23 @@ variable "counter" {
   default = 1
 }
 
-variable "ansible_playbook" {
-  default = ""
-  description = "Ansible Playbook to run"
-}
-
-variable "ansible_arguments" {
-  default = []
-  type    = "list"
-  description = "Additional Ansible Arguments"
-}
-
-variable "ansible_vars" {
-  default = []
-  type    = "list"
-  description = "Environment variables"
-}
-
 variable "size" {
   default = "s-1vcpu-1gb"
 }
 
-variable "name" {}
+variable "name" {
+}
 
-variable "path" {}
+variable "path" {
+}
 
 variable "regions" {
-  type = "list"
+  type    = list(string)
   default = ["LON1"]
 }
 
 variable "available_regions" {
-  type = "map"
+  type = map(string)
   default = {
     "NYC1" = "nyc1"
     "NYC2" = "nyc2"
@@ -49,3 +34,4 @@ variable "available_regions" {
     "BLR1" = "blr1"
   }
 }
+

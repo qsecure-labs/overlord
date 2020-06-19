@@ -1,3 +1,4 @@
+import cmd2
 import sys
 import os
 sys.path.insert(0, 'modules/providers')
@@ -37,60 +38,64 @@ class main(list):
         f.write(self.create_general())
         f.write(self.create_dns_names())
 
+        aws_exception = False
         # Check if AWS is used
         for c in self.campaign:
-            if c["module"] != "letsencrypt" and c["module"] != "godaddy":
+            if c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible":
                 if c["provider"] == "aws":
-                    self.variables["aws_region"] = c["region"]
-                    f.write(self.create_aws_vpc())
-                    break
+                    try:
+                        self.variables["aws_region"] = c["region"]
+                        f.write(self.create_aws_vpc())
+                        break
+                    except:
+                        print ("At least one AWS module should be used in the dependent modules!")
+                        aws_exception = True
+                        break
+        
+        if not aws_exception:
+            for c in self.campaign:
+                if c["module"] == "c2":
+                    f.write(self.create_c2(c))
+                if c["module"] == "redirector":
+                    f.write(self.create_redirector(c))
+                if c["module"] == "webserver":
+                    f.write(self.create_webserver(c))
+                if c["module"] == "gophish":
+                    f.write(self.create_gophish(c))
+                if c["module"] == "mail":
+                    if not os.path.exists(f"""projects/{self.project_id}/{c["id"]}/"""):
+                        alphabet = string.ascii_letters + string.digits
+                        password = ''.join(secrets.choice(alphabet) for i in range(20))
+                        os.system(f"""mkdir -p projects/{self.project_id}/{c["id"]}/""")
+                        os.system(f"""touch projects/{self.project_id}/{c["id"]}/iredmailpass.txt""")
+                        os.system(f"""cd projects/{self.project_id}/{c["id"]}/ && echo {password} > iredmailpass.txt""")
+                        os.system(f"""cp redbaron/data/scripts/iredmail.sh projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                        os.system(f"""sed -i 's/domain-to-change.com/{c["domain_name"]}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                        os.system(f"""sed -i 's/changeme!/{password}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
+                    f.write(self.create_mail(c))
+                if c["module"] == "dns_record":
+                    f.write(self.create_dns_records_type(c))
+                if c["module"] == "letsencrypt":
+                    f.write(self.create_cert(c))
+                if c["module"] == "godaddy":
+                    f.write(self.redirect_ns(c))
+                if c["module"] == "ansible":
+                    f.write(self.create_ansible(c))
+                # if c["module"] == "firewall":
+                #     f.write(self.create_firewall(c))
+            f.close
 
-        for c in self.campaign:
-            if c["module"] == "c2":
-                f.write(self.create_c2(c))
-            if c["module"] == "redirector":
-                f.write(self.create_redirector(c))
-            if c["module"] == "webserver":
-                f.write(self.create_webserver(c))
-            if c["module"] == "gophish":
-               f.write(self.create_gophish(c))
-            if c["module"] == "mail":
-                if not os.path.exists(f"""projects/{self.project_id}/{c["id"]}/"""):
-                    alphabet = string.ascii_letters + string.digits
-                    password = ''.join(secrets.choice(alphabet) for i in range(20))
-                    os.system(f"""mkdir -p projects/{self.project_id}/{c["id"]}/""")
-                    os.system(f"""cp redbaron/data/scripts/iredmail.sh projects/{self.project_id}/{c["id"]}/iredmail.sh""")
-                    os.system(f"""sed -i 's/domain-to-change.com/{c["domain_name"]}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
-                    os.system(f"""sed -i 's/changeme!/{password}/g' projects/{self.project_id}/{c["id"]}/iredmail.sh""")
-                f.write(self.create_mail(c))
-            if c["module"] == "dns_record":
-                f.write(self.create_dns_records_type(c))
-            if c["module"] == "letsencrypt":
-                f.write(self.create_cert(c))
-            if c["module"] == "godaddy":
-                f.write(self.redirect_ns(c))
-            # if c["module"] == "firewall":
-            #     f.write(self.create_firewall(c))
-        f.close
+            #Create the variables.tf file:
+            q.write(self.create_variables())
 
-        #Create the variables.tf file:
-        q.write(self.create_variables())
+            proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
+            notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+            print(f"""\n{notification} The terrafrom files for the project with ID {proj} have been created {notification}\n""")
 
 
     def categorize_domains(self):
         self.do_domains  =[]
         self.aws_domains =[]
-
-        #OLD
-        # for camp in self.campaign:
-        #     if camp["module"] == "dns_record":
-        #         if camp["type"] == "A" and (camp["name"] == "@" or camp["name"] == ""):
-        #             if camp["provider"] == "digitalocean":
-        #                 for k in camp["records"].keys():
-        #                     self.do_domains.append(k)
-        #             elif camp["provider"] == "aws":
-        #                 for k in camp["records"].keys():
-        #                     self.aws_domains.append(k)
 
         for camp in self.campaign:
             if camp["module"] == "dns_record":
@@ -119,24 +124,24 @@ module "create_vpc" {
         domain_string_do = ', '.join('"{0}"'.format(d) for d in  self.do_domains)
         output=f"""
 variable "domain" {{
-type    = "list"
+type    = list
 default = [{domain_string}]
 }}\n"""
         if len(self.aws_domains ) != 0:
             output= output + f"""
 variable "aws_domain" {{
-type    = "list"
+type    = list
 default = [{domain_string_aws}]
 }}\n"""
         if len(self.do_domains ) != 0:
             output= output + f"""
 variable "do_domain" {{
-type    = "list"
+type    = list
 default = [{domain_string_do}]
 }}\n"""
         # Check if digitalocean is used.
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "ansible":
                 if c["provider"] == "digitalocean":
                     output = output +f"""
 variable "do_token" {{
@@ -145,7 +150,7 @@ default = "{self.variables["dotoken"]}"
                     break
         # Check if aws is used.
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "ansible":
                 if c["provider"] == "aws":
                     output = output +f"""
 variable "aws_key" {{
@@ -178,33 +183,29 @@ variable "godaddy_secret" {{
 
     def create_general(self):
         output ="""
-terraform {
-    required_version = ">= 0.11.0"
-}
-
 ###################################################################################################################
 #                                                Providers                                                        #
 ###################################################################################################################
 """
         # Check if digitalocean is used.
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "ansible":
                 if c["provider"] == "digitalocean":
                     output = output +"""
 provider "digitalocean" {
-    token = "${var.do_token}"
+    token = var.do_token
 }"""
                     break
 
         # Check if aws is used.
         for c in self.campaign:
-            if c["module"] != "letsencrypt":
+            if c["module"] != "letsencrypt" and c["module"] != "ansible":
                 if c["provider"] == "aws":
                     output = output +"""
 provider "aws" {
-  region     = "${var.aws_region}"
-  access_key = "${var.aws_key}"
-  secret_key = "${var.aws_secret}"
+  region     = var.aws_region
+  access_key = var.aws_key
+  secret_key = var.aws_secret
 }
 """
                     break
@@ -212,8 +213,8 @@ provider "aws" {
             if c["module"] == "godaddy":
                 output = output +"""
 provider "godaddy" {
-  key =  "${var.godaddy_key}"
-  secret = "${var.godaddy_secret}"
+  key =  var.godaddy_key
+  secret = var.godaddy_secret
 }
 """
                 break
@@ -238,7 +239,7 @@ module "redirect_ns_{c["id"]}"{{
 module "redirect_ns_{c["id"]}"{{
   source = "../../redbaron/modules/godaddy/redirect-nameservers"
   domain = "{c["domain"]}"
-  nameservers = ["${{module.public_zone.name_servers[{public_zone}]}}"]
+  nameservers = module.public_zone.name_servers[{public_zone}]
 }}
 """
         return output
@@ -282,16 +283,6 @@ module "redirect_ns_{c["id"]}"{{
         return output
 
     ####################################################################################
-    # firewall
-    ####################################################################################
-    # def create_firewall(self,c):
-    #     if c["provider"] == "digitalocean":
-    #         output = digitalocean.main.firewall(c)
-    #     elif c["provider"] == "aws":
-    #         output = aws.main.firewall(c)
-    #     return output
-
-    ####################################################################################
     # DNS_NAMES
     ####################################################################################
     def create_dns_names(self):
@@ -314,11 +305,11 @@ module "redirect_ns_{c["id"]}"{{
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-dns-gophish-do"
-  provider_name ="digitalocean"
+  provider_name = "digitalocean"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  do_token ="${{var.do_token}}"
-  phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
+  do_token = var.do_token
+  phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
                     elif camp["module"] == "webserver":
@@ -326,18 +317,27 @@ module "create_cert_{c["id"]}" {{
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-webserver-do"
   domain = "{c["domain_name"]}"
-  phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
+  phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
-                    elif camp["module"] == "c2":
+                    elif camp["module"] == "c2" or ():
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-dns-do"
-  provider_name ="digitalocean"
+  provider_name = "digitalocean"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  do_token ="${{var.do_token}}"
-#   phishing_server_ip = "${{module.{camp["module"]}_rdir_{camp["id"]}.ips[{str(int(c["mod_id"].split('-')[1])-1)}]}}"
+  do_token = var.do_token
+}}
+"""
+                    elif camp["module"] == "redirector" and camp["redirector_id"] == "localhost" :
+                        output=f"""
+module "create_cert_{c["id"]}" {{
+  source = "../../redbaron/modules/letsencrypt/digitalocean/create-cert-dns-do"
+  provider_name = "digitalocean"
+  server_url = "production" #"staging" #"production" #(change this for live)
+  domain = "{c["domain_name"]}"
+  do_token = var.do_token
 }}
 """
 
@@ -352,14 +352,13 @@ module "create_cert_{c["id"]}" {{
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-gophish-aws"
-  provider_name ="aws"
   domain = "{c["domain_name"]}"
-  aws_key = "${{var.aws_key}}"
-  aws_secret = "${{var.aws_secret}}"
+  aws_key = var.aws_key
+  aws_secret = var.aws_secret
   region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
   server_url = "production"
-  phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
+  phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
                     elif camp["module"] == "webserver":
@@ -367,18 +366,29 @@ module "create_cert_{c["id"]}" {{
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-webserver-aws"
   domain = "{c["domain_name"]}"
-  phishing_server_ip = "${{module.{camp["module"]}_{camp["id"]}.ips[0]}}"
+  phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
 """
                     elif camp["module"] == "c2":
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-aws"
-  provider_name ="aws"
   server_url = "production" #"staging" #"production" #(change this for live)
   domain = "{c["domain_name"]}"
-  aws_key = "${{var.aws_key}}"
-  aws_secret = "${{var.aws_secret}}"
+  aws_key = var.aws_key
+  aws_secret = var.aws_secret
+  region = "eu-west-1"
+  zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
+}}
+"""
+                    elif camp["module"] == "redirector" and camp["redirector_id"] == "localhost" :
+                        output=f"""
+module "create_cert_{c["id"]}" {{
+  source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-aws"
+  server_url = "production" #"staging" #"production" #(change this for live)
+  domain = "{c["domain_name"]}"
+  aws_key = var.aws_key
+  aws_secret = var.aws_secret
   region = "eu-west-1"
   zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
 }}
@@ -399,37 +409,58 @@ module "create_cert_{c["id"]}" {{
                 if len(value.split('-')) > 1:
                     for camp in self.campaign:
                         if camp["id"] == value.split('-')[0]:
-                            record = f""" "{key}" = "${{module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[{str(int(value.split('-',1)[1])-1)}]}}" """
+                            record = f""" "{key}" = module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[0][{str(int(value.split('-',1)[1])-1)}]"""
                             break
                 else:
                     for camp in self.campaign:
                         if camp["id"] == value:
-                            record = f""" "{key}" = "${{module.{camp["module"]}_{value}.ips[0]}}" """
+                            record = f""" "{key}" = module.{camp["module"]}_{value}.ips[0][0] """
                             break
             if c["type"] == "MX" or c["type"] == "TXT":
                 record = f""" "{key}" = "{value}" """
-
-            output = digitalocean.main.dns_records_type(c,record)
+            
+            godaddy_id = ""
+            for camp in self.campaign:
+                if camp["module"] == "godaddy" and camp["provider"] == "digitalocean":
+                    if camp["domain"] == key:
+                        godaddy_id= camp["id"]
+            
+            output = digitalocean.main.dns_records_type(c,record,self.do_domains,godaddy_id)
             return output
         elif c["provider"] == "aws":
             if c["type"] == "A":
                 if len(value.split('-')) > 1:
                     for camp in self.campaign:
-                        if camp["id"] == value.split('-')[0]:
-                            record = f""" "{key}" = "${{module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[{str(int(value.split('-',1)[1])-1)}]}}" """
+                        if camp["id"] == value.split('-')[0]: #TODO - AWS does not work with more than one redirectors 
+                            record = f""" "{key}" = module.{camp["module"]}_rdir_{value.split('-')[0]}.ips[{str(int(value.split('-',1)[1])-1)}] """
                             break
                 else:
                     for camp in self.campaign:
                         if camp["id"] == value:
-                            record = f""" "{key}" = "${{module.{camp["module"]}_{value}.ips[0]}}" """
+                            record = f""" "{key}" = module.{camp["module"]}_{value}.ips[0] """
                             break
                 value = self.aws_domains.index(key)
-                output = aws.main.dns_records_type(c,record,value)
+
+                #Godaddy dependancy
+                godaddy_aws_id = ""
+                for camp in self.campaign:
+                    if camp["module"] == "godaddy" and camp["provider"] == "aws":
+                        if camp["domain"] == key:
+                            godaddy_aws_id = camp["id"]
+
+                output = aws.main.dns_records_type(c,record,value,godaddy_aws_id,self.aws_domains)
                 return output
             if c["type"] == "MX":
-                record = f""" "{key}" = "{c["priority"]} {value}" """
+                record = f""" "{key}" = ["{c["priority"]} {value}"] """
                 value = self.aws_domains.index(key)
-                output = aws.main.dns_records_type(c,record,value)
+                #Godaddy dependancy
+                godaddy_aws_id = ""
+                for camp in self.campaign:
+                    if camp["module"] == "godaddy" and camp["provider"] == "aws":
+                        if camp["domain"] == key:
+                            godaddy_aws_id = camp["id"]
+                    
+                output = aws.main.dns_records_type(c,record,value,godaddy_aws_id,self.aws_domains)
                 return output
             if c["type"] == "TXT":
                 txt_rec_list = []
@@ -444,11 +475,18 @@ module "create_cert_{c["id"]}" {{
                             txt_rec_list[self.aws_domains.index(key)] = txt_rec_list[self.aws_domains.index(key)] +" , \""+value +"\""
 
                     #Replace 3 fist characters in the list
+                    #Godaddy dependancy
+                    godaddy_aws_id = ""
+                    for camp in self.campaign:
+                        if camp["module"] == "godaddy" and camp["provider"] == "aws":
+                            if camp["domain"] == key:
+                                godaddy_aws_id = camp["id"]
                     output = ""
+
                     for idx,t in enumerate(txt_rec_list):
                         if len(t) != 0:
                             txt_rec_list[idx] = t[3:]
-                            output = output + aws.main.dns_records_type_txt(txt_rec_list[idx],idx)
+                            output = output + aws.main.dns_records_type_txt(txt_rec_list[idx],idx,godaddy_aws_id,self.aws_domains)
                     return output
                 else:
                     return output
@@ -465,10 +503,10 @@ module "create_cert_{c["id"]}" {{
             for camp in self.campaign:
                 if camp["id"] in i:
                     if "-" in i:
-                        my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+"rdir_"+camp["id"]+".ips["+str(int(i.split('-')[1])-1)+"]}"))
+                        my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+"rdir_"+camp["id"]+".ips[0]["+str(int(i.split('-')[1])-1)+"]}"))
                         break
                     else:
-                        my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+camp["id"]+".ips[0]}"))
+                        my_nets.insert(len(my_nets),('${module.'+camp["module"]+"_"+camp["id"]+".ips[0][0]}"))
                         break
         my_nets_1 = ' '.join("{0}".format(s) for s in my_nets)
         my_nets_2 = ', '.join("'{0}'".format(s) for s in my_nets)
@@ -478,4 +516,50 @@ module "create_cert_{c["id"]}" {{
             output = digitalocean.main.mail(c,my_nets_1,my_nets_2,my_nets_3,self.project_id)
         elif c["provider"] == "aws":
             output = aws.main.mail(c,my_nets_1,my_nets_2,my_nets_3,self.project_id)
+        return output
+    ####################################################################################
+    # Ansible:
+    ####################################################################################
+    def create_ansible(self,c):
+        output = ""
+        user = "root"
+        for host in c["hosts"]:
+            if "-" in host:
+                for mod in self.campaign:
+                    if mod["id"] == host.split("/")[0].split("-")[0]:
+                        if mod["provider"] == "aws":
+                            user = "admin"
+                        elif mod["provider"] == "digitalocean":
+                            user = "root"
+                output += f"""
+module "ansible_{host.split("/")[0]}_{c["id"]}" {{
+source    = "../../redbaron/modules/ansible"
+user      = "{user}"
+ip        = module.{host.split("/")[1]}_rdir_{host.split("/")[0].split("-")[0]}.ips[0][{int(host.split("/")[0].split("-")[1]) - 1}]
+playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
+}}
+"""
+            else:
+                for mod in self.campaign:
+                    if mod["id"] == host.split("/")[0]:
+                        if mod["provider"] == "aws":
+                            if mod["module"] != "c2": # Support for other providers only on c2 at the moment
+                                user = "admin"
+                            elif mod["distro"] == "debian":
+                                user = "admin"
+                            elif mod["distro"] == "kali":
+                                user = "ec2-user"
+                            elif mod["distro"] == "ubuntu":
+                                user = "ubuntu"
+                        elif mod["provider"] == "digitalocean":
+                            user = "root"
+
+                output += f"""
+module "ansible_{host.split("/")[0]}_{c["id"]}" {{
+source    = "../../redbaron/modules/ansible"
+user      = "{user}"
+ip        = module.{host.split("/")[1]}_{host.split("/")[0]}.ips[0][0]
+playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
+}}
+"""
         return output

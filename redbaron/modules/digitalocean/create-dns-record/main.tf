@@ -1,14 +1,20 @@
-terraform {
-  required_version = ">= 0.11.0"
+# Add a record to the domain
+resource "null_resource" "previous" {}
+
+resource "time_sleep" "wait_60_seconds" {
+  depends_on = [null_resource.previous]
+
+  create_duration = "60s"
 }
 
-# Add a record to the domain
 resource "digitalocean_record" "record" {
-  name   = "${var.name}"
-  count  = "${var.counter}"
-  domain = "${element(keys(var.records), count.index)}"
-  type   = "${var.type}"
-  value  = "${lookup(var.records, element(keys(var.records), count.index))}"
-  ttl    = "${var.ttl}"
-  priority = "${var.priority}"
+  name     = var.name
+  count    = var.counter
+  domain   = var.domain
+  type     = var.type
+  value    = var.records[element(keys(var.records), count.index)]
+  ttl      = var.ttl
+  priority = var.priority
+  depends_on = [time_sleep.wait_60_seconds]
 }
+

@@ -3,7 +3,7 @@
 # -------------------------------------------------------------------------------------------------
 variable "public_hosted_zones" {
   description = "List of domains or subdomains for which to create public hosted zones."
-  type        = "list"
+  type        = list(string)
   default     = []
 }
 
@@ -19,7 +19,7 @@ variable "delegation_set_id" {
 
 variable "custom_subdomain_ns" {
   description = "Hosted zones for subdomains require nameserver to be specified explicitly. You can use this variable to add a list of custom nameserver IP addresses. If left empty it will be populated by four AWS default nameserver."
-  type        = "list"
+  type        = list(string)
   default     = []
 }
 
@@ -33,7 +33,7 @@ variable "default_subdomain_ns_ttl" {
 # -------------------------------------------------------------------------------------------------
 variable "tags" {
   description = "The resource tags that should be added to all hosted zone resources."
-  type        = "map"
+  type        = map(string)
   default     = {}
 }
 
@@ -41,3 +41,4 @@ variable "comment" {
   description = "The hosted zone comment that should be added to all hosted zone resources."
   default     = "Managed by Terraform"
 }
+

@@ -1,6 +1,11 @@
-variable "type" {}
+variable "type" {
+}
 
-variable "name" {}
+variable "name" {
+}
+
+variable "domain" {
+}
 
 variable "counter" {
   default = 1
@@ -11,8 +16,10 @@ variable "ttl" {
 }
 
 variable "records" {
-  type = "map"
+  type = map(any)
 }
+
 variable "priority" {
   default = "10"
 }
+
