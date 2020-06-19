@@ -228,8 +228,14 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
 """
         return output
 
-    def dns_records_type(c,record):
-        domain = record.split('"')
+    def dns_records_type(c,record,do_domains,godaddy_id):
+      domain = record.split('"')
+      id_domain = 0
+      for idx,d in enumerate(do_domains):
+        if domain[1] in do_domains[idx]:
+          id_domain = idx
+          break
+      if not godaddy_id:
         if "v=DMARC1;" in record:
           c["name"] ="_dmarc"
         output=f"""
@@ -237,12 +243,25 @@ module "create_dns_record_{c["id"]}" {{
     source = "../../redbaron/modules/digitalocean/create-dns-record"
     name  = "{c["name"]}"
     type = "{c["type"]}"
-    domain = "{domain[1]}"
+    domain = module.create_domain_name_do.domain_name[{id_domain}]
     priority= {c["priority"]}
     counter = {c["counter"]}
     records = {{ {record} }}
 }}\n"""
-        return output
+      else:
+        if "v=DMARC1;" in record:
+          c["name"] ="_dmarc"
+        output=f"""
+module "create_dns_record_{c["id"]}" {{
+    source = "../../redbaron/modules/digitalocean/create-dns-record"
+    name  = "{c["name"]}"
+    type = "{c["type"]}"
+    domain = module.create_domain_name_do.domain_name[{id_domain}]
+    priority= {c["priority"]}
+    counter = module.redirect_ns_{godaddy_id}.redirected
+    records = {{ {record} }}
+}}\n"""
+      return output
 
 
     def create_dns_name():
@@ -256,24 +275,3 @@ module "create_domain_name_do" {
     name = "${var.do_domain}"
 }\n"""
         return output
-
-#     def firewall(c):
-#       mod, mod_type = c["mod_id"].split('/')
-#       output=f"""
-# ###################################################################################################################
-# #                                          FIREWALL                                                           #
-# ###################################################################################################################
-# resource "digitalocean_firewall" "{c["id"]}" {{
-#   name = "{c["rule"]}_{c["port"]}_{c["id"]}"
-
-#   droplet_ids = ["${{module.{mod_type}_{mod}.id}}"]
-
-#   {c["rule"]}_rule {{
-#       protocol           = "{c["protocol"]}"
-#       port_range         = "{c["port"]}"
-#       source_addresses   = ["0.0.0.0/0", "::/0"]
-#   }}
-# }}
-# """
-#       print(output)
-#       return output

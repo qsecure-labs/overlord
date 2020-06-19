@@ -283,16 +283,6 @@ module "redirect_ns_{c["id"]}"{{
         return output
 
     ####################################################################################
-    # firewall
-    ####################################################################################
-    # def create_firewall(self,c):
-    #     if c["provider"] == "digitalocean":
-    #         output = digitalocean.main.firewall(c)
-    #     elif c["provider"] == "aws":
-    #         output = aws.main.firewall(c)
-    #     return output
-
-    ####################################################################################
     # DNS_NAMES
     ####################################################################################
     def create_dns_names(self):
@@ -428,8 +418,14 @@ module "create_cert_{c["id"]}" {{
                             break
             if c["type"] == "MX" or c["type"] == "TXT":
                 record = f""" "{key}" = "{value}" """
-
-            output = digitalocean.main.dns_records_type(c,record)
+            
+            godaddy_id = ""
+            for camp in self.campaign:
+                if camp["module"] == "godaddy" and camp["provider"] == "digitalocean":
+                    if camp["domain"] == key:
+                        godaddy_id= camp["id"]
+            
+            output = digitalocean.main.dns_records_type(c,record,self.do_domains,godaddy_id)
             return output
         elif c["provider"] == "aws":
             if c["type"] == "A":
