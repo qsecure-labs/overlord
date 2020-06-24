@@ -15,6 +15,12 @@ resource "aws_security_group" "dns-c2" {
     protocol    = "tcp"
     cidr_blocks = ["${data.external.get_public_ip.result["ip"]}/32"]
   }
+  ingress { # rule for covenant admin panel
+    from_port   = 7443
+    to_port     = 7443
+    protocol    = "tcp"
+    cidr_blocks = ["${data.external.get_public_ip.result["ip"]}/32"]
+  }
   ingress {
     from_port   = 53
     to_port     = 53
