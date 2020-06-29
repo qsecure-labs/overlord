@@ -82,6 +82,7 @@ output "c2-rdir-{c["id"]}-ips" {{
 module "c2_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-c2"
     install = [{scripts}]
+    distro = "{linux_distro}"
     size = "{c["size"]}"
     regions = ["{c["region"]}"]
 }}
