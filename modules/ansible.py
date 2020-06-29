@@ -71,7 +71,7 @@ class cmd_main(cmd2.Cmd):
         # Create list with modules id
         modules_ids=[]
         for c in campaign_list:
-            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible":
+            if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible" and c["module"] != "redirector" and c["module"] != "mail":
                 modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                 if c["module"] != "redirector":
                     for i in range(c["redirectors"]):
