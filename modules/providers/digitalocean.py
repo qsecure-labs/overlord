@@ -82,6 +82,7 @@ output "c2-rdir-{c["id"]}-ips" {{
 module "c2_{c["id"]}" {{
     source = "../../redbaron/modules/{c["provider"]}/{c["type"]}-c2"
     install = [{scripts}]
+    distro = "{linux_distro}"
     size = "{c["size"]}"
     regions = ["{c["region"]}"]
 }}
@@ -156,6 +157,9 @@ output "gophish-rdir-{c["id"]}-ips" {{
   value = "${{module.gophish_rdir_{c["id"]}.ips}}"
 }}
 
+output "Admin_Password_{c["id"]}" {{
+  value = "You can find the auto-generated Gophish admin password at: /opt/goapps/src/github.com/gophish/password.txt"
+}}
 """
         else:
             output = f"""
@@ -169,6 +173,9 @@ output "gophish-{c["id"]}-ips" {{
   value = "${{module.gophish_{c["id"]}.ips}}"
 }}
 
+output "Admin_Password_{c["id"]}" {{
+  value = "You can find the auto-generated Gophish admin password at: /opt/goapps/src/github.com/gophish/password.txt"
+}}
 """
         return output
 
