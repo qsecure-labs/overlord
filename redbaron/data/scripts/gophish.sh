@@ -29,5 +29,9 @@ echo "export PATH=$GOPATH/bin:$GOROOT/bin:$PATH" >> /root/.profile
 source /root/.profile
 
 #create readme file
-echo "systemctl start gophish.service (start the service)" >> /root/README.txt
-echo "systemctl stop gophish.service (stop the service)" >> /root/README.txt
+echo "systemctl start gophish.service (start the service)" >> /opt/goapps/src/github.com/gophish/README.txt
+echo "systemctl stop gophish.service (stop the service)" >> /opt/goapps/src/github.com/gophish/README.txt
+
+sleep 30s
+
+cat /var/log/gophish.err | grep 'Please login with the username admin and the password' > /opt/goapps/src/github.com/gophish/password.txt
