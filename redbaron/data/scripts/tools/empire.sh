@@ -1,4 +1,6 @@
 #!/bin/bash
 git clone https://github.com/BC-SECURITY/Empire.git
 cd Empire
- sudo ./setup/install.sh <<< "RandomSTRING"
+sudo pip3 install poetry
+sudo ./setup/install.sh <<< "RandomSTRING"
+sudo poetry install
