@@ -1,15 +1,14 @@
 # Overlord – Red Teaming Automation
-<p align="center">
-  <img src="logo.png" width=30%>
-</p>
-
-<center>
 
 ![License](https://img.shields.io/badge/License-MIT-darkred.svg)
 [![Black Hat Arsenal 2020](https://img.shields.io/badge/2020-Black%20Hat%20Arsenal-lightgrey.svg)](https://www.blackhat.com/us-20/arsenal/schedule/index.html#overlord-red-teaming-automation-19846)
 ![GitHub stars](https://img.shields.io/github/stars/qsecure-labs/overlord)
 
-</center>
+<p align="center">
+  <img src="logo.png" width=30%>
+</p>
+
+
 
 Overlord provides a python-based console CLI which is used to build Red Teaming infrastructure in an automated way. The user has to provide inputs by using the tool’s modules (e.g. C2, Email Server, HTTP web delivery server, Phishing server etc.) and the full infra / modules and scripts will be generated automatically on a cloud provider of choice. Currently supports AWS and Digital Ocean. The tool is still under development and it was inspired and uses the [Red-Baron](https://github.com/byt3bl33d3r/Red-Baron) Terraform implementation found on Github. 
 
