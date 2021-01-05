@@ -31,6 +31,11 @@ resource "digitalocean_firewall" "web" {
     port_range       = "7443"
     source_addresses = ["${data.external.get_public_ip.result["ip"]}/32"]
   }
+  inbound_rule { # Rule for cobaltstrike
+    protocol         = "tcp"
+    port_range       = "50050"
+    source_addresses = ["${data.external.get_public_ip.result["ip"]}/32"]
+  }
   inbound_rule {
     protocol         = "udp"
     port_range       = "60000-61000"
