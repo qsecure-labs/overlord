@@ -3,7 +3,7 @@ Description=Gophish service
 After=network-online.target
 
 [Service]
-Environment="GOPHISH_BIN_PATH=/opt/goapps/src/github.com/gophish/gophish/"
+Environment="GOPHISH_BIN_PATH=/opt/gophish/"
 Environment="GOPHISH_LOG_PATH=/var/log/"
 ExecStart=/bin/bash /tmp/gophish.sh
 RestartSec=1
