@@ -184,7 +184,7 @@ output "gophish-rdir-{c["id"]}-ips" {{
 }}
 
 output "Admin_Password_{c["id"]}" {{
-  value = "You can find the auto-generated Gophish admin password at: /opt/goapps/src/github.com/gophish/password.txt"
+  value = "You can find the auto-generated Gophish admin password at: /opt/gophish/password.txt"
 }}
 """
         else:
@@ -201,7 +201,7 @@ output "gophish-{c["id"]}-ips" {{
 }}
 
 output "Admin_Password_{c["id"]}" {{
-  value = "You can find the auto-generated Gophish admin password at: /opt/goapps/src/github.com/gophish/password.txt"
+  value = "You can find the auto-generated Gophish admin password at: /opt/gophish/password.txt"
 }}
 """
         return output
