@@ -32,7 +32,7 @@ That is the reason why we are referencing the name of RedBaron on our  project a
  
 As Marcello stated on his acknowledgments, further thanks to:
  
-1. [@_RastaMouse's](https://twitter.com/_RastaMouse) two serie's blogpost on 'Automated Red Team Infrastructure Deployment with Terraform' Part [1](https://rastamouse.me/2017/08/automated-red-team-infrastructure-deployment-with-terraform---part-1/) and [2](https://rastamouse.me/2017/09/automated-red-team-infrastructure-deployment-with-terraform---part-2/)
+1. [@_RastaMouse's](https://twitter.com/_RastaMouse) two-part blogpost on 'Automated Red Team Infrastructure Deployment with Terraform' Part [1](https://rastamouse.me/2017/08/automated-red-team-infrastructure-deployment-with-terraform---part-1/) and [2](https://rastamouse.me/2017/09/automated-red-team-infrastructure-deployment-with-terraform---part-2/)
 2. [@bluscreenofjeff's](https://twitter.com/bluscreenofjeff) with his amazing Wiki on [Read Team Infrastucture](https://github.com/bluscreenofjeff/Red-Team-Infrastructure-Wiki)
 3. [@spotheplanet's](https://twitter.com/spotheplanet) blog post on [Red team infrastructure](https://ired.team/offensive-security/red-team-infrastructure)
 
