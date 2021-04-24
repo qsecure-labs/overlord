@@ -18,3 +18,5 @@ LOCATION=$(wget -qO - https://github.com/BishopFox/sliver/releases/latest \
 
 mkdir ~/sliver
 unzip sliver-server_linux.zip -d ~/sliver
+rm sliver-server_linux.zip
+chmod +x /sliver/sliver-server
