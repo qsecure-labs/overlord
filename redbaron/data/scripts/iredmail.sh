@@ -1,9 +1,9 @@
 #bin/bash
 
 wget https://github.com/iredmail/iRedMail/archive/refs/tags/1.5.0.tar.gz
-tar -xf 1.4.0.tar.gz
+tar -xf 1.5.0.tar.gz
 
-cd iRedMail-1.4.0
+cd iRedMail-1.5.0
 
 echo -e "AUTO_USE_EXISTING_CONFIG_FILE=y \
 \nAUTO_INSTALL_WITHOUT_CONFIRM=y \
