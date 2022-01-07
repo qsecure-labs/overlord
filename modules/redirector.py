@@ -1,4 +1,5 @@
 import cmd2
+from cmd2.ansi import Fg
 import os
 import argparse
 from prettytable import PrettyTable
@@ -24,7 +25,7 @@ class main(list):
         
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/redirector", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg=Fg.RED, bg=None,bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg=Fg.DARK_GRAY, bg=None,bold=True, underline=False) + cmd2.ansi.style("/redirector", fg=Fg.BLUE, bg=None,bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
@@ -113,7 +114,7 @@ class cmd_main(cmd2.Cmd):
             x.align["DESCRITPION"] = "l"
         else:
             x = PrettyTable()
-            x.title = 'C2 module'
+            x.title = 'Redirector module'
             x.field_names = ["VARIABLE", "VALUE", "REQUIRED", "DESCRITPION"]
             x.add_row(["id", self.mod["id"], "N/A", "Module ID"])
             x.add_row(["type", self.mod["type"], "yes", "Type of traffic to redirect values are: HTTP/DNS."])
@@ -154,13 +155,13 @@ class cmd_main(cmd2.Cmd):
         self.mod["region"]= arg.region
         # Change provider for all modules on AWS
         if self.mod["provider"] == "aws":
-            notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+            notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
             print(f"""\n{notification} Only one region is supported per project on AWS. {notification}\n""")
             global campaign_list
             for c in campaign_list:
                 if c["provider"] == "aws":
                     if c["region"] != arg.region:
-                        print(cmd2.ansi.style(f"""Module with {c["id"]} has region set to {c["region"]}. Replacing...""", fg='red', bg='',bold=True, underline=False))
+                        print(cmd2.ansi.style(f"""Module with {c["id"]} has region set to {c["region"]}. Replacing...""", fg=Fg.RED, bg=None,bold=True, underline=False))
                         c["region"] = arg.region
 
     def set_size(self, arg):
