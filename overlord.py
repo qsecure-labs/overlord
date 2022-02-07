@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import cmd2
+from cmd2.ansi import Fg
 import os
 import time
 import sys
@@ -40,7 +41,7 @@ def hide_cmd2_modules(self):
 class Overlord(cmd2.Cmd):
     """Main Menu for Overlord."""
     os.system('clear')
-    version = cmd2.ansi.style("v.1.0", fg='red', bg='',
+    version = cmd2.ansi.style("v.1.0", fg=Fg.RED, bg=None,
                              bold=True, underline=False)
     print(f"""
                      _               _
@@ -79,7 +80,7 @@ class Overlord(cmd2.Cmd):
 
         self.project_id = rand
 
-        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( rand, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
+        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg=Fg.RED, bg=None,bold=True, underline=False) + " : " + cmd2.ansi.style( rand, fg=Fg.DARK_GRAY, bg=None,bold=True, underline=False) + ")" +"$> "
         self.loadproject_id.choices = next(os.walk(dir_path))[1]
         self.cloneproject_id.choices = next(os.walk(dir_path))[1]
 
@@ -94,7 +95,7 @@ class Overlord(cmd2.Cmd):
 
     def do_exit(self, arg):
         """exit to main menu"""
-        flag = input(cmd2.ansi.style("Exit? [y/N]:", fg='red', bg='',bold=True, underline=False))
+        flag = input(cmd2.ansi.style("Exit? [y/N]:", fg=Fg.RED, bg=None,bold=True, underline=False))
         if  flag == 'y':
             return True
 
@@ -128,10 +129,10 @@ class Overlord(cmd2.Cmd):
         else:
             self.project_id = arg.id
         self.campaign = []
-        proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        proj = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
+        notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
         print(f"""\n{notification} New project with ID {proj} has been created.  {notification}\n""")
-        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
+        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg=Fg.RED, bg=None,bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg=Fg.DARK_GRAY, bg=None,bold=True, underline=False) + ")" +"$> "
 
     def create_dir(self):
         """Creates the project directory"""
@@ -153,11 +154,11 @@ class Overlord(cmd2.Cmd):
             with open(dir_path+'/variables.json', 'r') as filehandle:
                 self.variables = json.load(filehandle)
             self.project_id = arg.id
-            proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-            notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+            proj = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
+            notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
             print(f"""\n{notification} The project with ID {proj} has been loaded {notification}\n""")
         self.update_choices(self.campaign)
-        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
+        self.prompt =  "(" + cmd2.ansi.style("Overlord", fg=Fg.RED, bg=None,bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg=Fg.DARK_GRAY, bg=None,bold=True, underline=False) + ")" +"$> "
 
     cloneproject_parser = argparse.ArgumentParser(prog='clone')
     cloneproject_id = cloneproject_parser.add_argument('id', type=str, help='example: [ clone <ID> ]')
@@ -168,7 +169,7 @@ class Overlord(cmd2.Cmd):
         """Clones a project to a new one"""
         project_to_clone = arg.id
         dir_path = "projects/" + project_to_clone
-        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
         new_path = ""
         new_project_name = ""
         if arg.name is None:
@@ -203,7 +204,7 @@ class Overlord(cmd2.Cmd):
     #@cmd2.with_argparser(deleteproject_parser)
     def do_delete(self,arg):
         """Deletes a project"""
-        flag = input(cmd2.ansi.style("Are you sure? [y/N]:", fg='red', bg='',bold=True, underline=False))
+        flag = input(cmd2.ansi.style("Are you sure? [y/N]:", fg=Fg.RED, bg=None,bold=True, underline=False))
         if  flag == 'y':
             dir_path = "projects/"+self.project_id+"/.terraform"
             if  os.path.exists(dir_path):
@@ -211,16 +212,16 @@ class Overlord(cmd2.Cmd):
                 os.system(f"""cd projects/{self.project_id} && /opt/terraform destroy -auto-approve""")
                 os.system(f"""rm projects/{self.project_id}/terraform.tfstate*""")
                 shutil.rmtree(f"""projects/{self.project_id}/.terraform""")
-            notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+            notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
             print(f"""\n{notification} Check if terraform exited without an error before you proceed. {notification}\n""")
-            flag1 = input(cmd2.ansi.style("Proceding with deleting project directory. Are you sure? [y/N]:", fg='red', bg='',bold=True, underline=False))
+            flag1 = input(cmd2.ansi.style("Proceding with deleting project directory. Are you sure? [y/N]:", fg=Fg.RED, bg=None,bold=True, underline=False))
             if flag1 == "y":
                 shutil.rmtree("projects/"+self.project_id)
                 self.loadproject_id.choices = next(os.walk("projects"))[1]
                 self.cloneproject_id.choices = next(os.walk("projects"))[1]
                 self.update_choices(self.campaign)
-                proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-                notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+                proj = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
+                notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
                 print(f"""\n{notification} The project with ID {proj} has been deleted {notification}\n""")
 
 
@@ -235,18 +236,18 @@ class Overlord(cmd2.Cmd):
             json.dump(self.variables, filehandle,indent=4)
         self.loadproject_id.choices = next(os.walk("projects"))[1]
         self.cloneproject_id.choices = next(os.walk("projects"))[1]
-        proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        proj = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
+        notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
         print(f"""\n{notification} The config files for the project with ID {proj} have been created  {notification}\n""")
 
 
     def do_rename(self,arg):
         """Rename a project"""
-        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
         if not arg:
             print(f"""\n{notification} You have to specify a new name for your project! {notification}\n""")
         else:
-            proj_old = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
+            proj_old = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
             dir_path = "projects/"+self.project_id
             if os.path.exists(dir_path):
                 os.rename("projects/"+self.project_id, "projects/"+arg)
@@ -255,14 +256,14 @@ class Overlord(cmd2.Cmd):
             self.loadproject_id.choices = next(os.walk("projects"))[1]
             self.cloneproject_id.choices = next(os.walk("projects"))[1]
 
-            proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
+            proj = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
             print(f"""\n{notification} The project with ID {proj_old} has been renamed to {proj} {notification}\n""")
-            self.prompt =  "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg='bright_black', bg='',bold=True, underline=False) + ")" +"$> "
+            self.prompt =  "(" + cmd2.ansi.style("Overlord", fg=Fg.RED, bg=None,bold=True, underline=False) + " : " + cmd2.ansi.style( self.project_id, fg=Fg.DARK_GRAY, bg=None,bold=True, underline=False) + ")" +"$> "
 
     def do_deploy(self,arg):
         """Deploy current  project"""
-        proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        proj = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
+        notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
         print(f"""\n{notification} Started deployment of project with ID {proj} {notification}\n""")
         os.system(f"""mkdir -p projects/{self.project_id}/.terraform/plugins/linux_amd64 """)
         os.system(f"""cp redbaron/data/plugins/terraform-provider-godaddy_v1.7.3_x4 projects/{self.project_id}/.terraform/plugins/linux_amd64/terraform-provider-godaddy_v1.7.3_x4""")
@@ -425,15 +426,15 @@ class Overlord(cmd2.Cmd):
         """Deletes a module"""
         if arg.id == "all":
             self.campaign = []
-            notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+            notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
             print(f"""\n{notification} All modules have been deleted from the campaign {notification}\n""")
         else:
             for idx,c in enumerate(self.campaign):
                 if arg.id == c["id"]:
                     self.campaign.pop(idx)
-                    mod = cmd2.ansi.style(c["module"], fg='blue', bg='',bold=True, underline=False)
-                    mod_id = cmd2.ansi.style(c["id"], fg='blue', bg='',bold=True, underline=False)
-                    notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+                    mod = cmd2.ansi.style(c["module"], fg=Fg.BLUE, bg=None,bold=True, underline=False)
+                    mod_id = cmd2.ansi.style(c["id"], fg=Fg.BLUE, bg=None,bold=True, underline=False)
+                    notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
                     print(f"""\n{notification} Module {mod} with ID {mod_id} has been deleted from the campaign {notification}\n""")
 
     # EDITMODULE COMMAND
@@ -581,7 +582,7 @@ class Overlord(cmd2.Cmd):
         with open('projects/variables.json', 'w') as filehandle:
                 json.dump(self.variables, filehandle,indent=4)
 
-        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
         print(f"""\n{notification} Variables have been saved to ./projects/variables.json {notification}\n""")
 
     #Set handler functions for the sub-commands
@@ -685,9 +686,9 @@ def addModule(module,campaign):
     """Adds a module to the campaign"""
     if module:
         campaign.insert(len(campaign),dict(module))
-        mod = cmd2.ansi.style(module["module"], fg='blue', bg='',bold=True, underline=False)
-        mod_id = cmd2.ansi.style(module["id"], fg='blue', bg='',bold=True, underline=False)
-        notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+        mod = cmd2.ansi.style(module["module"], fg=Fg.BLUE, bg=None,bold=True, underline=False)
+        mod_id = cmd2.ansi.style(module["id"], fg=Fg.BLUE, bg=None,bold=True, underline=False)
+        notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
         print(f"""\n{notification} Module {mod} with ID {mod_id} has been added to the campaign {notification}\n""")
 
 def updateModulesIdList(campaign,m):

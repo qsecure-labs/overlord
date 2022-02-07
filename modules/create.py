@@ -1,4 +1,5 @@
 import cmd2
+from cmd2.ansi import Fg
 import sys
 import os
 sys.path.insert(0, 'modules/providers')
@@ -88,8 +89,8 @@ class main(list):
             #Create the variables.tf file:
             q.write(self.create_variables())
 
-            proj = cmd2.ansi.style(self.project_id, fg='blue', bg='',bold=True, underline=False)
-            notification = cmd2.ansi.style("***", fg='red', bg='',bold=True, underline=False)
+            proj = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
+            notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
             print(f"""\n{notification} The terrafrom files for the project with ID {proj} have been created {notification}\n""")
 
 

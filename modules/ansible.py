@@ -1,4 +1,5 @@
 import cmd2
+from cmd2.ansi import Fg
 import os
 import argparse
 from prettytable import PrettyTable
@@ -22,7 +23,7 @@ class main(list):
 
         # Call cmd_main class 
         i = cmd_main()
-        i.prompt = "(" + cmd2.ansi.style("Overlord", fg='red', bg='',bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg='bright_black', bg='',bold=True, underline=False) + cmd2.ansi.style("/ansible", fg='blue', bg='',bold=True, underline=False) +")" +"$> "
+        i.prompt = "(" + cmd2.ansi.style("Overlord", fg=Fg.RED, bg=None,bold=True, underline=False) + " : " + cmd2.ansi.style( project_id, fg=Fg.DARK_GRAY, bg=None,bold=True, underline=False) + cmd2.ansi.style("/ansible", fg=Fg.BLUE, bg=None,bold=True, underline=False) +")" +"$> "
         i.cmdloop()
 
 def hide_cmd2_modules(self):
