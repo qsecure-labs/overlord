@@ -66,7 +66,7 @@ data "template_file" "ssh_config" {
   depends_on = [aws_instance.phishing-server]
 
   vars = {
-    name         = "dns_rdir_${aws_instance.phishing-server[count.index].public_ip}"
+    name         = "phish_${aws_instance.phishing-server[count.index].public_ip}"
     hostname     = aws_instance.phishing-server[count.index].public_ip
     user         = "admin"
     identityfile = "${abspath(path.root)}/ssh_keys/${aws_instance.phishing-server[count.index].public_ip}"

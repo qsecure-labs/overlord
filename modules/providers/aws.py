@@ -56,7 +56,7 @@ output "redirector_{c["id"]}-ips" {{
         scripts = ', '.join('"../../redbaron/data/scripts/tools/{0}.sh"'.format(s) for s in c["tools"])
         user = ""
         if c["distro"] == "kali":
-          user = "ec2-user"
+          user = "kali"
         elif c["distro"] == "ubuntu":
           user = "ubuntu"
         else:

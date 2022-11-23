@@ -135,7 +135,7 @@ data "template_file" "ssh_config" {
   depends_on = [aws_instance.gophish-server]
 
   vars = {
-    name         = "dns_rdir_${aws_instance.gophish-server[count.index].public_ip}"
+    name         = "gophish_${aws_instance.gophish-server[count.index].public_ip}"
     hostname     = aws_instance.gophish-server[count.index].public_ip
     user         = "admin"
     identityfile = "${abspath(path.root)}/ssh_keys/${aws_instance.gophish-server[count.index].public_ip}"

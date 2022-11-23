@@ -549,7 +549,7 @@ playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
                             elif mod["distro"] == "debian":
                                 user = "admin"
                             elif mod["distro"] == "kali":
-                                user = "ec2-user"
+                                user = "kali"
                             elif mod["distro"] == "ubuntu":
                                 user = "ubuntu"
                         elif mod["provider"] == "digitalocean":
