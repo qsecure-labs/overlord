@@ -2,10 +2,10 @@
     "mod_redirector": {
         "module": "redirector",
         "type": "http",
-        "region": "LON1",
+        "region": "eu-west-2",
         "redirector_id": "",
-        "provider": "digitalocean",
-        "size": "s-1vcpu-1gb",
+        "provider": "aws",
+        "size": "t2.micro",
         "id": ""
     },
     "mod_c2": {
@@ -13,28 +13,29 @@
         "type": "http",
         "redirectors": 1,
         "tools": [],
-        "region": "LON1",
-        "provider": "digitalocean",
-        "size": "s-1vcpu-1gb",
+        "region": "eu-west-2",
+        "provider": "aws",
+        "size": "t2.micro",
         "id": "",
-        "distro": "debian"
+        "distro": "kali"
     },
     "mod_dns_record": {
         "module": "dns_record",
-        "provider": "digitalocean",
+        "provider": "aws",
         "type": "A",
-        "name": "@",
+        "name": "",
         "records": {},
         "counter": 1,
         "ttl": "10",
-        "priority": 1
+        "priority": 1,
+        "zone": "new"
     },
     "mod_gophish": {
         "module": "gophish",
-        "redirectors": 1,
-        "region": "LON1",
-        "provider": "digitalocean",
-        "size": "s-1vcpu-1gb",
+        "redirectors": 0,
+        "region": "eu-west-2",
+        "provider": "aws",
+        "size": "t2.micro",
         "id": ""
     },
     "mod_letsencrypt": {
@@ -42,29 +43,30 @@
         "id": "",
         "domain_name": "",
         "mod_id": "",
-        "email": "kokos@example.com"
+        "email": "kokosexample.com",
+        "zone": "new"
     },
     "mod_mail": {
         "module": "mail",
         "domain_name": "",
         "subdomain": "mail",
-        "region": "LON1",
-        "provider": "digitalocean",
-        "size": "s-1vcpu-1gb",
+        "region": "eu-west-2",
+        "provider": "aws",
+        "size": "t2.micro",
         "id": "",
         "allowed_ips": []
     },
     "mod_webserver": {
         "module": "webserver",
         "redirectors": 1,
-        "region": "LON1",
-        "provider": "digitalocean",
-        "size": "s-1vcpu-1gb",
+        "region": "eu-west-2",
+        "provider": "aws",
+        "size": "t2.micro",
         "id": ""
     },
     "mod_godaddy": {
         "module": "godaddy",
-        "provider": "digitalocean",
+        "provider": "aws",
         "domain": "",
         "id": ""
     },
@@ -76,7 +78,7 @@
     },
     "mod_firewall": {
         "module": "firewall",
-        "provider": "digitalocean",
+        "provider": "aws",
         "protocol": "tcp",
         "port": "",
         "address": "0.0.0.0/0",
@@ -134,12 +136,12 @@
             "us-west-2-ubuntu": "ami-0652b0a864db01553"}
         },
         "digitalocean": {
-            "regions": ["NYC1", "NYC2", "NYC2", "SFO1", "SFO2", "AMS2", "AMS1", "LON1", "FRA1", "TOR1", "BLR1"],
-            "size": ["s-1vcpu-1gb"],
-            "default_region": "LON1",
-            "default_size": "s-1vcpu-1gb",
+            "regions": ["NYC1", "NYC2", "NYC2", "SFO1", "SFO2", "AMS2", "AMS1", "eu-west-2", "FRA1", "TOR1", "BLR1"],
+            "size": ["t2.micro"],
+            "default_region": "eu-west-2",
+            "default_size": "t2.micro",
             "supported_distros":  ["debian","ubuntu"]
         },
-        "providers_list": ["digitalocean", "aws"],
+        "providers_list": ["aws", "digitalocean"],
         "distros": ["debian","kali","ubuntu"]
     }

@@ -54,14 +54,18 @@ resource "acme_certificate" "certificate" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo cp /tmp/${var.domain}_privkey.pem /opt/goapps/src/github.com/gophish/gophish/${var.domain}_privkey.pem",
-      "sudo cp /tmp/${var.domain}_cert.pem /opt/goapps/src/github.com/gophish/gophish/${var.domain}_cert.pem",
-      "sudo sed -i 's/false/true/g' /opt/goapps/src/github.com/gophish/gophish/config.json",
-      "sudo sed -i 's/0.0.0.0:80/0.0.0.0:443/g' /opt/goapps/src/github.com/gophish/gophish/config.json",
-      "sudo sed -i 's/example.crt/${var.domain}_cert.pem/g' /opt/goapps/src/github.com/gophish/gophish/config.json",
-      "sudo sed -i 's/example.key/${var.domain}_privkey.pem/g' /opt/goapps/src/github.com/gophish/gophish/config.json",
+      "sudo cp /tmp/${var.domain}_privkey.pem /opt/gophish/${var.domain}_privkey.pem",
+      "sudo cp /tmp/${var.domain}_cert.pem /opt/gophish/${var.domain}_cert.pem",
+      "sudo sed -i 's/false/true/g' /opt/gophish/config.json",
+      "sudo sed -i 's/0.0.0.0:80/0.0.0.0:443/g' /opt/gophish/config.json",
+      "sudo sed -i 's/example.crt/${var.domain}_cert.pem/g' /opt/gophish/config.json",
+      "sudo sed -i 's/example.key/${var.domain}_privkey.pem/g' /opt/gophish/config.json",
+      "sudo sed -i 's/gophish_admin.crt/${var.domain}_cert.pem/g' /opt/gophish/config.json",
+      "sudo sed -i 's/gophish_admin.key/${var.domain}_privkey.pem/g' /opt/gophish/config.json",
       "sudo systemctl stop gophish.service",
       "sudo systemctl start gophish.service",
+      "sudo rm /opt/gophish/password.txt",
+      "sudo cat /var/log/gophish.err | sudo grep 'Please login with the username admin and the password' > /opt/gophish/password.txt"
     ]
 
     connection {

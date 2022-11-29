@@ -84,14 +84,14 @@ class cmd_main(cmd2.Cmd):
         modules_ids = []
         for c in campaign_list:
             if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "godaddy" and  c["module"] != "ansible":
-                if c["module"] == "mail" or c["module"] == "redirector":
+                if c["module"] == "mail" or c["module"] == "redirector" or c["module"] == "gophish":
                     modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                 else:
                     modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                     for i in range(c["redirectors"]):
                         modules_ids.insert(len(modules_ids),(c["id"]+"-"+str(i+1)+"/"+c["module"]))
 
-        self.domain_recrod_parser.choices = domain_names
+        self.domain_record_parser.choices = domain_names
         self.module_recrod_parser.choices = modules_ids
 
     def do_back(self,arg):
@@ -111,10 +111,11 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["id",mod["id"] , "N/A", ""])
             x.add_row(["provider", mod["provider"], "yes", "Provider to be used"])
             x.add_row(["type", mod["type"], "yes", "The record type to add. Valid values are A, MX and TXT."])
-            x.add_row(["record", mod["records"], "yes", "The record to add.\n  A:   set record -m <module_id> -d <domain>\n  TXT: set record -d <domain> -t <template>/-v <custom>\n  MX:  set record -m <module_id> -d <domain>"])
+            x.add_row(["record", mod["records"], "yes", "The record to add.\n  A:   set record -m <module_id> -d <domain>\n  TXT: set record -d <domain> -t <template>/-v <custom>\n  MX:  set record -d <domain> -v <mailserver_domain>"])
             x.add_row(["name",mod["name"] , "yes", "Use @ to create the record at the root of the domain or enter a hostname to create it elsewhere.\nA records are for IPv4 addresses only and tell a request where your domain should direct to. For AWS the '@' is converted to ''."])
             x.add_row(["priority",mod["priority"] , "no", "Used for mail server. Default 1."])
             x.add_row(["ttl",mod["ttl"] , "no", "Time to live"])
+            x.add_row(["zone",mod["zone"] , "yes", "Route53 Zone ID. Use new to create new one."])
             x.align["DESCRITPION"] = "l"
         else:            
             x = PrettyTable()
@@ -123,10 +124,11 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["id",self.mod["id"] , "N/A", ""])
             x.add_row(["provider", self.mod["provider"], "yes", "Provider to be used"])
             x.add_row(["type", self.mod["type"], "yes", "The record type to add. Valid values are A, MX and TXT."])
-            x.add_row(["record", self.mod["records"], "yes", "The  record to add.\n  A:   set record -m <module_id> -d <domain>\n  TXT: set record -d <domain> -t <template>/-v <custom>\n  MX:  set record -m <module_id> -d <domain>"])
+            x.add_row(["record", self.mod["records"], "yes", "The  record to add.\n  A:   set record -m <module_id> -d <domain>\n  TXT: set record -d <domain> -t <template>/-v <custom>\n  MX:  set record -d <domain> -v <mailserver_domain>"])
             x.add_row(["name",self.mod["name"] , "yes", "Use @ to create the record at the root of the domain or enter a hostname to create it elsewhere.\nA records are for IPv4 addresses only and tell a request where your domain should direct to."])
             x.add_row(["priority",self.mod["priority"] , "no", "Used for mail server. Default 1,"])
-            x.add_row(["ttl",self.mod["ttl"] , "no", "Time to live"])
+            x.add_row(["ttl", self.mod["ttl"] , "no", "Time to live"])
+            x.add_row(["zone", self.mod["zone"] , "yes", "Route53 Zone ID. Use new to create new one."])
             x.align["DESCRITPION"] = "l"
         print(x)
 
@@ -152,12 +154,16 @@ class cmd_main(cmd2.Cmd):
     parser_priority = set_subparsers.add_parser('priority', help='Set priority')
     parser_priority.add_argument('priority', type=int, help='example: [ set priority <1> ]')
 
+    # create the parser for the "zone" sub-command
+    parser_zone = set_subparsers.add_parser('zone', help='Set zone ID')
+    parser_zone.add_argument('zone', type=str, help='example: [ set zone <ZONE_ID> or set zone new for new zone ]')
+
     # create the parser for the "record" sub-command
-    parser_record = set_subparsers.add_parser('record', help="""Sets the record\n            examples\n            A:   set record -m <module_id> -d <domain>\n            TXT: set record -d <domain> -t <template> / set record -d <domain> -v <custom>\n            MX:  set record -m <module_id> -d <domain>""")
+    parser_record = set_subparsers.add_parser('record', help="""Sets the record\n            examples\n            A:   set record -m <module_id> -d <domain>\n            TXT: set record -d <domain> -t <template> / set record -d <domain> -v <custom>\n            MX:  set record -d <domain> -v <MX Domain>""")
     module_recrod_parser = parser_record.add_argument('-m','--module', type=str, help='Module ID to add') #choices=campaign_list,
     # parser_record.add_argument('-r','--redirector', type=int, help='Redirector of module to use')
-    domain_recrod_parser =parser_record.add_argument('-d','--domain', type=str, help='domain to use') #,choices=domain_names,
-    parser_record.add_argument('-v','--value',type=str, help='Custom vaule to be added') #  ,nargs="?"
+    domain_record_parser =parser_record.add_argument('-d','--domain', type=str, help='domain to use') #,choices=domain_names,
+    parser_record.add_argument('-v','--value',type=str, help='Custom vaule to be added (for MX or TXT records)') #  ,nargs="?"
     parser_record.add_argument('-t','--txt_templ',type=str,choices = values_list, help='TXT predifined records')
 
     def set_type(self, arg):
@@ -168,13 +174,13 @@ class cmd_main(cmd2.Cmd):
         modules_ids = []
         if arg.type == "MX":
             for c in campaign_list:
-                if c["module"] == "mail" :
+                if c["module"] in ["mail", "gophish"] :
                     modules_ids.insert(len(modules_ids),c["id"])
             self.module_recrod_parser.choices = modules_ids
         else:
             for c in campaign_list:
                     if c["module"] != "dns_record" and c["module"] != "letsencrypt" and c["module"] != "redirector" and c["module"] != "godaddy" and  c["module"] != "ansible":
-                        if c["module"] == "mail":
+                        if c["module"] == "mail" or c["module"] == "gophish":
                             modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
                         else:
                             modules_ids.insert(len(modules_ids),(c["id"]+"/"+c["module"]))
@@ -194,6 +200,10 @@ class cmd_main(cmd2.Cmd):
     def set_priority(self, arg):
         """Sets the priority variable"""
         self.mod["priority"]= arg.priority
+
+    def set_zone(self, arg):
+        """Sets the priority variable"""
+        self.mod["zone"]= arg.zone
     
     def set_provider(self, arg):
         """Sets the provider variable"""
@@ -204,7 +214,7 @@ class cmd_main(cmd2.Cmd):
 
         if arg.provider == "aws":
             for c in campaign_list:
-                if c["module"] != "ansible":
+                if c["module"] != "ansible" and c["module"] != "letsencrypt":
                     if c["provider"] == "aws":
                         aws_flag = True
             if not aws_flag:
@@ -230,13 +240,11 @@ class cmd_main(cmd2.Cmd):
         global campaign_list
         record = {}
         if self.mod["type"] == "MX":
-            if  arg.module is not None:
-                for c in campaign_list:
-                    if c["module"] == "mail" and c["id"] == arg.module.split('/')[0]:
-                        record = {c["domain_name"]: c["subdomain"]+"."+c["domain_name"]+"."}
-                        self.mod["records"]= record
-                if record is None:
-                    print("The module is not a mail server")
+            if arg.domain is not None and arg.value is not None:
+                record = {arg.domain: arg.value}
+                self.mod["records"]= record
+            else:
+                print("The MX type requires domain and value to be set")
                 
         elif self.mod["type"] == "TXT":
             if arg.txt_templ is not None:
@@ -272,6 +280,7 @@ class cmd_main(cmd2.Cmd):
     parser_name.set_defaults(func=set_name)
     parser_priority.set_defaults(func=set_priority)
     parser_record.set_defaults(func=set_record)
+    parser_zone.set_defaults(func=set_zone)
 
     @cmd2.with_argparser(set_parser)
     def do_set(self, args):

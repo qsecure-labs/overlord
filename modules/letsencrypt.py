@@ -75,6 +75,7 @@ class cmd_main(cmd2.Cmd):
         
         self.domain_list = []
         self.record_list = []
+        self.zone_list = []
         for c in campaign_list:
             if c["module"] == "dns_record" and c["type"]== "A":
                 if c["name"] == "@" or c["name"] == "":
@@ -87,6 +88,7 @@ class cmd_main(cmd2.Cmd):
                         self.domain_list.append( c["name"]+"."+k)
                     rec[ c["name"]+"."+k] = rec.pop(k)
                     self.record_list.append(rec)
+                self.zone_list.append(c["zone"])
 
         self.domain_names = self.domain_list
         self.domain_name_parser.choices = self.domain_list
@@ -101,6 +103,7 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["domain_name", mod["domain_name"], "yes", "The domain name for the certificate"])
             x.add_row(["email",mod["email"] , "yes", "Email for certificate defaults to kokos@example.com"])
             x.add_row(["mod_id",mod["mod_id"] , "no", "Autoloaded from domain_name"])
+            x.add_row(["zone",mod["zone"] , "no", "Autoloaded from zone_list"])
             x.align["DESCRITPION"] = "l"
         else:
             x = PrettyTable()
@@ -110,6 +113,7 @@ class cmd_main(cmd2.Cmd):
             x.add_row(["domain_name", self.mod["domain_name"], "yes", "The domain name for the certificate"])
             x.add_row(["email",self.mod["email"] , "yes", "Email for certificate defaults to kokos@example.com"])
             x.add_row(["mod_id",self.mod["mod_id"] , "no", "Autoloaded from domain_name"])
+            x.add_row(["zone",self.mod["zone"] , "no", "Autoloaded from zone_list"])
             x.align["DESCRITPION"] = "l"
         print(x)
     
@@ -142,6 +146,7 @@ class cmd_main(cmd2.Cmd):
         for idx,d in enumerate(self.domain_names):
             if d ==  arg.domain_name:
                 self.mod["mod_id"] = self.record_list[idx][d]
+                self.mod["zone"] = self.zone_list[idx]
    
     def set_email(self, arg):
         """Sets the email variable"""

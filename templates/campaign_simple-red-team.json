@@ -9,16 +9,16 @@
         "region": "eu-west-2",
         "provider": "aws",
         "size": "t2.medium",
-        "id": "JKSENQ",
+        "id": "simple-c2",
         "distro": "kali",
         "ami": "ami-085caaed54aee448f"
     },
     {
         "module": "gophish",
-        "redirectors": 1,
+        "redirectors": 0,
         "region": "eu-west-2",
         "provider": "aws",
         "size": "t2.small",
-        "id": "XXXXXXX"
+        "id": "simple-gophish"
     }
 ]
