@@ -63,8 +63,9 @@ resource "acme_certificate" "certificate" {
       "sudo sed -i 's/gophish_admin.crt/${var.domain}_cert.pem/g' /opt/gophish/config.json",
       "sudo sed -i 's/gophish_admin.key/${var.domain}_privkey.pem/g' /opt/gophish/config.json",
       "sudo systemctl stop gophish.service",
-      "sudo systemctl start gophish.service",      
-      "sudo cat /var/log/gophish.err | sudo grep 'Please login with the username admin and the password' | sudo tee /opt/gophish/password.txt"
+      "sudo systemctl start gophish.service",
+      "sleep 10s",      
+      "sudo sh -c 'cat /var/log/gophish.err | sudo grep password > /opt/gophish/password.txt'"
     ]
 
     connection {

@@ -12,13 +12,13 @@ sudo apt install autossh
 pip3 install -r requirements.txt
 
 # download terraform binary
-wget https://releases.hashicorp.com/terraform/0.12.26/terraform_0.12.26_linux_amd64.zip
-unzip terraform_0.12.26_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/0.12.19/terraform_0.12.19_linux_amd64.zip
+unzip terraform_0.12.19_linux_amd64.zip
 sudo mv terraform /opt/terraform
-rm terraform_0.12.26_linux_amd64.zip
+rm terraform_0.12.19_linux_amd64.zip
 
-# download godaddy plugin for terraform
-wget https://github.com/n3integration/terraform-godaddy/releases/download/v1.7.3/terraform-godaddy_linux_amd64.tgz
-tar -xvzf terraform-godaddy_linux_amd64.tgz
-rm terraform-godaddy_linux_amd64.tgz
-sudo mv terraform-godaddy_linux_amd64 ../redbaron/data/plugins/terraform-provider-godaddy_v1.7.3_x4
+# download godaddy plugin for terraform (Optional)
+# wget https://github.com/n3integration/terraform-godaddy/releases/download/v1.7.3/terraform-godaddy_linux_amd64.tgz
+# tar -xvzf terraform-godaddy_linux_amd64.tgz
+# rm terraform-godaddy_linux_amd64.tgz
+# sudo mv terraform-godaddy_linux_amd64 ../redbaron/data/plugins/terraform-provider-godaddy_v1.7.3_x4
