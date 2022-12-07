@@ -11,7 +11,7 @@ def send_new_message_teams(event_type, client_name):
     global teamsHook
     myTeamsMessage = pymsteams.connectorcard(teamsHook)
     myTeamsMessage.title("GoPhish")
-    myTeamsMessage.text('[+] New Event from'.format(client_name))
+    myTeamsMessage.text('[+] New Event from {}'.format(client_name))
 
     # create the section
     myMessageSection = pymsteams.cardsection() 
