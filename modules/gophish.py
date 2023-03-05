@@ -10,12 +10,16 @@ import json
 
 module = {}
 campaign_list = []
+project_name = ''
 
 class main(list):
     """Main function to initialize variables and calls the cmd2 package for the gophish module """
     def __init__(self,campaign,mod,project_id):
         global campaign_list
         campaign_list = campaign
+
+        global project_name
+        project_name = project_id
 
         if mod is not None:
             global module
@@ -51,6 +55,7 @@ class cmd_main(cmd2.Cmd):
     def __init__(self):
         super().__init__()
         global module
+        global project_name
 
         # Hide the Quit funcitionality
         hide_cmd2_modules(self)
@@ -76,7 +81,7 @@ class cmd_main(cmd2.Cmd):
         if module:
             self.mod = dict(module)
         else:
-            self.mod["id"] = randomString()
+            self.mod["id"] = project_name + '_' + self.mod["module"] + '_' + randomString()
             
     def do_back(self, arg):
         """Return to main menu"""
@@ -141,10 +146,13 @@ class cmd_main(cmd2.Cmd):
             print(f"""\n{notification} Only one region is supported per project on AWS. {notification}\n""")
             global campaign_list
             for c in campaign_list:
-                if c["provider"] == "aws":
-                    if c["region"] != arg.region:
-                        print(cmd2.ansi.style(f"""Module with {c["id"]} has region set to {c["region"]}. Replacing...""", fg=Fg.RED, bg=None,bold=True, underline=False))
-                        c["region"] = arg.region
+                try:
+                    if c["provider"] == "aws":
+                        if c["region"] != arg.region:
+                            print(cmd2.ansi.style(f"""Module with {c["id"]} has region set to {c["region"]}. Replacing...""", fg=Fg.RED, bg=None,bold=True, underline=False))
+                            c["region"] = arg.region
+                except:
+                    pass
 
     def set_redirectors(self, arg):
         """Sets the redirectors variable"""

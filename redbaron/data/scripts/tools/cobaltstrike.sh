@@ -1,12 +1,12 @@
 #!/bin/bash
 
-CSTRIKE_KEY='xxxx-xxxx-xxxx-xxxx'
+CSTRIKE_KEY=''
 
 sudo apt install openjdk-11-jdk -y
 sudo update-java-alternatives -s java-1.11.0-openjdk-amd64 -y
 
-token=`curl -s https://www.cobaltstrike.com/download -d "dlkey=${CSTRIKE_KEY}" | grep 'href="/downloads/' | cut -d '/' -f3`
-curl -s https://www.cobaltstrike.com/downloads/${token}/cobaltstrike-dist.tgz -o /tmp/cobaltstrike.tgz
+token=`curl -s https://download.cobaltstrike.com/download -d "dlkey=${CSTRIKE_KEY}" | grep 'href="/downloads/' | cut -d '/' -f3`
+curl -s https://download.cobaltstrike.com/downloads/${token}/cobaltstrike-dist.tgz -o /tmp/cobaltstrike.tgz
 
 echo ${CSTRIKE_KEY} > ~/.cobaltstrike.license
 sudo cp ~/.cobaltstrike.license /root/.cobaltstrike.license

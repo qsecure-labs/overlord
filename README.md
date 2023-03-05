@@ -14,16 +14,39 @@ Overlord provides a python-based console CLI which is used to build Red Teaming 
 
 A demo infrastructure was set up in our blog post https://qsecure.com.cy/resources/publications/overlord/.
 
-For the full documentation of the tool visit the Wiki tab at https://github.com/qsecure-labs/overlord/wiki.
+For the full documentation of the tool visit the Wiki tab.
 
 # Installation
 
+## Using the install script
+
 ```bash
-git clone https://github.com/qsecure-labs/overlord.git
+git clone https://github.com/s3nn/overlord.git
 cd overlord/config
 chmod +x install.sh
 sudo ./install.sh
 ```
+
+## Installing without script
+
+### Install python dependecies
+
+Make sure you install all python [dependencies](config/requirements.txt) using whatever method you prefer (venv, poetry etc)
+
+
+```
+pip3 install -r requirements.txt
+```
+
+### Setup Terraform
+
+Overlord currently uses and outdated version of terraform. You can download it [here](https://releases.hashicorp.com/terraform/0.12.19/terraform_0.12.19_linux_amd64.zip) or using:
+
+```
+wget https://releases.hashicorp.com/terraform/0.12.19/terraform_0.12.19_linux_amd64.zip
+```
+
+Make sure to place the `terraform` binary or a symlink to it at `/opt/terraform`. This is what Overlord will be trying to execute.
 
 ## Acknowledgments
  

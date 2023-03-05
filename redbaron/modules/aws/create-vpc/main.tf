@@ -1,11 +1,11 @@
 resource "aws_vpc" "default" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = "192.168.0.0/24"
   enable_dns_hostnames = true
 }
 
 resource "aws_subnet" "default" {
   vpc_id     = aws_vpc.default.id
-  cidr_block = "10.0.0.0/24"
+  cidr_block = "192.168.0.0/24"
 }
 
 resource "aws_internet_gateway" "default" {

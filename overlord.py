@@ -188,8 +188,10 @@ class Overlord(cmd2.Cmd):
             new_project_name = arg.name    
 
         if not os.path.exists(new_path):
-            command = 'mkdir ' +new_path
-            os.system(command)
+            os.system('mkdir projects/'+new_project_name)
+            os.system('mkdir projects/'+new_project_name+'/ssh_keys')
+            os.system('mkdir projects/'+new_project_name+'/ssh_configs')
+            os.system('mkdir projects/'+new_project_name+'/certificates')
             shutil.copy(dir_path+'/campaign.json',new_path+'/campaign.json')
             shutil.copy(dir_path+'/variables.json',new_path+'/variables.json')
 
@@ -265,6 +267,7 @@ class Overlord(cmd2.Cmd):
         proj = cmd2.ansi.style(self.project_id, fg=Fg.BLUE, bg=None,bold=True, underline=False)
         notification = cmd2.ansi.style("***", fg=Fg.RED, bg=None,bold=True, underline=False)
         print(f"""\n{notification} Started deployment of project with ID {proj} {notification}\n""")
+
         os.system(f"""mkdir -p projects/{self.project_id}/.terraform/plugins/linux_amd64 """)
         os.system(f"""cp redbaron/data/plugins/terraform-provider-godaddy_v1.7.3_x4 projects/{self.project_id}/.terraform/plugins/linux_amd64/terraform-provider-godaddy_v1.7.3_x4""")
         os.system(f"""chmod -R a+x projects/{self.project_id}/.terraform/plugins/linux_amd64/*""")

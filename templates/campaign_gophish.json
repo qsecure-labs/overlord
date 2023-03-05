@@ -1,0 +1,10 @@
+[
+    {
+        "module": "gophish",
+        "redirectors": 0,
+        "region": "eu-west-2",
+        "provider": "aws",
+        "size": "t2.small",
+        "id": "gophish"
+    }
+]

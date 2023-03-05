@@ -9,7 +9,7 @@ resource "random_id" "server" {
 resource "tls_private_key" "ssh" {
   count     = var.counter
   algorithm = "RSA"
-  rsa_bits  = 4096
+  rsa_bits  = 2048
 }
 
 resource "aws_key_pair" "http-c2" {
@@ -38,6 +38,11 @@ resource "aws_instance" "http-c2" {
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true
 
+
+  provisioner "local-exec" {
+    command = "echo \"${tls_private_key.ssh[count.index].private_key_pem}\" > ssh_keys/${self.public_ip} && echo \"${tls_private_key.ssh[count.index].public_key_openssh}\" > ssh_keys/${self.public_ip}.pub && chmod 600 ssh_keys/*"
+  }
+
   provisioner "remote-exec" {
     scripts = concat(["../../redbaron/data/scripts/core_deps.sh"], var.install)
 
@@ -49,9 +54,6 @@ resource "aws_instance" "http-c2" {
     }
   }
 
-  provisioner "local-exec" {
-    command = "echo \"${tls_private_key.ssh[count.index].private_key_pem}\" > ssh_keys/${self.public_ip} && echo \"${tls_private_key.ssh[count.index].public_key_openssh}\" > ssh_keys/${self.public_ip}.pub && chmod 600 ssh_keys/*"
-  }
 
   provisioner "local-exec" {
     when    = destroy

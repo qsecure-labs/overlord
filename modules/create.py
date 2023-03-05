@@ -37,18 +37,21 @@ class main(list):
         q= open("projects/"+self.project_id+"/variables.tf","w+")
 
         f.write(self.create_general())
-        f.write(self.create_dns_names())
+        # commented out because we don't want to automatically create new hosted zone
+        # f.write(self.create_dns_names())  
 
         aws_exception = False
         # Check if AWS is used
         for c in self.campaign:
-            if c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible":
+            if c["module"] != "letsencrypt" and c["module"] != "godaddy" and c["module"] != "ansible" and c["module"] != "dns_record":
                 if c["provider"] == "aws":
                     try:
                         self.variables["aws_region"] = c["region"]
                         f.write(self.create_aws_vpc())
                         break
-                    except:
+                    except Exception as e:
+                        print(e.message)
+                        print(str(e))
                         print ("At least one AWS module should be used in the dependent modules!")
                         aws_exception = True
                         break
@@ -344,20 +347,25 @@ module "create_cert_{c["id"]}" {{
 
 #AWS
                 if camp["provider"] == "aws":
-                    public_zone = 0
-                    for idx,d in enumerate(self.aws_domains):
-                        if d == c["domain_name"]:
-                            public_zone = idx
-
+                    zone = ''
+                    if c["zone"] == "new":
+                        public_zone = 0                                              
+                        for idx,d in enumerate(self.aws_domains):
+                            if d == c["domain_name"]:
+                                public_zone = idx
+                        zone = f'module.public_zone.public_zones_ids[{public_zone}]'
+                    else:
+                        zone = c["zone"]
                     if camp["module"] == "gophish":
+
                         output=f"""
 module "create_cert_{c["id"]}" {{
   source = "../../redbaron/modules/letsencrypt/aws/create-cert-dns-gophish-aws"
   domain = "{c["domain_name"]}"
   aws_key = var.aws_key
   aws_secret = var.aws_secret
-  region = "eu-west-1"
-  zone = "${{module.public_zone.public_zones_ids[{public_zone}]}}"
+  region = "{camp["region"]}"
+  zone = "{zone}"
   server_url = "production"
   phishing_server_ip = module.{camp["module"]}_{camp["id"]}.ips[0][0]
 }}
@@ -464,33 +472,46 @@ module "create_cert_{c["id"]}" {{
                 output = aws.main.dns_records_type(c,record,value,godaddy_aws_id,self.aws_domains)
                 return output
             if c["type"] == "TXT":
-                txt_rec_list = []
-                txt_rec_list = [""] * len(self.aws_domains)
-                if not self.txt_recs:
-                    self.txt_recs = True
-                    for camp in self.campaign:
-                        if camp["module"] == "dns_record" and camp["provider"] == "aws" and camp["type"] == "TXT":
-                            for k in camp["records"].keys():
-                                key = k
-                            value = camp["records"][key]
-                            txt_rec_list[self.aws_domains.index(key)] = txt_rec_list[self.aws_domains.index(key)] +" , \""+value +"\""
+                record = f""" "{key}" = ["{value}"] """
+                value = self.aws_domains.index(key)
+                #Godaddy dependancy
+                godaddy_aws_id = ""
+                for camp in self.campaign:
+                    if camp["module"] == "godaddy" and camp["provider"] == "aws":
+                        if camp["domain"] == key:
+                            godaddy_aws_id = camp["id"]
+                    
+                output = aws.main.dns_records_type(c,record,value,godaddy_aws_id,self.aws_domains)
+                return output
 
-                    #Replace 3 fist characters in the list
-                    #Godaddy dependancy
-                    godaddy_aws_id = ""
-                    for camp in self.campaign:
-                        if camp["module"] == "godaddy" and camp["provider"] == "aws":
-                            if camp["domain"] == key:
-                                godaddy_aws_id = camp["id"]
-                    output = ""
+            # if c["type"] == "TXT":
+            #     txt_rec_list = []
+            #     txt_rec_list = [""] * len(self.aws_domains)
+            #     if not self.txt_recs:
+            #         self.txt_recs = True
+            #         for camp in self.campaign:
+            #             if camp["module"] == "dns_record" and camp["provider"] == "aws" and camp["type"] == "TXT":
+            #                 for k in camp["records"].keys():
+            #                     key = k
+            #                 value = camp["records"][key]
+            #                 txt_rec_list[self.aws_domains.index(key)] = txt_rec_list[self.aws_domains.index(key)] +" , \""+value +"\""
 
-                    for idx,t in enumerate(txt_rec_list):
-                        if len(t) != 0:
-                            txt_rec_list[idx] = t[3:]
-                            output = output + aws.main.dns_records_type_txt(txt_rec_list[idx],idx,godaddy_aws_id,self.aws_domains)
-                    return output
-                else:
-                    return output
+            #         #Replace 3 fist characters in the list
+            #         #Godaddy dependancy
+            #         godaddy_aws_id = ""
+            #         for camp in self.campaign:
+            #             if camp["module"] == "godaddy" and camp["provider"] == "aws":
+            #                 if camp["domain"] == key:
+            #                     godaddy_aws_id = camp["id"]
+            #         output = ""
+
+            #         for idx,t in enumerate(txt_rec_list):
+            #             if len(t) != 0:
+            #                 txt_rec_list[idx] = t[3:]
+            #                 output = output + aws.main.dns_records_type_txt(txt_rec_list[idx],idx,godaddy_aws_id,self.aws_domains)
+            #         return output
+            #     else:
+            #         return output
 
 
     ####################################################################################
@@ -549,7 +570,7 @@ playbook  = "../../redbaron/data/playbooks/{c["playbook"]}"
                             elif mod["distro"] == "debian":
                                 user = "admin"
                             elif mod["distro"] == "kali":
-                                user = "ec2-user"
+                                user = "kali"
                             elif mod["distro"] == "ubuntu":
                                 user = "ubuntu"
                         elif mod["provider"] == "digitalocean":

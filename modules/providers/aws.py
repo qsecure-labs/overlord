@@ -56,7 +56,7 @@ output "redirector_{c["id"]}-ips" {{
         scripts = ', '.join('"../../redbaron/data/scripts/tools/{0}.sh"'.format(s) for s in c["tools"])
         user = ""
         if c["distro"] == "kali":
-          user = "ec2-user"
+          user = "kali"
         elif c["distro"] == "ubuntu":
           user = "ubuntu"
         else:
@@ -263,6 +263,14 @@ resource "null_resource" "update_iredmail_{c["id"]}" {{
         return output
 
     def dns_records_type(c,record,value,godaddy_id,aws_domains):
+
+      # Decide if new Hosted Zone will be created
+      zone = ''
+      if c["zone"] == "new":
+        zone = module.public_zone.public_zones_ids[{value}]
+      else: 
+        zone = c["zone"]
+
       domain = record.split('"')
       id_domain = 0
       for idx,d in enumerate(aws_domains):
@@ -278,7 +286,7 @@ module "create_dns_record_{c["id"]}" {{
     type = "{c["type"]}"
     counter = 1
     records = {{ {record} }}
-    zone = module.public_zone.public_zones_ids[{value}]
+    zone = "{zone}"
 }}\n"""
         else:
           output=f"""
@@ -288,7 +296,7 @@ module "create_dns_record_{c["id"]}" {{
     type = "{c["type"]}"
     counter = 1
     records = {{ {record} }}
-    zone = module.public_zone.public_zones_ids[{value}]
+    zone = "{zone}"
 }}\n"""
       else:
         if not c["name"]:
@@ -299,7 +307,7 @@ module "create_dns_record_{c["id"]}" {{
     type = "{c["type"]}"
     counter = module.redirect_ns_{godaddy_id}.redirected
     records = {{ {record} }}
-    zone = module.public_zone.public_zones_ids[{value}]
+    zone = "{zone}"
 }}\n"""
         else:
           output=f"""
@@ -309,7 +317,7 @@ module "create_dns_record_{c["id"]}" {{
     type = "{c["type"]}"
     counter = module.redirect_ns_{godaddy_id}.redirected
     records = {{ {record} }}
-    zone = module.public_zone.public_zones_ids[{value}]
+    zone = "{zone}"
 }}\n"""
 
       return output
@@ -322,7 +330,7 @@ module "create_dns_record_{value}" {{
     name  = ""
     type = "TXT"
     records = [{record}]
-    zone = module.public_zone.public_zones_ids[{value}]
+    zone = "{zone}"
 }}\n"""
         return output
 

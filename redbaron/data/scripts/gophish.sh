@@ -21,4 +21,5 @@ echo "systemctl stop gophish.service (stop the service)" >>/opt/gophish/OVERLORD
 
 sleep 20s
 
+# get initial password
 cat /var/log/gophish.err | grep 'Please login with the username admin and the password' > /opt/gophish/password.txt
